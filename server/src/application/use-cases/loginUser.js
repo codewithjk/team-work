@@ -1,10 +1,10 @@
 const authService = require("../services/authService");
 const userRepository = require("../../infrastructure/database/repositories/userRepositoryImpl");
 
-class CreateUser {
+class loginUser {
   async execute(data) {
-    return authService.createUser(data, userRepository);
+    return authService.loginUser(data, userRepository);
   }
 }
 
-module.exports = new CreateUser();
+module.exports = new loginUser();
