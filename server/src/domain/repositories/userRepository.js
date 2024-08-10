@@ -6,6 +6,16 @@ class UserRepository {
   async save(user) {
     throw new Error("Method not implemented");
   }
+  async findByToken(code) {
+    throw new Error("Method not implemented");
+  }
+
+  async findByVerificationToken(code) {
+    throw new Error("Method not implemented");
+  }
+  async findByResetPsswordToken(token) {
+    throw new Error("Method not implemented");
+  }
 }
 
 module.exports = UserRepository;
