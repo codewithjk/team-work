@@ -12,43 +12,58 @@ const {
 class AuthService {
   async createUser(data, userRepository) {
     try {
-      const { name, email, password } = data;
+      const { name, email, password, oauthId } = data;
+      console.log(data);
       const existingUser = await userRepository.findByEmail(email);
-      if (existingUser) {
+      if (existingUser && oauthId) {
+        console.log("git login", existingUser);
+        return await JwtToken.setToken(existingUser);
+      } else if (existingUser) {
         throw new Error("User already exists");
+      } else if (oauthId) {
+        const newOAuthUser = await userRepository.save({
+          ...data,
+          isVerified: true,
+        });
+        return await JwtToken.setToken(newOAuthUser);
+      } else {
+        const hashedPassword = await bcrypt.hash(password);
+        const verificationToken = generateVerificationCode();
+        const user = new User(
+          name,
+          email,
+          hashedPassword,
+          verificationToken,
+          new Date(),
+          new Date()
+        );
+        const newUser = await userRepository.save({
+          ...user,
+          verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
+        });
+        console.log("new user", newUser);
+        await sendVerificationEmail(newUser.email, newUser.verificationToken);
+        return { data: newUser };
       }
-      const hashedPassword = await bcrypt.hash(password);
-      const verificationToken = generateVerificationCode();
-      const user = new User(
-        name,
-        email,
-        hashedPassword,
-        verificationToken,
-        new Date(),
-        new Date()
-      );
-      const newUser = await userRepository.save({
-        ...user,
-        verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
-      });
-      console.log("new user", newUser);
-      sendVerificationEmail(newUser.email, newUser.verificationToken);
-      return newUser;
     } catch (error) {
       throw error;
     }
   }
   async loginUser(data, userRepository) {
-    const { email, password } = data;
-    const user = await userRepository.findByEmail(email);
-    if (!user) {
-      throw new Error("User not found");
+    try {
+      const { email, password } = data;
+      const user = await userRepository.findByEmail(email);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        throw new Error("Invalid password");
+      }
+      return await JwtToken.setToken(user);
+    } catch (error) {
+      throw error;
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new Error("Invalid password");
-    }
-    return await JwtToken.setToken(user);
   }
   async verifyUser(code, userRepository) {
     try {
@@ -61,7 +76,8 @@ class AuthService {
       verifiedUser.verificationTokenExpiresAt = undefined;
       await userRepository.save(verifiedUser);
       sendWelcomeEmail(verifiedUser.email, verifiedUser.name);
-      return verifiedUser;
+      // return verifiedUser;
+      return await JwtToken.setToken(verifiedUser);
     } catch (error) {
       throw error;
     }
@@ -76,7 +92,7 @@ class AuthService {
       user.resetPsswordToken = resetToken;
       user.resetPsswordTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
       await userRepository.save(user);
-      sendPasswordResetEmail(
+      await sendPasswordResetEmail(
         email,
         `${process.env.WEB_APP_ORIGIN}/reset-password/${resetToken}`
       );
@@ -98,6 +114,25 @@ class AuthService {
       user.resetPsswordTokenExpiresAt = undefined;
       await userRepository.save(user);
       await sendResetSuccessEmail(user.email);
+      return user;
+    } catch (error) {
+      console.log("before", error);
+      throw new Error(error);
+    }
+  }
+  async checkAuth(id, userRepository) {
+    try {
+      console.log("check auth called ");
+      const user = await userRepository.findById(id);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async getProfile(id, userRepository) {
+    try {
+      console.log("get profile called ");
+      const user = await userRepository.findById(id);
       return user;
     } catch (error) {
       throw error;

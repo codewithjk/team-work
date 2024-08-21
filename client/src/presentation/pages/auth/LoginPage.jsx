@@ -28,13 +28,11 @@ const formSchema = z.object({
 });
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const auth = useSelector((state) => state.auth);
-  const { loading, user, error } = auth;
+  const { loading, user, error, isAuthenticated } = auth;
 
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -44,68 +42,94 @@ const LoginPage = () => {
     },
   });
 
-  const onSubmit = async (data) => {
-    await dispatch(login(data.email, data.password));
+  const onSubmit = (data) => {
+    dispatch(login(data.email, data.password));
   };
   useEffect(() => {
-    if (user) {
-      console.log("success");
+    if (isAuthenticated) {
       navigate("/home");
     }
     if (error) {
-      console.log("dkle");
       toast.error(error);
     }
   }, [user, error, loading]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      <section className=" w-4/5 max-w-5xl border-black">
-        <div className="mb-8 flex flex-col gap-2">
-          <h1 className=" text-3xl font-semibold">Log In</h1>
-          <p className=" text-sm text-neutral-500">
-            Are new to TeamWork?{" "}
-            <Link to="/signup" className=" underline underline-offset-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-6 sm:p-12">
+      <section className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-semibold text-gray-800">Log In</h1>
+          <p className="mt-2 text-sm text-gray-600">
+            New to TeamWork?{" "}
+            <Link to="/signup" className="text-blue-500 hover:underline">
               Signup
             </Link>
           </p>
         </div>
-        <div className="mb-8 flex flex-col gap-2">
+        <div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
+              <div className="mb-6">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="example@gmail.com"
+                          {...field}
+                          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-                    <FormControl>
-                      <Input placeholder="example@gmail.com" {...field} />
-                    </FormControl>
+              <div className="mb-6">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="password"
+                          {...field}
+                          className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-                    <FormMessage />
-                  </FormItem>
+              <div className="flex justify-end mb-6">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-blue-500 hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+
+              <div className="flex flex-col gap-4">
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  Log In
+                </Button>
+                {loading && (
+                  <p className="text-center text-gray-600">Loading...</p>
                 )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input placeholder="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="mt-8 flex flex-col gap-2">
-                <Button type="submit">Log In</Button>
-                {loading && <p>loading</p>}
               </div>
             </form>
           </Form>

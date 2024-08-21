@@ -35,10 +35,14 @@ const sendWelcomeEmail = async (email, name) => {
     const response = await mailtrapClient.send({
       from: sender,
       to: recipient,
-      template_uuid: "e65925d1-a9d1-4a40-ae7c-d92b37d593df",
+      template_uuid: "afb02214-f9e5-4278-b8d4-9d81dfff496b",
       template_variables: {
-        company_info_name: "Auth Company",
+        company_info_name: "Team Work",
         name: name,
+        company_info_address: "Brototype marad",
+        company_info_city: "Kochi",
+        company_info_zip_code: "671552",
+        company_info_country: "India",
       },
     });
 
@@ -61,7 +65,6 @@ const sendPasswordResetEmail = async (email, resetURL) => {
       html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
       category: "Password Reset",
     });
-    console.log("mail sent to ");
   } catch (error) {
     console.error(`Error sending password reset email`, error);
 

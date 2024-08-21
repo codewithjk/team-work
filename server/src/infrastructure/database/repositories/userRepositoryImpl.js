@@ -5,6 +5,9 @@ class UserRepositoryImpl extends UserRepository {
   async findByEmail(email) {
     return User.findOne({ email });
   }
+  async findById(id) {
+    return User.findOne({ _id: id });
+  }
   async findByVerificationToken(code) {
     return User.findOne({
       verificationToken: code,

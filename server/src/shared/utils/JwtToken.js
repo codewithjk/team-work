@@ -3,10 +3,11 @@ const secret = process.env.JWT_SECRET;
 
 class Jwt {
   async setToken(data) {
-    const { name, email } = data;
-    const token = jwt.sign({ name, email, role: "user" }, secret, {
+    const { _id, name, email } = data;
+    const token = jwt.sign({ userId: _id, name, email, role: "user" }, secret, {
       expiresIn: "1h",
     });
+    console.log(data);
     return { data, token };
   }
 }
