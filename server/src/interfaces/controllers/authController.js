@@ -5,12 +5,12 @@ const sendResetPasswordMail = require("../../application/use-cases/sendResetPass
 const updatePassword = require("../../application/use-cases/updatePassword");
 const verifyUser = require("../../application/use-cases/verifyUser");
 class AuthController {
-  async register(req, res) {
+  async register(req, res, next) {
     try {
       const user = await createUser.execute(req.body);
       const { _id, name, email, isVerified } = user.data;
       if (user.token) {
-        console.log("this github user has token ");
+        console.log("this  user has token ");
         res.cookie("access_token", user.token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
@@ -19,6 +19,7 @@ class AuthController {
         });
       }
       res.status(201).json({ id: _id, name, email, isVerified });
+      next();
     } catch (error) {
       console.log("erorr: ", error);
       res.status(400).json({ error: error.message });

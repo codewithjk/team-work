@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const verifyJwtToken = (req, res, next) => {
   const token = req.cookies.access_token;
-  console.log("this is tokern from middleware", token);
+
   if (!token && token == undefined)
     return res
       .status(401)
@@ -19,7 +19,7 @@ const verifyJwtToken = (req, res, next) => {
     next();
   } catch (error) {
     console.log("Error in verifyToken ", error);
-    return res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 

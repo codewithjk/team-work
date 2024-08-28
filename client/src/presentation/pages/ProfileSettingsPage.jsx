@@ -21,7 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import PrivatePageLayout from "@/layouts/PrivatePageLayout";
+
 import { toast, Toaster } from "sonner";
 import { useSelector } from "react-redux";
 import {
@@ -133,168 +133,162 @@ function ProfileSettingsPage() {
   };
 
   return (
-    <PrivatePageLayout>
-      <div className="container mx-auto p-4 md:max-w-[75%]">
-        <Card className="shadow-lg">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
-                name="coverPhoto"
-                render={({ field }) => {}}
-              />
-              <CardHeader>
-                <div className="relative h-48 bg-gray-200 rounded-lg overflow-hidden">
-                  <img
-                    src={form.watch("coverPhoto") || "default-cover.jpg"}
-                    alt="Cover"
+    <div className="container mx-auto p-4 md:max-w-[75%]">
+      <Card className="shadow-lg">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="coverPhoto"
+              render={({ field }) => {}}
+            />
+            <CardHeader>
+              <div className="relative h-48 bg-gray-200 rounded-lg overflow-hidden">
+                <img
+                  src={form.watch("coverPhoto") || "default-cover.jpg"}
+                  alt="Cover"
+                  className="object-cover w-full h-full"
+                />
+                <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-25">
+                  <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="text-white"
+                        onClick={() => setPopoverOpen(true)}
+                      >
+                        Upload Cover Image
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-4">
+                      <Input
+                        placeholder="Search Unsplash"
+                        value={imageSearchQuery}
+                        onChange={handleImageSearchQueryChange}
+                      />
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        className="mt-2 w-full"
+                        onClick={handleImageSearchClick}
+                      >
+                        Search
+                      </Button>
+                      <div className="mt-4 grid grid-cols-2 gap-2 max-h-60 overflow-auto">
+                        {searchResults.map((image) => (
+                          <img
+                            key={image.id}
+                            src={image.urls.small}
+                            alt={image.alt_description}
+                            className="cursor-pointer object-cover w-full h-28 rounded"
+                            onClick={() => handleImageSelect(image.urls.full)}
+                          />
+                        ))}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+              <CardTitle>Profile Settings</CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-6">
+              {/* Avatar Upload */}
+              <div className="flex justify-center mb-4">
+                <Avatar className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full overflow-hidden">
+                  <AvatarImage
+                    src={profileData?.avatar}
+                    alt="Avatar"
                     className="object-cover w-full h-full"
                   />
-                  <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-25">
-                    <Popover open={isPopoverOpen} onOpenChange={setPopoverOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="text-white"
-                          onClick={() => setPopoverOpen(true)}
-                        >
-                          Upload Cover Image
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-80 p-4">
+                  <AvatarFallback>AB</AvatarFallback>
+                </Avatar>
+              </div>
+
+              <div className="space-y-4">
+                {/* Name Input */}
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input type="text" placeholder="Your Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Email Input */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
                         <Input
-                          placeholder="Search Unsplash"
-                          value={imageSearchQuery}
-                          onChange={handleImageSearchQueryChange}
+                          type="email"
+                          placeholder="Your Email"
+                          {...field}
                         />
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          className="mt-2 w-full"
-                          onClick={handleImageSearchClick}
-                        >
-                          Search
-                        </Button>
-                        <div className="mt-4 grid grid-cols-2 gap-2 max-h-60 overflow-auto">
-                          {searchResults.map((image) => (
-                            <img
-                              key={image.id}
-                              src={image.urls.small}
-                              alt={image.alt_description}
-                              className="cursor-pointer object-cover w-full h-28 rounded"
-                              onClick={() => handleImageSelect(image.urls.full)}
-                            />
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-                <CardTitle>Profile Settings</CardTitle>
-              </CardHeader>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <CardContent className="space-y-6">
-                {/* Avatar Upload */}
-                <div className="flex justify-center mb-4">
-                  <Avatar className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full overflow-hidden">
-                    <AvatarImage
-                      src={profileData?.avatar}
-                      alt="Avatar"
-                      className="object-cover w-full h-full"
-                    />
-                    <AvatarFallback>AB</AvatarFallback>
-                  </Avatar>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Name Input */}
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
+                {/* Timezone Selector */}
+                <FormField
+                  control={form.control}
+                  name="timezone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Timezone</FormLabel>
+                      <FormControl>
+                        <div className="relative">
                           <Input
                             type="text"
-                            placeholder="Your Name"
+                            placeholder="Select Timezone"
+                            value={timezoneInput}
+                            onChange={handleTimezoneChange}
                             {...field}
                           />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          {filteredTimezones.length > 0 && (
+                            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto">
+                              {filteredTimezones.map((tz) => (
+                                <div
+                                  key={tz}
+                                  className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                  onClick={() => handleTimezoneSelect(tz)}
+                                >
+                                  {tz}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </CardContent>
 
-                  {/* Email Input */}
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="Your Email"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  {/* Timezone Selector */}
-                  <FormField
-                    control={form.control}
-                    name="timezone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Timezone</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              type="text"
-                              placeholder="Select Timezone"
-                              value={timezoneInput}
-                              onChange={handleTimezoneChange}
-                              {...field}
-                            />
-                            {filteredTimezones.length > 0 && (
-                              <div className="absolute z-10 w-full bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto">
-                                {filteredTimezones.map((tz) => (
-                                  <div
-                                    key={tz}
-                                    className="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                                    onClick={() => handleTimezoneSelect(tz)}
-                                  >
-                                    {tz}
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </CardContent>
-
-              <CardFooter className="space-x-2">
-                <Button type="submit" variant="primary">
-                  Save
-                </Button>
-              </CardFooter>
-            </form>
-          </Form>
-        </Card>
-      </div>
+            <CardFooter className="space-x-2">
+              <Button type="submit" variant="primary">
+                Save
+              </Button>
+            </CardFooter>
+          </form>
+        </Form>
+      </Card>
       <Toaster />
-    </PrivatePageLayout>
+    </div>
   );
 }
 

@@ -306,11 +306,11 @@ function SignupPage() {
   }, [message, error, user]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-6 sm:p-12">
-      <section className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6 sm:p-12">
+      <section className="w-full max-w-md bg-background p-8 rounded-lg shadow-md border border-foreground-50">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-semibold text-primary">Signup</h1>
-          <p className="mt-2 text-sm text-black">
+          <p className="mt-2 text-sm text-forground">
             Already have an account?{" "}
             <Link to="/login" className="text-blue-500 hover:underline">
               Login
@@ -417,7 +417,7 @@ function SignupPage() {
           </Button>
           <Button
             onClick={githubLogin}
-            className="w-full py-2 text-white bg-black flex items-center justify-center gap-2 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800"
+            className="w-full py-2 text-forground bg-background flex items-center justify-center gap-2 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 border border-foreground-50"
           >
             <FaGithub size={20} />
             Sign Up with GitHub

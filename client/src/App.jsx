@@ -16,6 +16,10 @@ import { checkAuth } from "./application/actions/authActions";
 import { useEffect } from "react";
 import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
 import { useSelector } from "react-redux";
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import ProjectPage from "@/pages/ProjectPage";
+import ProjectSettingsPage from "@/pages/ProjectSettingsPage";
+import VerifyInvitationPage from "@/pages/VerifyInvitePage";
 
 function App() {
   const dispatch = useDispatch();
@@ -28,71 +32,97 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <Router>
-        <Routes>
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/signup"
-            element={
-              <RedirectAuthenticatedUser>
-                <SignupPage />
-              </RedirectAuthenticatedUser>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <RedirectAuthenticatedUser>
-                <LoginPage />
-              </RedirectAuthenticatedUser>
-            }
-          />
-          <Route path="/verify-email" element={<VerifyEmail />} />
-          <Route
-            path="/forgot-password"
-            element={
-              <RedirectAuthenticatedUser>
-                <ForgotPassword />
-              </RedirectAuthenticatedUser>
-            }
-          />
+    <div className=" bg-white">
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Router>
+          <Routes>
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <HomePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/signup"
+              element={
+                <RedirectAuthenticatedUser>
+                  <SignupPage />
+                </RedirectAuthenticatedUser>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <RedirectAuthenticatedUser>
+                  <LoginPage />
+                </RedirectAuthenticatedUser>
+              }
+            />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route
+              path="/forgot-password"
+              element={
+                <RedirectAuthenticatedUser>
+                  <ForgotPassword />
+                </RedirectAuthenticatedUser>
+              }
+            />
 
-          <Route
-            path="/reset-password/:token"
-            element={
-              <RedirectAuthenticatedUser>
-                <ResetPassword />
-              </RedirectAuthenticatedUser>
-            }
-          />
-          <Route
-            path="/handle-google-auth/:token"
-            element={<HandleGoogleOauthPage />}
-          />
-          <Route
-            path="/handle-github-auth/:token"
-            element={<HandleGithubOauthPage />}
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <ProfileSettingsPage />
-              </ProtectedRoute>
-            }
-          />
-          {/* catch all routes */}
-          <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
-      </Router>
+            <Route
+              path="/reset-password/:token"
+              element={
+                <RedirectAuthenticatedUser>
+                  <ResetPassword />
+                </RedirectAuthenticatedUser>
+              }
+            />
+            <Route
+              path="/handle-google-auth/:token"
+              element={<HandleGoogleOauthPage />}
+            />
+            <Route
+              path="/handle-github-auth/:token"
+              element={<HandleGithubOauthPage />}
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfileSettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects"
+              element={
+                <ProtectedRoute>
+                  <ProjectPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/projects/:projectId/settings"
+              element={
+                <ProtectedRoute>
+                  <ProjectSettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/verify-invite/:token"
+              element={
+                <ProtectedRoute>
+                  <VerifyInvitationPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* catch all routes */}
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
     </div>
   );
 }
