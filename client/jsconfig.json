@@ -1,0 +1,19 @@
+// {
+//   "compilerOptions": {
+//     "baseUrl": "src",
+//     "paths": {
+//       "@/*": ["*"]
+//     }
+//   },
+//   "include": ["src"]
+// }
+{
+  "compilerOptions": {
+    // ...
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/presentation/*"]
+    }
+    // ...
+  }
+}
