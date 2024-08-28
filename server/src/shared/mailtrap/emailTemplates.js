@@ -94,8 +94,38 @@ const PASSWORD_RESET_REQUEST_TEMPLATE = `
 </html>
 `;
 
+const INVITE_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Your Password</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #6495ED, #6495ED); padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">Invitation</h1>
+  </div>
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p>Hello,</p>
+    <p>The team of <b>{project_name}</b> wants you to join their team . we hope you will join soon </p>
+    <p>To join the team, click the button below:</p>
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="{project_url}" style="background-color: #6495ED; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Join Team</a>
+    </div>
+    <p>This link will expire in 24 hours for security reasons.</p>
+    <p>Best regards,<br>Your App Team</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+`;
+
 module.exports = {
   VERIFICATION_EMAIL_TEMPLATE,
   PASSWORD_RESET_REQUEST_TEMPLATE,
   PASSWORD_RESET_SUCCESS_TEMPLATE,
+  INVITE_EMAIL_TEMPLATE,
 };

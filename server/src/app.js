@@ -1,6 +1,7 @@
 const express = require("express");
 const authRouter = require("./interfaces/routes/authRouter");
 const profileRouter = require("./interfaces/routes/profileRouter");
+const projectRouter = require("./interfaces/routes/projectRouter");
 const errorHandlerMiddleware = require("./interfaces/middlewares/errorHandlerMiddleware");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -16,5 +17,6 @@ app.use(cookieParser());
 app.use(express.json());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/profile", profileRouter);
+app.use("/api/v1/project", projectRouter);
 app.use(errorHandlerMiddleware);
 module.exports = app;
