@@ -1,11 +1,15 @@
 import Sidebar from "@/components/Sidebar";
+import Navbar from "@/components/ui/navbar";
 import React from "react";
 
 function PrivatePageLayout({ children }) {
   return (
-    <div className="min-h-screen flex flex-row bg-gray-100">
+    <div className="min-h-screen flex flex-row bg-background">
       <Sidebar />
-      <div className="flex-1 ">{children}</div>
+      <div className="flex-1 ">
+        <Navbar />
+        {children}
+      </div>
     </div>
   );
 }

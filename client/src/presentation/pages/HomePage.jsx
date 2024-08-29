@@ -12,10 +12,9 @@ function HomePage() {
     console.log("logout clicked");
   };
   return (
-    <PrivatePageLayout>
-      <h1>home</h1>
+    <div>
       <Button onClick={handleclick}>Logout</Button>
-    </PrivatePageLayout>
+    </div>
   );
 }
 

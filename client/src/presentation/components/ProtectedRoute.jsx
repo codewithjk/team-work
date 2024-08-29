@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 import { getProfile } from "../../application/actions/profileActions";
 import { Skeleton } from "@/components/ui/skeleton";
+import PrivatePageLayout from "@/layouts/PrivatePageLayout";
 
 const ProtectedRoute = ({ children }) => {
   const dispatch = useDispatch();
@@ -31,7 +32,7 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/verify-email" replace />;
   }
 
-  return children;
+  return <PrivatePageLayout>{children}</PrivatePageLayout>;
 };
 
 export default ProtectedRoute;
