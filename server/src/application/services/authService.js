@@ -39,7 +39,7 @@ class AuthService {
         );
         const newUser = await userRepository.save({
           ...user,
-          verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000,
+          verificationTokenExpiresAt: Date.now() + 1 * 60 * 1000,
         });
         console.log("new user", newUser);
         await sendVerificationEmail(newUser.email, newUser.verificationToken);
@@ -90,7 +90,7 @@ class AuthService {
       }
       const resetToken = generateVerificationCode();
       user.resetPsswordToken = resetToken;
-      user.resetPsswordTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
+      user.resetPsswordTokenExpiresAt = Date.now() + 1 * 60 * 1000;
       await userRepository.save(user);
       await sendPasswordResetEmail(
         email,
@@ -133,6 +133,21 @@ class AuthService {
     try {
       console.log("get profile called ");
       const user = await userRepository.findById(id);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async resendCode(data, userRepository) {
+    try {
+      const { userId } = data;
+      const user = await userRepository.findById(userId);
+      console.log(user, userId);
+      const verificationToken = generateVerificationCode();
+      user.verificationTokenExpiresAt = Date.now() + 1 * 60 * 1000;
+      user.verificationToken = verificationToken;
+      await userRepository.save(user);
+      await sendVerificationEmail(user.email, user.verificationToken);
       return user;
     } catch (error) {
       throw error;

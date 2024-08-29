@@ -15,6 +15,7 @@ router.post(`/reset-password/:token`, authController.resetPassword);
 router.post(`/check-auth`, verifyToken, authController.checkAuth);
 router.post(`/oauth-signup`, authController.oauthSignup);
 router.post(`/logout`, authController.logout);
+router.put(`/resend-code`, authController.resendCode);
 
 // Google OAuth routes
 router.get(

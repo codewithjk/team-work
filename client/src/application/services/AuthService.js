@@ -53,6 +53,14 @@ class AuthService {
     }
     throw new Error("failed to logout");
   }
+  async resendCode(userId) {
+    console.log(userId);
+    const response = await authApi.resendCode(userId);
+    if (response.status === 200) {
+      return response.data;
+    }
+    throw new Error("failed to resend");
+  }
 }
 
 export default new AuthService();
