@@ -97,6 +97,16 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    resendSuccess: (state) => {
+      state.loading = false;
+    },
+    resendFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    resendRequest: (state) => {
+      state.loading = true;
+    },
   },
 });
 
@@ -122,5 +132,8 @@ export const {
   logoutSuccess,
   logoutFail,
   logoutRequest,
+  resendSuccess,
+  resendFail,
+  resendRequest,
 } = authSlice.actions;
 export default authSlice.reducer;

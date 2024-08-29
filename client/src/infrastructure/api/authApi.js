@@ -23,6 +23,9 @@ const checkAuth = () => {
 const logout = () => {
   return axios.post(`/auth/logout`, {});
 };
+const resendCode = (userId) => {
+  return axios.put("/auth/resend-code", { userId });
+};
 
 const authApi = {
   login,
@@ -32,6 +35,7 @@ const authApi = {
   verifyMail,
   checkAuth,
   logout,
+  resendCode,
 };
 
 export default authApi;

@@ -1,6 +1,7 @@
 const checkAuth = require("../../application/use-cases/checkAuth");
 const createUser = require("../../application/use-cases/createUser");
 const loginUser = require("../../application/use-cases/loginUser");
+const resendCode = require("../../application/use-cases/resendCode");
 const sendResetPasswordMail = require("../../application/use-cases/sendResetPasswordMail");
 const updatePassword = require("../../application/use-cases/updatePassword");
 const verifyUser = require("../../application/use-cases/verifyUser");
@@ -8,7 +9,8 @@ class AuthController {
   async register(req, res, next) {
     try {
       const user = await createUser.execute(req.body);
-      const { _id, name, email, isVerified } = user.data;
+      const { _id, name, email, isVerified, verificationTokenExpiresAt } =
+        user.data;
       if (user.token) {
         console.log("this  user has token ");
         res.cookie("access_token", user.token, {
@@ -18,8 +20,14 @@ class AuthController {
           maxAge: 7 * 24 * 60 * 60 * 1000,
         });
       }
+
+      res
+        .status(201)
+        .json({ id: _id, name, email, isVerified, verificationTokenExpiresAt });
+
       res.status(201).json({ id: _id, name, email, isVerified });
       next();
+
     } catch (error) {
       console.log("erorr: ", error);
       res.status(400).json({ error: error.message });
@@ -132,6 +140,18 @@ class AuthController {
         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       });
       return res.status(200).json({ message: "Logged out successfully" });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+  async resendCode(req, res) {
+    try {
+      const { userId } = req.body;
+      console.log(userId);
+
+      const user = await resendCode.execute({ userId });
+      console.log(user);
+      res.status(200).json({ message: "successfully resend code" });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

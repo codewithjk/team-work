@@ -20,6 +20,9 @@ import {
   logoutSuccess,
   logoutFail,
   logoutRequest,
+  resendSuccess,
+  resendFail,
+  resendRequest,
 } from "../slice/authSlice";
 import AuthService from "../services/AuthService";
 
@@ -97,7 +100,14 @@ export const logout = () => async (dispatch) => {
   }
 };
 
-export const resendVerificationCode = () => async (dispatch) => {
+export const resendVerificationCode = (id) => async (dispatch) => {
   try {
-  } catch (error) {}
+    dispatch(resendRequest());
+    const data = await AuthService.resendCode(id);
+    console.log(data);
+
+    dispatch(resendSuccess(data));
+  } catch (error) {
+    dispatch(resendFail(error?.response?.data?.error || error.message));
+  }
 };
