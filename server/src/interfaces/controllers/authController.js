@@ -25,9 +25,7 @@ class AuthController {
         .status(201)
         .json({ id: _id, name, email, isVerified, verificationTokenExpiresAt });
 
-      res.status(201).json({ id: _id, name, email, isVerified });
       next();
-
     } catch (error) {
       console.log("erorr: ", error);
       res.status(400).json({ error: error.message });

@@ -2,6 +2,7 @@ const AddMember = require("./AddMember");
 const CreateProject = require("./CreateProject");
 const DeleteProject = require("./DeleteProject");
 const GetProject = require("./GetProject");
+const ListAllMembers = require("./ListAllMembers");
 const ListAllProject = require("./ListAllProject");
 const UpdateProject = require("./UpdateProject");
 const VerifyMember = require("./VerifyMember");
@@ -14,4 +15,5 @@ module.exports = {
   DeleteProject,
   AddMember,
   VerifyMember,
+  ListAllMembers,
 };

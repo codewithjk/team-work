@@ -25,6 +25,9 @@ const verifyInvitationToken = (token) => {
 const addMember = (projectId, data) => {
   return axios.post(`/project/${projectId}/members`, data);
 };
+const getMembers = (projectId) => {
+  return axios.get(`/project/${projectId}/members`);
+};
 
 const projectApi = {
   getProject,
@@ -34,5 +37,6 @@ const projectApi = {
   deleteProject,
   verifyInvitationToken,
   addMember,
+  getMembers,
 };
 export default projectApi;

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const ProjectRepository = require("../../../domain/repositories/projectRepository");
 const membersModel = require("../models/membersModel");
 const projectModel = require("../models/projectModel");
@@ -63,13 +64,14 @@ class ProjectRepositoryImpl extends ProjectRepository {
       throw error;
     }
   }
-  async verifyMember({ token }) {
+  async verifyMember({ token, userId }) {
     try {
       const member = await membersModel.findOne({
         inviteToken: token,
         inviteTokenExpiresAt: { $gt: Date.now() },
       });
       if (member) {
+        member.userId = userId;
         member.status = "active";
         member.inviteToken = undefined;
         member.inviteTokenExpiresAt = undefined;
@@ -78,6 +80,41 @@ class ProjectRepositoryImpl extends ProjectRepository {
         throw new Error("token is invalid");
       }
     } catch (error) {
+      throw error;
+    }
+  }
+  async getMembersByProjectId(projectId) {
+    try {
+      const members = await membersModel.aggregate([
+        { $match: { projectId: new mongoose.Types.ObjectId(projectId) } }, // Match members by projectId
+        {
+          $lookup: {
+            from: "users", // The name of the collection for users
+            localField: "userId",
+            foreignField: "_id",
+            as: "userDetails",
+          },
+        },
+        {
+          $unwind: "$userDetails", // Flatten the userDetails array
+        },
+        {
+          $project: {
+            email: 1,
+            status: 1,
+            role: 1,
+            user: {
+              name: "$userDetails.name",
+              email: "$userDetails.email",
+              avatar: "$userDetails.avatar",
+            },
+          },
+        },
+      ]);
+
+      return members;
+    } catch (error) {
+      console.error("Error fetching members:", error);
       throw error;
     }
   }

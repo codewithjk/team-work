@@ -7,22 +7,24 @@ const projectController = new ProjectController();
 
 router
   .route("/")
-  .all(verifyJwtToken) // Apply this middleware to all methods
-  .get(projectController.getProjects) // Fetch list of projects with filter, search, and pagination
+  // .all(verifyJwtToken)
+  .get(projectController.getProjects)
   .post(projectController.createProject);
 
 router
   .route("/:projectId")
-  .all(verifyJwtToken) // Apply this middleware to all methods for single project routes
-  .get(projectController.getProjectById) // Get single project details
-  .put(projectController.updateProjectById) // Update specific project
-  .delete(projectController.deleteProjectById); // Delete specific project
+  // .all(verifyJwtToken)
+  .get(projectController.getProjectById)
+  .put(projectController.updateProjectById)
+  .delete(projectController.deleteProjectById);
 router
   .route("/:projectId/members")
-  .all(verifyJwtToken)
-  .post(projectController.addMember);
+  // .all(verifyJwtToken)
+  .post(projectController.addMember)
+  .get(projectController.getMembers);
+
 router
   .route("/verify")
-  .all(verifyJwtToken)
+  // .all(verifyJwtToken)
   .post(projectController.verifyMember);
 module.exports = router;

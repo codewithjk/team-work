@@ -10,20 +10,45 @@ import {
   Bell,
   MenuSquare,
   SidebarCloseIcon,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector } from "react-redux";
 import { ModeToggle } from "./ui/mode-toggle";
+import { useEffect } from "react";
+import projectApi from "../../infrastructure/api/projectApi";
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [projectsDropdownOpen, setProjectsDropdownOpen] = useState(false);
+  const [openProjectDropdowns, setOpenProjectDropdowns] = useState({});
   const location = useLocation();
-
+  const [projects, setProjects] = useState([]);
   const profile = useSelector((state) => state.profile);
   const { profileData } = profile;
 
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const response = await projectApi.getAllProjects();
+        const data = response.data.projects;
+        if (response.status === 200) {
+          setProjects(data);
+        } else {
+          console.log(response);
+          // toast.error("Failed to fetch projects.");
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
   const menuItems = [
-    { name: "Home", icon: <LucideHome className="w-5 h-5" />, path: "/" },
+    { name: "Home", icon: <LucideHome className="w-5 h-5" />, path: "/home" },
     { name: "Inbox", icon: <InboxIcon className="w-5 h-5" />, path: "/inbox" },
     {
       name: "Meeting",
@@ -44,6 +69,17 @@ function Sidebar() {
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
+  };
+
+  const toggleProjectsDropdown = () => {
+    setProjectsDropdownOpen(!projectsDropdownOpen);
+  };
+
+  const toggleProjectMenu = (projectId) => {
+    console.log(projectId);
+    setOpenProjectDropdowns((prevState) => ({
+      [projectId]: !prevState[projectId],
+    }));
   };
 
   return (
@@ -101,6 +137,71 @@ function Sidebar() {
               <span>{item.name}</span>
             </Link>
           ))}
+
+          {/* Projects Dropdown */}
+          <div className="mt-4">
+            <button
+              onClick={toggleProjectsDropdown}
+              className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors"
+            >
+              <span className="mr-3">
+                <UserIcon className="w-5 h-5" />
+              </span>
+              <span>Your Projects</span>
+              {projectsDropdownOpen ? (
+                <ChevronDown className="ml-auto w-4 h-4" />
+              ) : (
+                <ChevronRight className="ml-auto w-4 h-4" />
+              )}
+            </button>
+
+            {/* Projects List */}
+            {projectsDropdownOpen && (
+              <div className="ml-4 mt-2 space-y-2">
+                {projects.map((project) => (
+                  <div key={project._id}>
+                    <button
+                      onClick={() => toggleProjectMenu(project._id)}
+                      className="flex items-center w-full p-2 rounded-md hover:bg-muted transition-colors"
+                    >
+                      <span>{project.name}</span>
+                      {openProjectDropdowns[project._id] ? (
+                        <ChevronDown className="ml-auto w-4 h-4" />
+                      ) : (
+                        <ChevronRight className="ml-auto w-4 h-4" />
+                      )}
+                    </button>
+
+                    {/* Project Menu Items */}
+                    {openProjectDropdowns[project._id] && (
+                      <div className="ml-4 space-y-2">
+                        <Link
+                          to={`/projects/${project._id}/tasks`}
+                          className="block p-2 text-sm rounded-md hover:bg-muted"
+                        >
+                          Tasks
+                        </Link>
+                        <Link
+                          to={`/projects/${project._id}/cycles`}
+                          className="block p-2 text-sm rounded-md hover:bg-muted"
+                        >
+                          Cycles
+                        </Link>
+                        <Link
+                          to={`/projects/${project._id}/modules`}
+                          className="block p-2 text-sm rounded-md hover:bg-muted"
+                        >
+                          Modules
+                        </Link>
+                        {/* Add more project-specific links as needed */}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
           <ModeToggle />
         </nav>
       </div>

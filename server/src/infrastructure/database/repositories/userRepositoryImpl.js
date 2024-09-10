@@ -20,6 +20,9 @@ class UserRepositoryImpl extends UserRepository {
       resetPsswordTokenExpiresAt: { $gt: Date.now() },
     });
   }
+  async findByIdAndUpdate(id, data) {
+    return User.findOneAndUpdate({ _id: id }, data, { new: true });
+  }
 
   async save(user) {
     const newUser = new User(user);

@@ -20,6 +20,8 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import ProjectPage from "@/pages/ProjectPage";
 import ProjectSettingsPage from "@/pages/ProjectSettingsPage";
 import VerifyInvitationPage from "@/pages/VerifyInvitePage";
+import ModulePage from "@/pages/ModulePage";
+import TaskPage from "@/pages/TaskPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -115,6 +117,26 @@ function App() {
               element={
                 <ProtectedRoute>
                   <VerifyInvitationPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* module routes */}
+            <Route
+              path="/projects/:projectId/modules"
+              element={
+                <ProtectedRoute>
+                  <ModulePage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* task routes */}
+            <Route
+              path="/projects/:projectId/tasks"
+              element={
+                <ProtectedRoute>
+                  <TaskPage />
                 </ProtectedRoute>
               }
             />

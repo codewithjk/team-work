@@ -3,9 +3,10 @@ class VerifyMember {
     this.projectRepository = projectRepository;
   }
 
-  async execute({ token }) {
+  async execute({ token, userId }) {
     return await this.projectRepository.verifyMember({
       token,
+      userId,
     });
   }
 }

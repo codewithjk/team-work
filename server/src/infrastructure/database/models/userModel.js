@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  coverPhoto: String,
   oauthId: String,
   avatar: String,
   resetPsswordToken: String,

@@ -13,6 +13,7 @@ function HomePage() {
   };
   return (
     <div>
+      Home
       <Button onClick={handleclick}>Logout</Button>
     </div>
   );

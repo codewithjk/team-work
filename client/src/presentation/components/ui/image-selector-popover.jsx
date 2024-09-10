@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Popover,
   PopoverTrigger,
@@ -14,13 +14,36 @@ function ImageSelectorPopover({ onSelectImage }) {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [imageSearchQuery, setImageSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [initialImage, setInitialImage] = useState(null);
+
+  useEffect(() => {
+    fetchInitialImages();
+  }, []);
+
+  const fetchInitialImages = async () => {
+    try {
+      const response = await axios.get(`https://api.unsplash.com/photos`, {
+        params: { per_page: 20 }, // Adjust the number of images you want to load initially
+        headers: {
+          Authorization: `Client-ID ${unsplashAccessKey}`,
+        },
+      });
+      setSearchResults(response.data);
+      if (response.data.length > 0) {
+        setInitialImage(response.data[0].urls.full);
+        onSelectImage(response.data[0].urls.full);
+      }
+    } catch (error) {
+      console.error("Error fetching initial images:", error);
+    }
+  };
 
   const fetchImagesFromUnsplash = async () => {
     try {
       const response = await axios.get(
         `https://api.unsplash.com/search/photos`,
         {
-          params: { query: imageSearchQuery },
+          params: { query: imageSearchQuery, per_page: 20 }, // Adjust the number of search results
           headers: {
             Authorization: `Client-ID ${unsplashAccessKey}`,
           },
@@ -45,30 +68,28 @@ function ImageSelectorPopover({ onSelectImage }) {
     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" className="w-full mt-2">
-          Upload Cover Image
+          Change Cover
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-4">
-        <Input
-          placeholder="Search Unsplash"
-          value={imageSearchQuery}
-          onChange={(e) => setImageSearchQuery(e.target.value)}
-        />
-        <Button
-          type="button"
-          variant="secondary"
-          className="mt-2 w-full"
-          onClick={handleImageSearchClick}
-        >
-          Search
-        </Button>
-        <div className="mt-4 grid grid-cols-2 gap-2 max-h-60 overflow-auto">
+      <PopoverContent className="w-full p-4 bg-background text-foreground rounded-lg">
+        <div className="flex items-center space-x-2 mb-4">
+          <Input
+            placeholder="Search Unsplash"
+            value={imageSearchQuery}
+            onChange={(e) => setImageSearchQuery(e.target.value)}
+            className="flex-1 rounded-lg bg-background text-foreground"
+          />
+          <Button type="button" onClick={handleImageSearchClick}>
+            Search
+          </Button>
+        </div>
+        <div className="grid grid-cols-4 gap-2 max-h-60 overflow-auto">
           {searchResults.map((image) => (
             <img
               key={image.id}
               src={image.urls.small}
               alt={image.alt_description}
-              className="cursor-pointer object-cover w-full h-28 rounded"
+              className="cursor-pointer object-cover w-full h-24 rounded-lg hover:opacity-80 transition-opacity"
               onClick={() => handleImageSelect(image.urls.full)}
             />
           ))}

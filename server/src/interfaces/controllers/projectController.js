@@ -6,6 +6,7 @@ const {
   DeleteProject,
   AddMember,
   VerifyMember,
+  ListAllMembers,
 } = require("../../application/use-cases/project-use-cases");
 const ProjectRepositoryImpl = require("../../infrastructure/database/repositories/projectRepositoryImpl");
 const projectRepository = new ProjectRepositoryImpl();
@@ -16,6 +17,7 @@ const updateProjectUsecase = new UpdateProject(projectRepository);
 const deleteProjectUsecase = new DeleteProject(projectRepository);
 const addMemberUsecase = new AddMember(projectRepository);
 const verifyMemberUsecase = new VerifyMember(projectRepository);
+const listAllMemebersOfProjectUsecase = new ListAllMembers(projectRepository);
 class ProjectController {
   async createProject(req, res) {
     try {
@@ -112,7 +114,11 @@ class ProjectController {
   async verifyMember(req, res) {
     try {
       const { token } = req.body;
-      const verifiedMember = await verifyMemberUsecase.execute({ token });
+      const userId = req.userId;
+      const verifiedMember = await verifyMemberUsecase.execute({
+        token,
+        userId,
+      });
       console.log(verifiedMember);
       res.status(200).json({ message: " successfully verified" });
     } catch (error) {
@@ -120,6 +126,24 @@ class ProjectController {
       res
         .status(500)
         .json({ error: "Failed to verify", message: error.message });
+    }
+  }
+  async getMembers(req, res) {
+    try {
+      const projectId = req.params.projectId;
+      const ownerId = req.userId;
+
+      const members = await listAllMemebersOfProjectUsecase.execute({
+        projectId,
+      });
+
+      res.status(200).json({
+        members,
+      });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ error: "Failed to fetch members", message: error.message });
     }
   }
 }
