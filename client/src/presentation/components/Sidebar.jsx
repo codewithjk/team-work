@@ -49,7 +49,7 @@ function Sidebar() {
 
   const menuItems = [
     { name: "Home", icon: <LucideHome className="w-5 h-5" />, path: "/home" },
-    { name: "Inbox", icon: <InboxIcon className="w-5 h-5" />, path: "/inbox" },
+    { name: "Inbox", icon: <InboxIcon className="w-5 h-5" />, path: "/chats" },
     {
       name: "Meeting",
       icon: <Calendar className="w-5 h-5" />,
