@@ -11,7 +11,7 @@ import io from "socket.io-client";
 import axios from "axios";
 import KanbanColumn from "./KanbanColumn";
 
-const socket = io("http://localhost:5000");
+// const socket = io("http://localhost:5000");
 
 const KanbanBoard = ({ initialTasks }) => {
   const [tasks, setTasks] = useState(initialTasks ?? []);

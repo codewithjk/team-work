@@ -22,6 +22,7 @@ import ProjectSettingsPage from "@/pages/ProjectSettingsPage";
 import VerifyInvitationPage from "@/pages/VerifyInvitePage";
 import ModulePage from "@/pages/ModulePage";
 import TaskPage from "@/pages/TaskPage";
+import ChatPage from "@/pages/chat/ChatPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -140,6 +141,25 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+            {/* chat routes */}
+            <Route
+              path="/chats"
+              element={
+                <ProtectedRoute>
+                  <ChatPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chats/:projectId"
+              element={
+                <ProtectedRoute>
+                  <ChatPage />
+                </ProtectedRoute>
+              }
+            />
+
             {/* catch all routes */}
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Routes>
