@@ -106,7 +106,7 @@ export default function TaskForm({
   };
   const handleModuleChange = (moduelId, moduleName) => {
     setValue("module", moduelId);
-    selectedModuleName(moduleName);
+    setSelectedModuleName(moduleName);
   };
 
   return (

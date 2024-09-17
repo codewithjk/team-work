@@ -26,23 +26,40 @@ class ProjectRepositoryImpl extends ProjectRepository {
   async findAll(queries) {
     try {
       const { search, filter, page, limit, ownerId } = queries;
+
+      //find project that is assigned to
+      const assignedProjects = await membersModel.aggregate([
+        { $match: { userId: new mongoose.Types.ObjectId(ownerId) } },
+        {
+          $lookup: {
+            from: "projects",
+            localField: "projectId",
+            foreignField: "_id",
+            as: "projects",
+          },
+        },
+        { $unwind: "$projects" },
+        {
+          $replaceRoot: { newRoot: "$projects" },
+        },
+      ]);
+
       const query = { ownerId };
-
       if (search) {
-        query.name = { $regex: search, $options: "i" }; // Search by project name
-      }
-
-      if (filter) {
-        query.category = filter; // Assuming projects have a 'category' field
+        query.name = { $regex: search, $options: "i" };
       }
 
       const totalProjects = await projectModel.countDocuments(query);
       const totalPages = Math.ceil(totalProjects / limit);
 
-      const projects = await projectModel
+      let projects = await projectModel
         .find(query)
         .skip((page - 1) * limit)
         .limit(parseInt(limit));
+
+      if (filter == "true") {
+        projects = [...projects, ...assignedProjects];
+      }
       return { projects, totalPages };
     } catch (error) {
       throw error;
@@ -86,17 +103,17 @@ class ProjectRepositoryImpl extends ProjectRepository {
   async getMembersByProjectId(projectId) {
     try {
       const members = await membersModel.aggregate([
-        { $match: { projectId: new mongoose.Types.ObjectId(projectId) } }, // Match members by projectId
+        { $match: { projectId: new mongoose.Types.ObjectId(projectId) } },
         {
           $lookup: {
-            from: "users", // The name of the collection for users
+            from: "users",
             localField: "userId",
             foreignField: "_id",
             as: "userDetails",
           },
         },
         {
-          $unwind: "$userDetails", // Flatten the userDetails array
+          $unwind: "$userDetails",
         },
         {
           $project: {

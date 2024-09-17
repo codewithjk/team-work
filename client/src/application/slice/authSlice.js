@@ -97,8 +97,9 @@ const authSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    resendSuccess: (state) => {
+    resendSuccess: (state, action) => {
       state.loading = false;
+      state.user = action.payload;
     },
     resendFail: (state, action) => {
       state.loading = false;
@@ -106,6 +107,10 @@ const authSlice = createSlice({
     },
     resendRequest: (state) => {
       state.loading = true;
+    },
+    resetAuthState: (state) => {
+      state.loading = false;
+      state.error = null;
     },
   },
 });
@@ -135,5 +140,6 @@ export const {
   resendSuccess,
   resendFail,
   resendRequest,
+  resetAuthState,
 } = authSlice.actions;
 export default authSlice.reducer;

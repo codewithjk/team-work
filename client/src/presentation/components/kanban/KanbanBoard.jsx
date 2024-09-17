@@ -10,69 +10,80 @@ import { arrayMove } from "@dnd-kit/sortable";
 import io from "socket.io-client";
 import axios from "axios";
 import KanbanColumn from "./KanbanColumn";
+import { useSelector } from "react-redux";
+import { updateTask } from "../../../application/actions/taskActions";
+import { useDispatch } from "react-redux";
 
 // const socket = io("http://localhost:5000");
 
-const KanbanBoard = ({ initialTasks }) => {
-  const [tasks, setTasks] = useState(initialTasks ?? []);
+const KanbanBoard = ({ isOwner }) => {
+  const { tasks } = useSelector((state) => state.task);
+  const dispatch = useDispatch();
+
+  // const [tasks, setTasks] = useState(initialTasks);
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } })
   );
 
-  useEffect(() => {
-    // Listen for real-time task updates
-    socket.on("taskUpdated", (updatedTask) => {
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task._id === updatedTask._id ? updatedTask : task
-        )
-      );
-    });
+  // useEffect(() => {
+  //   // Listen for real-time task updates
+  //   socket.on("taskUpdated", (updatedTask) => {
+  //     setTasks((prevTasks) =>
+  //       prevTasks.map((task) =>
+  //         task._id === updatedTask._id ? updatedTask : task
+  //       )
+  //     );
+  //   });
 
-    return () => {
-      socket.off("taskUpdated");
-    };
-  }, []);
+  //   return () => {
+  //     socket.off("taskUpdated");
+  //   };
+  // }, []);
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
+    console.log(event);
 
     if (!over) return;
 
-    const activeTask = tasks.find((task) => task._id === active.id);
-    const overColumn = over.data.current?.state;
+    const taskId = active.id;
+    const state = over.id;
+    dispatch(updateTask(taskId, { state }));
 
-    if (overColumn && activeTask.state !== overColumn) {
-      const updatedTask = { ...activeTask, state: overColumn };
+    // const activeTask = tasks.find((task) => task._id === active.id);
+    // const overColumn = over.data.current?.state;
 
-      // Update task state locally
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task._id === activeTask._id ? updatedTask : task
-        )
-      );
+    // if (overColumn && activeTask.state !== overColumn) {
+    //   const updatedTask = { ...activeTask, state: overColumn };
 
-      try {
-        // Update task state on the backend
-        await axios.put(`/api/tasks/${activeTask._id}/state`, {
-          state: overColumn,
-        });
+    //   // Update task state locally
+    //   setTasks((prevTasks) =>
+    //     prevTasks.map((task) =>
+    //       task._id === activeTask._id ? updatedTask : task
+    //     )
+    //   );
 
-        // Emit the real-time update to other clients
-        socket.emit("taskUpdated", updatedTask);
-      } catch (error) {
-        console.error("Failed to update task state", error);
-      }
-    }
+    //   try {
+    //     // Update task state on the backend
+    //     await axios.put(`/api/tasks/${activeTask._id}/state`, {
+    //       state: overColumn,
+    //     });
+
+    //     // Emit the real-time update to other clients
+    //     socket.emit("taskUpdated", updatedTask);
+    //   } catch (error) {
+    //     console.error("Failed to update task state", error);
+    //   }
+    // }
   };
 
   const states = [
-    "backlog",
-    "planned",
-    "in-progress",
-    "paused",
-    "completed",
-    "cancelled",
+    { id: 1, title: "backlog" },
+    { id: 2, title: "planned" },
+    { id: 3, title: "in-progress" },
+    { id: 4, title: "paused" },
+    { id: 5, title: "completed" },
+    { id: 6, title: "cancelled" },
   ];
 
   return (
@@ -81,13 +92,16 @@ const KanbanBoard = ({ initialTasks }) => {
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex space-x-4 overflow-x-auto">
+      <div className="flex h-full overflow-x-scroll w-fit border border-t border-foreground-50 ">
         {states.map((state) => (
-          <KanbanColumn
-            key={state}
-            state={state}
-            tasks={tasks.filter((task) => task.state === state)}
-          />
+          <div key={state.id} className="flex-shrink-1 w-80  h-full">
+            <KanbanColumn
+              state={state}
+              tasks={tasks.filter((task) => task.state === state.title)}
+              isOverlay
+              isOwner={isOwner}
+            />
+          </div>
         ))}
       </div>
     </DndContext>

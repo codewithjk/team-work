@@ -3,7 +3,6 @@ class UpdateTask {
     this.taskRepository = taskRepository;
   }
   async execute(id, task) {
-    console.log(id, task);
     return this.taskRepository.update(id, task);
   }
 }

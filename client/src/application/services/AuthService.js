@@ -12,7 +12,7 @@ class AuthService {
     const response = await authApi.signup(user);
     console.log(response);
     if (response.status === 201) {
-      const { _id, name, email } = response.data;
+      // const { _id, name, email } = response.data;
       return response.data;
     }
     throw new Error("Signup failed");
@@ -48,6 +48,8 @@ class AuthService {
   }
   async logout() {
     const response = await authApi.logout();
+    console.log(response);
+
     if (response.status === 200) {
       return response.data;
     }

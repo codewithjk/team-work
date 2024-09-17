@@ -13,15 +13,15 @@ class TaskRepositoryImpl {
           from: "members",
           localField: "assignees",
           foreignField: "_id",
-          as: "assignees", // Changed alias to "assignees"
+          as: "assignees",
         },
       },
       {
         $lookup: {
           from: "users",
-          localField: "assignees.userId", // Changed localField to use "assignees"
+          localField: "assignees.userId",
           foreignField: "_id",
-          as: "assigneeDetails", // Changed alias to "assigneeDetails"
+          as: "assigneeDetails",
         },
       },
       {
@@ -38,7 +38,6 @@ class TaskRepositoryImpl {
           preserveNullAndEmptyArrays: true,
         },
       },
-      // New lookup for module details
       {
         $lookup: {
           from: "modules",
@@ -61,9 +60,9 @@ class TaskRepositoryImpl {
           endDate: 1,
           state: 1,
           priority: 1,
-          assignees: "$assigneeDetails", // Changed projection to use "assignees"
+          assignees: "$assigneeDetails",
           project: { name: "$project.name" },
-          module: "$moduleDetails", // Project module name
+          module: "$moduleDetails",
         },
       },
     ]);
@@ -74,7 +73,7 @@ class TaskRepositoryImpl {
     return await newTask.save();
   }
   async update(id, task) {
-    return await taskModel.findByIdAndUpdate(id, task);
+    return await taskModel.findByIdAndUpdate(id, task, { new: true });
   }
 
   async delete(id) {
@@ -92,7 +91,7 @@ class TaskRepositoryImpl {
       }
 
       if (filter) {
-        query.category = filter;
+        query = { ...query, ...filter };
       }
 
       const totalProjects = await taskModel.countDocuments(query);
@@ -105,6 +104,99 @@ class TaskRepositoryImpl {
 
       return { tasks, totalPages };
     } catch (error) {
+      throw error;
+    }
+  }
+  async findByUserId(userId) {
+    try {
+      const members = await mongoose.model("Member").aggregate([
+        {
+          $match: { userId: new mongoose.Types.ObjectId(userId) },
+        },
+        {
+          $project: { _id: 1 },
+        },
+      ]);
+      const memberIds = members.map((member) => member._id);
+
+      if (memberIds.length === 0) {
+        return {
+          tasksAssignedToUser: [],
+          totalTasks: 0,
+          completedTasks: [],
+        };
+      }
+
+      const result = await mongoose.model("Task").aggregate([
+        {
+          $match: {
+            assignees: { $in: memberIds },
+          },
+        },
+        {
+          $lookup: {
+            from: "modules",
+            localField: "module",
+            foreignField: "_id",
+            as: "moduleDetails",
+          },
+        },
+        {
+          $lookup: {
+            from: "projects",
+            localField: "projectId",
+            foreignField: "_id",
+            as: "projectDetails",
+          },
+        },
+        {
+          $project: {
+            name: 1,
+            description: 1,
+            state: 1,
+            priority: 1,
+            startDate: 1,
+            endDate: 1,
+            moduleDetails: { $arrayElemAt: ["$moduleDetails.name", 0] },
+            projectDetails: { $arrayElemAt: ["$projectDetails.name", 0] },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            tasksAssignedToUser: { $push: "$$ROOT" },
+            totalTasks: { $sum: 1 },
+            completedTasks: {
+              $push: {
+                $cond: [{ $eq: ["$state", "completed"] }, "$$ROOT", null],
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            tasksAssignedToUser: 1,
+            totalTasks: 1,
+            completedTasks: {
+              $filter: {
+                input: "$completedTasks",
+                as: "item",
+                cond: { $ne: ["$$item", null] },
+              },
+            },
+          },
+        },
+      ]);
+
+      return result.length > 0
+        ? result[0]
+        : {
+            tasksAssignedToUser: [],
+            totalTasks: 0,
+            completedTasks: [],
+          };
+    } catch (error) {
+      console.error("Error fetching assigned tasks for user:", error);
       throw error;
     }
   }

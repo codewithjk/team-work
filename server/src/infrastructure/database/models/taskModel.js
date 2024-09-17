@@ -49,6 +49,7 @@ const TaskSchema = new Schema(
       required: [true, "Module is required"],
     },
     projectId: { type: mongoose.Schema.ObjectId, ref: "Project" },
+    createdBy: { type: mongoose.Schema.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

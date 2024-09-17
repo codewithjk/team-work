@@ -31,7 +31,7 @@ function ChatPage() {
   };
 
   return (
-    <div className="w-full  flex flex-col">
+    <div className="">
       <ChatLayout navCollapsedSize={8} />
     </div>
   );

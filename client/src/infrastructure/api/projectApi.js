@@ -4,8 +4,8 @@ const getProject = (id) => {
   return axios.get(`/project/${id}`);
 };
 
-const getAllProjects = () => {
-  return axios.get(`/project/`);
+const getAllProjects = (data) => {
+  return axios.get(`/project/?filter=${data?.allProjects}`);
 };
 
 const createProject = (project) => {

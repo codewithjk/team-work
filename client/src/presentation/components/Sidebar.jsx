@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector } from "react-redux";
-import { ModeToggle } from "./ui/mode-toggle";
+
 import { useEffect } from "react";
 import projectApi from "../../infrastructure/api/projectApi";
 
@@ -31,7 +31,7 @@ function Sidebar() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await projectApi.getAllProjects();
+        const response = await projectApi.getAllProjects({ allProjects: true });
         const data = response.data.projects;
         if (response.status === 200) {
           setProjects(data);
@@ -83,10 +83,10 @@ function Sidebar() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen w-fit">
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex flex-col bg-background border border-foreground-50 text-foreground w-64 transition-transform transform md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex flex-col bg-background border border-foreground-50 text-foreground md:w-64 transition-transform transform md:translate-x-0",
           {
             "-translate-x-full": !isOpen,
             "translate-x-0": isOpen,
@@ -95,10 +95,15 @@ function Sidebar() {
       >
         {/* Avatar Section */}
         <div className="flex items-center justify-between p-4 ">
-          <Avatar className="cursor-pointer">
+          <Avatar className="cursor-pointer overflow-hidden">
             <Link to="/profile">
-              <AvatarImage src={profileData?.avatar} alt="User Profile" />
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarImage
+                src={profileData?.avatar}
+                className="object-cover w-full h-full"
+              />
+              <AvatarFallback className=" font-extrabold text-2xl">
+                {profileData?.name[0].toUpperCase()}
+              </AvatarFallback>
             </Link>
           </Avatar>
           <div className="px-2 md:block">
@@ -181,12 +186,7 @@ function Sidebar() {
                         >
                           Tasks
                         </Link>
-                        <Link
-                          to={`/projects/${project._id}/cycles`}
-                          className="block p-2 text-sm rounded-md hover:bg-muted"
-                        >
-                          Cycles
-                        </Link>
+
                         <Link
                           to={`/projects/${project._id}/modules`}
                           className="block p-2 text-sm rounded-md hover:bg-muted"
@@ -201,8 +201,6 @@ function Sidebar() {
               </div>
             )}
           </div>
-
-          <ModeToggle />
         </nav>
       </div>
 

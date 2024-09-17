@@ -19,6 +19,8 @@ import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { toast, Toaster } from "sonner";
+import { FcGoogle } from "react-icons/fc";
+import { FaGithub } from "react-icons/fa";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -54,12 +56,26 @@ const LoginPage = () => {
     }
   }, [user, error, loading]);
 
+  const googleLogin = () => {
+    console.log("google");
+    window.location.href = `${
+      import.meta.env.VITE_BACKEND_API_BASE_URL
+    }/auth/google`;
+  };
+
+  const githubLogin = () => {
+    console.log("github");
+    window.location.href = `${
+      import.meta.env.VITE_BACKEND_API_BASE_URL
+    }/auth/github`;
+  };
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-6 sm:p-12">
-      <section className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6 sm:p-12">
+      <section className="w-full max-w-md bg-background border border-foreground-50 p-8 rounded-lg shadow-md">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold text-gray-800">Log In</h1>
-          <p className="mt-2 text-sm text-gray-600">
+          <h1 className="text-3xl font-semibold text-forground-800">Log In</h1>
+          <p className="mt-2 text-sm text-muted ">
             New to TeamWork?{" "}
             <Link to="/signup" className="text-blue-500 hover:underline">
               Signup
@@ -133,6 +149,22 @@ const LoginPage = () => {
               </div>
             </form>
           </Form>
+          <div className="mt-8 flex flex-col gap-4">
+            <Button
+              onClick={googleLogin}
+              className="w-full py-2 text-black border border-secondary bg-white flex items-center justify-center gap-2 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-400"
+            >
+              <FcGoogle size={20} />
+              Sign Up with Google
+            </Button>
+            <Button
+              onClick={githubLogin}
+              className="w-full py-2 text-forground bg-background flex items-center justify-center gap-2 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-800 border border-foreground-50"
+            >
+              <FaGithub size={20} />
+              Sign Up with GitHub
+            </Button>
+          </div>
         </div>
       </section>
       <Toaster />

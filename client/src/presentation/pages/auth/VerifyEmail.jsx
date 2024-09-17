@@ -32,15 +32,18 @@ function VerifyEmail() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
   const { loading, error, message, user } = auth;
+  console.log(user);
   const userId = user.id;
   const verificationTokenExpiresAt = user.verificationTokenExpiresAt;
 
   // Function to calculate remaining time from the token expiration
   const calculateRemainingTime = () => {
-    const expirationTime = Date.parse(verificationTokenExpiresAt) / 1000; // Convert to seconds
-    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+    const expirationTime = Math.floor(
+      Date.parse(verificationTokenExpiresAt) / 1000
+    );
+    const currentTime = Math.floor(Date.now() / 1000);
     const remainingTime = expirationTime - currentTime;
-    return remainingTime > 0 ? remainingTime : 0;
+    return remainingTime > 0 ? Math.floor(remainingTime) : 0;
   };
 
   const formatTime = (seconds) => {
@@ -81,9 +84,12 @@ function VerifyEmail() {
 
   const handleResend = () => {
     dispatch(resendVerificationCode(userId));
-    setTimer(calculateRemainingTime());
     setIsResendDisabled(true);
   };
+
+  useEffect(() => {
+    setTimer(calculateRemainingTime());
+  }, [auth]);
 
   useEffect(() => {
     if (message) {
@@ -141,7 +147,7 @@ function VerifyEmail() {
             <div className="flex flex-col gap-4">
               <Button
                 type="submit"
-                disabled={loading || timer <= 0}
+                disabled={loading || !isResendDisabled}
                 className="w-full py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {loading ? "Verifying..." : "Verify"}

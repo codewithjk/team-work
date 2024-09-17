@@ -80,9 +80,7 @@ export const verifyMail = (code) => async (dispatch) => {
 export const checkAuth = () => async (dispatch) => {
   try {
     dispatch(checkAuthRequest());
-    console.log("check outh actions");
     const data = await AuthService.checkAuth();
-    console.log("check outh actions", data);
     dispatch(checkAuthSuccess(data));
   } catch (error) {
     console.log("check auth action : ", error);
@@ -106,8 +104,10 @@ export const resendVerificationCode = (id) => async (dispatch) => {
     const data = await AuthService.resendCode(id);
     console.log(data);
 
-    dispatch(resendSuccess(data));
+    dispatch(resendSuccess(data.user));
   } catch (error) {
+    console.log(error);
+
     dispatch(resendFail(error?.response?.data?.error || error.message));
   }
 };

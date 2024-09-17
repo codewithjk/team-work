@@ -24,8 +24,6 @@ class AuthController {
       res
         .status(201)
         .json({ id: _id, name, email, isVerified, verificationTokenExpiresAt });
-
-      next();
     } catch (error) {
       console.log("erorr: ", error);
       res.status(400).json({ error: error.message });
@@ -139,6 +137,7 @@ class AuthController {
       });
       return res.status(200).json({ message: "Logged out successfully" });
     } catch (error) {
+      console.log(user);
       res.status(400).json({ error: error.message });
     }
   }
@@ -149,7 +148,11 @@ class AuthController {
 
       const user = await resendCode.execute({ userId });
       console.log(user);
-      res.status(200).json({ message: "successfully resend code" });
+      const { _id, name, email, isVerified, verificationTokenExpiresAt } = user;
+      res.status(200).json({
+        message: "successfully resend code",
+        user: { id: _id, name, email, isVerified, verificationTokenExpiresAt },
+      });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

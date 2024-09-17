@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const memberSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
     trim: true,
     lowercase: true,
     unique: true,
@@ -11,7 +10,6 @@ const memberSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
   },
   projectId: {
     type: mongoose.Schema.Types.ObjectId,

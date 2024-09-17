@@ -86,8 +86,8 @@ function ProfileSettingsPage() {
   };
 
   return (
-    <div className="container mx-auto p-4 md:max-w-[75%]">
-      <Card className="shadow-lg">
+    <div className=" p-4 overflow-scroll ">
+      <Card className="shadow-lg md:max-w-[75%] mx-auto ">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <CardHeader>
@@ -110,10 +110,11 @@ function ProfileSettingsPage() {
                 <Avatar className="w-24 h-24 md:w-32 md:h-32 lg:w-40 lg:h-40 rounded-full overflow-hidden">
                   <AvatarImage
                     src={profileData?.avatar}
-                    alt="Avatar"
                     className="object-cover w-full h-full"
                   />
-                  <AvatarFallback>AB</AvatarFallback>
+                  <AvatarFallback className=" font-extrabold text-5xl">
+                    {profileData?.name[0].toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
               </div>
 

@@ -47,8 +47,6 @@ class ProjectController {
         ownerId,
       });
 
-      console.log(projects);
-
       res.status(200).json({
         projects,
         totalPages,
@@ -93,6 +91,7 @@ class ProjectController {
     try {
       const projectId = req.params.projectId;
       const { email, role } = req.body;
+      console.log(req.body);
       const newMember = await addMemberUsecase.execute({
         email,
         projectId,
@@ -102,6 +101,8 @@ class ProjectController {
 
       res.status(200).json({ message: "invitation sent successfully" });
     } catch (error) {
+      console.log(error);
+
       if (error.code === 11000) {
         res.status(403).json({ message: "email is used by other member" });
       } else {

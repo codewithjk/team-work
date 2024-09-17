@@ -89,34 +89,38 @@ function ProjectPage() {
   };
 
   return (
-    <div className="min-h-screen p-4 max-w-screen">
+    <div className=" max-w-screen flex flex-col ">
       {/* Add Project Button */}
-      <div className="flex justify-end ">
+      <div className=" sticky top-0 p-2 border border-x-0  bg-background w-full flex justify-end ">
         <Button onClick={() => setIsProjectFormOpen(true)}>Add Project</Button>
       </div>
 
       {/* Project List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-        {projects.map((project) => (
-          <Card key={project._id}>
-            <CardHeader>
-              <img
-                src={project.coverImage || "default-cover.jpg"}
-                alt="Cover"
-                className="object-cover w-full h-32 rounded-t-lg"
-              />
-              <h3 className="text-lg font-medium mt-2">{project.name}</h3>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between">
-                <p>{project.description}</p>
-                <Link to={`/projects/${project._id}/settings`}>
-                  <SettingsIcon />
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="flex-1 overflow-scroll p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8  ">
+          {projects.map((project) => (
+            <Card key={project._id}>
+              <CardHeader>
+                <img
+                  src={project.coverImage || "default-cover.jpg"}
+                  alt="Cover"
+                  className="object-cover w-full h-32 rounded-t-lg"
+                />
+                <h3 className="text-lg font-medium mt-2">{project.name}</h3>
+              </CardHeader>
+              <CardContent>
+                <div className="flex justify-between">
+                  <p className="truncate overflow-hidden text-ellipsis whitespace-nowrap">
+                    {project.description}
+                  </p>
+                  <Link to={`/projects/${project._id}/settings`}>
+                    <SettingsIcon />
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
 
       {isProjectFormOpen && (

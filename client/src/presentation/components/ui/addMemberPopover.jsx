@@ -47,14 +47,14 @@ function AddMemberPopover({ isOpen, onClose }) {
     try {
       const response = await projectApi.addMember(projectId, data);
       if (response.status === 200) {
-        toast.success("Member added successfully!");
-        onClose(); // Close popover after successful addition
+        toast.success("Invitation sent successfully!");
+        onClose();
       }
     } catch (error) {
       if (error.response.status == 403) {
         toast.error(error.response.data.message);
       } else {
-        toast.error("Failed to add member.");
+        toast.error("Failed to invite member.");
       }
     }
   };
