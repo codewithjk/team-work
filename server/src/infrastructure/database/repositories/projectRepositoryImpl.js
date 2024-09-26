@@ -25,6 +25,8 @@ class ProjectRepositoryImpl extends ProjectRepository {
   }
   async findAll(queries) {
     try {
+      console.log(queries);
+
       const { search, filter, page, limit, ownerId } = queries;
 
       //find project that is assigned to
@@ -69,6 +71,12 @@ class ProjectRepositoryImpl extends ProjectRepository {
   async addMember({ email, projectId, inviteToken, role }) {
     try {
       const inviteTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
+      const exitstingMemeber = await membersModel.findOne({ email, projectId });
+      console.log(exitstingMemeber);
+
+      if (exitstingMemeber) {
+        throw new Error("email is alrady used by other member");
+      }
       const newMember = new membersModel({
         email,
         projectId,

@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 
-const Sidebar = ({ chats, isCollapsed, isMobile }) => {
+const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
   console.log(chats);
 
   return (
@@ -25,7 +25,7 @@ const Sidebar = ({ chats, isCollapsed, isMobile }) => {
             <span className="text-zinc-300">({chats.length})</span>
           </div>
 
-          <div>
+          {/* <div>
             <Link
               href="#"
               className={cn(
@@ -45,7 +45,7 @@ const Sidebar = ({ chats, isCollapsed, isMobile }) => {
             >
               <SquarePen size={20} />
             </Link>
-          </div>
+          </div> */}
         </div>
       )}
       <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
@@ -55,7 +55,8 @@ const Sidebar = ({ chats, isCollapsed, isMobile }) => {
               <Tooltip key={index} delayDuration={0}>
                 <TooltipTrigger asChild>
                   <Link
-                    to={`/chats/${chat.id}`}
+                    onClick={() => setSelectedGroup(chat)}
+                    to={`/chats/${chat._id}`}
                     className={cn(
                       buttonVariants({ variant: chat.variant, size: "icon" }),
                       "h-11 w-11 md:h-16 md:w-16",
@@ -85,8 +86,9 @@ const Sidebar = ({ chats, isCollapsed, isMobile }) => {
             </TooltipProvider>
           ) : (
             <Link
+              onClick={() => setSelectedGroup(chat)}
               key={index}
-              to={`/chats/${chat.id}`}
+              to={`/chats/${chat._id}`}
               className={cn(
                 buttonVariants({ variant: chat.variant, size: "xl" }),
                 chat.variant === "secondary" &&

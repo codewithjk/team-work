@@ -63,7 +63,7 @@ function HandleGithubOauthPage() {
   }, [token, dispatch, isAuthenticated, navigate]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen p-4 bg-background">
       <Card className="max-w-md w-full p-6 shadow-lg rounded-md">
         <CardHeader>
           <CardTitle>Processing GitHub OAuth</CardTitle>

@@ -61,19 +61,18 @@ function ProjectPage() {
 
   const handleFormSubmit = async (data) => {
     try {
-      // Save the project to the backend
       const response = await projectApi.createProject(data);
       console.log(response);
 
       if (response.status === 200) {
-        const newProject = await response.data;
+        const newProject = await response.data.project;
         console.log("new proect : ", newProject);
 
-        // Update the project list
         setProjects((prevProjects) => [...prevProjects, newProject]);
+
         toast.success("Project added successfully!");
         setIsProjectFormOpen(false);
-        reset(); // Reset the form after submission
+        reset();
       } else {
         toast.error("Failed to add project.");
       }
@@ -83,6 +82,7 @@ function ProjectPage() {
     }
   };
 
+  console.log(projects);
   const handleImageSelect = (imageUrl) => {
     setCoverPhoto(imageUrl);
     setValue("coverImage", imageUrl); // Update cover photo field in the form

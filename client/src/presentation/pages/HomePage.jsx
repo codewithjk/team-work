@@ -22,6 +22,8 @@ function HomePage() {
   useEffect(() => {
     async function getTasks() {
       const response = await taskApi.getAllTasks();
+      console.log(response);
+
       setAssignedTasks(response.data.tasksAssignedToUser);
     }
     getTasks();
@@ -29,7 +31,6 @@ function HomePage() {
       try {
         const response = await projectApi.getAllProjects();
         const data = response.data.projects;
-        console.log(data);
         if (response.status === 200) {
           setProjects(data);
         } else {
@@ -41,6 +42,8 @@ function HomePage() {
     };
     fetchProjects();
   }, []);
+
+  console.log(assignedTasks);
 
   function filterAssignedTasksByState(state) {
     return assignedTasks.filter((task) => task.state === state);

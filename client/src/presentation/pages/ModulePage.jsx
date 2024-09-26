@@ -235,9 +235,6 @@ const ModulePage = () => {
                   <DropdownMenuItem onClick={() => handleEditModule(module)}>
                     Edit
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Open in new tab</DropdownMenuItem>
-                  <DropdownMenuItem>Copy link</DropdownMenuItem>
-                  <DropdownMenuItem>Archive</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleDeleteModule(module)}>
                     Delete
                   </DropdownMenuItem>

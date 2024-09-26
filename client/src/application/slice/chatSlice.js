@@ -10,10 +10,10 @@ const initialState = {
   ],
   input: "",
   chatBotMessages: ChatBotMessages,
-  messages: userData[0].messages,
+  messages: [],
   hasInitialAIResponse: false,
   hasInitialResponse: false,
-  selectedUser: Users[4],
+  selectedGroup: null,
 };
 
 const chatSlice = createSlice({
@@ -35,14 +35,26 @@ const chatSlice = createSlice({
     setChatBotMessages: (state, action) => {
       state.chatBotMessages = action.payload(state.chatBotMessages);
     },
+    setSelectedGroup: (state, action) => {
+      console.log(action.payload);
+      state.selectedGroup = action.payload;
+    },
     setMessages: (state, action) => {
-      state.messages = action.payload(state.messages);
+      console.log("called");
+      state.messages.push(action.payload);
+    },
+    addOldMessages: (state, action) => {
+      console.log("Old messages loaded");
+      state.messages = [...action.payload, ...state.messages]; // Prepend old messages
     },
     setHasInitialAIResponse: (state, action) => {
       state.hasInitialAIResponse = action.payload;
     },
     setHasInitialResponse: (state, action) => {
       state.hasInitialResponse = action.payload;
+    },
+    resetMessages: (state, action) => {
+      state.messages = [];
     },
   },
 });
@@ -57,5 +69,8 @@ export const {
   setMessages,
   setHasInitialAIResponse,
   setHasInitialResponse,
+  resetMessages,
+  setSelectedGroup,
+  addOldMessages,
 } = chatSlice.actions;
 export default chatSlice.reducer;

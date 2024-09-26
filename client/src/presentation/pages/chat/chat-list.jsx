@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import ChatBottombar from "./chat-bottombar";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -9,12 +9,107 @@ import {
 } from "@/components/ui/chat/chat-bubble";
 
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
+import { getSocket } from "@/utils/socketClient.config";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  resetMessages,
+  setMessages,
+  addOldMessages,
+} from "../../../application/slice/chatSlice";
 
-const getMessageVariant = (messageName, selectedUserName) =>
-  messageName !== selectedUserName ? "sent" : "received";
+import chatApi from "../../../infrastructure/api/chatApi";
 
-export function ChatList({ messages, selectedUser, sendMessage, isMobile }) {
+const getMessageVariant = (senderId, userId) =>
+  senderId === userId ? "sent" : "received";
+
+export function ChatList({ selectedGroup, sendMessage, isMobile }) {
+  console.log("chat list rendered");
+
+  const groupId = selectedGroup._id;
+  const { profileData } = useSelector((state) => state.profile);
+  const userId = profileData?._id;
+  const dispatch = useDispatch();
+  const { messages } = useSelector((state) => state.chat);
+
   const messagesContainerRef = useRef(null);
+  const [loadingOldMessages, setLoadingOldMessages] = useState(false);
+  const [loadingRecentMessages, setLoadingRecentMessages] = useState(true);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+
+  const fetchRecentMessages = useCallback(async () => {
+    try {
+      setLoadingRecentMessages(true);
+      const response = await chatApi.getAllChats(
+        groupId,
+        new Date().toISOString()
+      );
+      const fetchedMessages = response.data.messages;
+      console.log(fetchedMessages);
+
+      if (fetchedMessages.length > 0) {
+        dispatch(addOldMessages(fetchedMessages));
+      }
+    } catch (error) {
+      console.error("Error fetching recent messages:", error);
+    } finally {
+      setLoadingRecentMessages(false);
+    }
+  }, [groupId, dispatch]);
+
+  const fetchOldMessages = useCallback(async () => {
+    if (!hasMoreMessages || loadingOldMessages || messages.length === 0) return;
+
+    const oldestMessage = messages[0];
+    setLoadingOldMessages(true);
+
+    try {
+      const response = await chatApi.getAllChats(
+        groupId,
+        oldestMessage.timestamp
+      );
+      console.log(response);
+
+      const fetchedMessages = response.data.messages;
+      if (fetchedMessages.length > 0) {
+        dispatch(addOldMessages(fetchedMessages));
+      } else {
+        setHasMoreMessages(false);
+      }
+    } catch (error) {
+      console.error("Error fetching old messages:", error);
+    } finally {
+      setLoadingOldMessages(false);
+    }
+  }, [groupId, hasMoreMessages, loadingOldMessages, messages, dispatch]);
+
+  const handleScroll = () => {
+    console.log("scrolling");
+
+    if (
+      messagesContainerRef.current &&
+      messagesContainerRef.current.scrollTop === 0
+    ) {
+      fetchOldMessages();
+    }
+  };
+
+  useEffect(() => {
+    const socket = getSocket();
+
+    socket.emit("joinProjectGroup", { groupId, userId });
+
+    const handleReceiveMessage = (message) => {
+      dispatch(setMessages(message));
+    };
+
+    socket.on("receiveMessage", handleReceiveMessage);
+
+    return () => {
+      socket.off("receiveMessage", handleReceiveMessage);
+      socket.emit("leaveProjectGroup", { groupId, userId });
+      dispatch(resetMessages());
+    };
+  }, [selectedGroup, userId, groupId, dispatch]);
 
   useEffect(() => {
     if (messagesContainerRef.current) {
@@ -23,12 +118,16 @@ export function ChatList({ messages, selectedUser, sendMessage, isMobile }) {
     }
   }, [messages]);
 
+  useEffect(() => {
+    fetchRecentMessages();
+  }, [fetchRecentMessages]);
+
   return (
     <div className="w-full overflow-y-auto h-full flex flex-col">
-      <ChatMessageList ref={messagesContainerRef}>
+      <ChatMessageList ref={messagesContainerRef} onScroll={handleScroll}>
         <AnimatePresence>
           {messages.map((message, index) => {
-            const variant = getMessageVariant(message.name, selectedUser.name);
+            const variant = getMessageVariant(message.senderId, userId);
             return (
               <motion.div
                 key={index}
@@ -53,7 +152,7 @@ export function ChatList({ messages, selectedUser, sendMessage, isMobile }) {
                     variant={variant}
                     isLoading={message.isLoading}
                   >
-                    {message.message}
+                    {message.content}
                     {message.timestamp && (
                       <ChatBubbleTimestamp timestamp={message.timestamp} />
                     )}
@@ -64,7 +163,22 @@ export function ChatList({ messages, selectedUser, sendMessage, isMobile }) {
           })}
         </AnimatePresence>
       </ChatMessageList>
-      <ChatBottombar isMobile={isMobile} />
+
+      {/* Loading spinner for recent messages */}
+      {loadingRecentMessages && (
+        <div className="flex justify-center items-center py-2">
+          <span>Loading recent messages...</span>
+        </div>
+      )}
+
+      {/* Loading spinner for fetching old messages */}
+      {loadingOldMessages && (
+        <div className="flex justify-center items-center py-2">
+          <span>Loading old messages...</span>
+        </div>
+      )}
+
+      <ChatBottombar isMobile={isMobile} selectedGroup={selectedGroup} />
     </div>
   );
 }

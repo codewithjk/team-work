@@ -80,7 +80,6 @@ class TaskController {
     try {
       const task = req.body;
       const id = req.params.taskId;
-      console.log(task, id);
       const updatedTask = await updateTaskUsecase.execute(id, task);
       res.status(200).json({ message: "successful", updatedTask });
     } catch (error) {

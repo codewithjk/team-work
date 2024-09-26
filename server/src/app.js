@@ -8,6 +8,9 @@ const cookieParser = require("cookie-parser");
 const verifyJwtToken = require("./interfaces/middlewares/verifyJwtToken");
 const moduleRouter = require("./interfaces/routes/moduleRouter");
 const taskRouter = require("./interfaces/routes/taskRouter");
+const chatRouter = require("./interfaces/routes/chatRouter");
+const meetingRouter = require("./interfaces/routes/meetingRouter");
+
 const app = express();
 
 const allowedOrigin = process.env.WEB_APP_ORIGIN;
@@ -25,5 +28,8 @@ app.use("/api/v1/profile", profileRouter);
 app.use("/api/v1/project", projectRouter);
 app.use("/api/v1/module", moduleRouter);
 app.use("/api/v1/task", taskRouter);
+app.use("/api/v1/chat", chatRouter);
+app.use("/api/v1/meeting", meetingRouter);
+
 app.use(errorHandlerMiddleware);
 module.exports = app;

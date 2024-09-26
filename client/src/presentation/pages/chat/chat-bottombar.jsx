@@ -11,7 +11,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-// import { Message, loggedInUserData } from "@/app/data";
+
 import {
   Popover,
   PopoverContent,
@@ -22,14 +22,21 @@ import { ChatInput } from "@/components/ui/chat/chat-input";
 import { EmojiPicker } from "./emoji-picker";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+
+import { getSocket } from "@/utils/socketClient.config";
+import { setMessages } from "../../../application/slice/chatSlice";
 
 const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
-export default function ChatBottombar({ isMobile }) {
+export default function ChatBottombar({ isMobile, selectedGroup }) {
   const [message, setMessage] = useState("");
+  const dispatch = useDispatch();
   const inputRef = useRef(null);
-  const { setHasInitialResponse, setMessages, hasInitialResponse } =
-    useSelector((state) => state.chat);
+  const { setHasInitialResponse, hasInitialResponse } = useSelector(
+    (state) => state.chat
+  );
+  const { profileData } = useSelector((state) => state.profile);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,30 +44,34 @@ export default function ChatBottombar({ isMobile }) {
     setMessage(event.target.value);
   };
 
-  const sendMessage = (newMessage) => {
-    console.log(newMessage);
-  };
-
   const handleThumbsUp = () => {
     const newMessage = {
-      id: message.length + 1,
-      name: loggedInUserData.name,
-      avatar: loggedInUserData.avatar,
-      message: "👍",
+      senderId: profileData._id,
+      name: profileData.name,
+      avatar: profileData.avatar,
+      content: "👍",
     };
-    sendMessage(newMessage);
+    const socket = getSocket();
+    socket.emit("sendMessage", {
+      groupId: selectedGroup._id,
+      message: newMessage,
+    });
     setMessage("");
   };
 
   const handleSend = () => {
     if (message.trim()) {
       const newMessage = {
-        id: message.length + 1,
-        name: loggedInUserData.name,
-        avatar: loggedInUserData.avatar,
-        message: message.trim(),
+        senderId: profileData._id,
+        name: profileData.name,
+        avatar: profileData.avatar,
+        content: message.trim(),
       };
-      sendMessage(newMessage);
+      const socket = getSocket();
+      socket.emit("sendMessage", {
+        groupId: selectedGroup._id,
+        message: newMessage,
+      });
       setMessage("");
 
       if (inputRef.current) {

@@ -5,7 +5,6 @@ const memberSchema = new mongoose.Schema({
     type: String,
     trim: true,
     lowercase: true,
-    unique: true,
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,

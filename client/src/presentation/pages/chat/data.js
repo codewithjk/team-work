@@ -13,7 +13,7 @@ export const Users = [
     avatar:
       "https://images.freeimages.com/images/large-previews/fdd/man-avatar-1632964.jpg?fmt=webp&h=350",
     messages: [],
-    name: "John Doe",
+    name: "Nijas",
   },
   {
     id: 3,
@@ -123,7 +123,7 @@ export const userData = [
     id: 2,
     avatar:
       "https://images.freeimages.com/images/large-previews/fdd/man-avatar-1632964.jpg?fmt=webp&h=350",
-    name: "John Doe",
+    name: "Nijas",
     messages: [],
   },
   {

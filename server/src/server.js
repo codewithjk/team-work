@@ -1,16 +1,51 @@
+"use strict";
+
 const mongoose = require("mongoose");
 const app = require("./app");
+const http = require("http");
+const socketServer = require("../src/infrastructure/sockets/socketServer");
 
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
-    app.listen(PORT, () => {
+if (!MONGODB_URI) {
+  console.error(
+    "Error: MONGODB_URI is not defined in the environment variables."
+  );
+  process.exit(1);
+}
+
+const startServer = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    console.log("Connected to MongoDB");
+
+    const server = http.createServer(app);
+
+    socketServer(server);
+
+    server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
-  })
-  .catch((err) => {
-    console.error("Database connection error:", err);
-  });
+
+    const gracefulShutdown = () => {
+      console.log("Shutting down gracefully...");
+      server.close(() => {
+        console.log("HTTP server closed.");
+        mongoose.connection.close(false, () => {
+          console.log("MongoDB connection closed.");
+          process.exit(0);
+        });
+      });
+    };
+
+    process.on("SIGTERM", gracefulShutdown);
+    process.on("SIGINT", gracefulShutdown);
+  } catch (error) {
+    console.error("Database connection error:", error);
+    process.exit(1);
+  }
+};
+
+// Start the server
+startServer();

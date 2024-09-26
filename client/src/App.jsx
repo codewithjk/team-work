@@ -23,16 +23,42 @@ import VerifyInvitationPage from "@/pages/VerifyInvitePage";
 import ModulePage from "@/pages/ModulePage";
 import TaskPage from "@/pages/TaskPage";
 import ChatPage from "@/pages/chat/ChatPage";
+import {
+  socketConnected,
+  socketDisconnected,
+} from "./application/slice/socketSlice";
+
+import { initSocket } from "@/utils/socketClient.config";
+import MeetingPage from "@/pages/meeting/MeetingPage";
 
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const { user } = auth;
+  const socketURL = import.meta.env.VITE_SOCKET_BASE_URL;
   useEffect(() => {
     console.log("App refershed");
-    console.log("dispatch callled");
     dispatch(checkAuth());
   }, []);
+
+  useEffect(() => {
+    const socket = initSocket(socketURL || "http://localhost:3000");
+
+    socket.on("connect", () => {
+      console.log("socket connected ");
+
+      dispatch(socketConnected());
+    });
+
+    socket.on("disconnect", () => {
+      dispatch(socketDisconnected());
+    });
+
+    // Clean up when component unmounts
+    return () => {
+      socket.disconnect();
+    };
+  }, [dispatch]);
 
   return (
     <div className=" bg-white">
@@ -160,6 +186,15 @@ function App() {
               }
             />
 
+            {/* meeting routes */}
+            <Route
+              path="/meetings"
+              element={
+                <ProtectedRoute>
+                  <MeetingPage />
+                </ProtectedRoute>
+              }
+            />
             {/* catch all routes */}
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Routes>

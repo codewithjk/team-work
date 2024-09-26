@@ -51,9 +51,9 @@ function Sidebar() {
     { name: "Home", icon: <LucideHome className="w-5 h-5" />, path: "/home" },
     { name: "Inbox", icon: <InboxIcon className="w-5 h-5" />, path: "/chats" },
     {
-      name: "Meeting",
+      name: "Meetings",
       icon: <Calendar className="w-5 h-5" />,
-      path: "/meeting",
+      path: "/meetings",
     },
     {
       name: "Projects",

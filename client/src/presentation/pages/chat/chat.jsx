@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-// import { Message, UserData } from "@/app/data";
+// import { Message, GroupData } from "@/app/data";
 import ChatTopbar from "./chat-topbar";
 import { ChatList } from "./chat-list";
 // import useChatStore from "@/hooks/useChatStore";
 
-const Chat = ({ messages, selectedUser, isMobile }) => {
-  const messagesState = [{}];
-
+const Chat = ({ messages, selectedGroup, isMobile }) => {
+  // const { selectedGroup } = useSelector((state) => state.chat);
   const sendMessage = (newMessage) => {
     useChatStore.setState((state) => ({
       messages: [...state.messages, newMessage],
@@ -15,10 +14,9 @@ const Chat = ({ messages, selectedUser, isMobile }) => {
 
   return (
     <div className="flex flex-col justify-between w-full h-full">
-      <ChatTopbar selectedUser={selectedUser} />
+      <ChatTopbar selectedGroup={selectedGroup} />
       <ChatList
-        messages={messagesState}
-        selectedUser={selectedUser}
+        selectedGroup={selectedGroup}
         sendMessage={sendMessage}
         isMobile={isMobile}
       />

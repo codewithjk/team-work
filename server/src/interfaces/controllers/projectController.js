@@ -27,7 +27,6 @@ class ProjectController {
         ...req.body,
         ownerId,
       });
-      console.log(newProject);
       res.status(200).json({ message: "successful", project: newProject });
     } catch (error) {
       console.log("Error from controller : ", error.message);
@@ -97,19 +96,11 @@ class ProjectController {
         projectId,
         role,
       });
-      console.log(newMember);
-
       res.status(200).json({ message: "invitation sent successfully" });
     } catch (error) {
-      console.log(error);
-
-      if (error.code === 11000) {
-        res.status(403).json({ message: "email is used by other member" });
-      } else {
-        res
-          .status(500)
-          .json({ error: "Failed to send invitation", message: error.message });
-      }
+      res
+        .status(500)
+        .json({ error: "Failed to send invitation", message: error.message });
     }
   }
   async verifyMember(req, res) {
@@ -120,10 +111,8 @@ class ProjectController {
         token,
         userId,
       });
-      console.log(verifiedMember);
       res.status(200).json({ message: " successfully verified" });
     } catch (error) {
-      console.log(error);
       res
         .status(500)
         .json({ error: "Failed to verify", message: error.message });
