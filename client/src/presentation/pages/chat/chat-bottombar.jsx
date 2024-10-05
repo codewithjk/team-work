@@ -46,6 +46,7 @@ export default function ChatBottombar({ isMobile, selectedGroup }) {
 
   const handleThumbsUp = () => {
     const newMessage = {
+      senderName: profileData.name,
       senderId: profileData._id,
       name: profileData.name,
       avatar: profileData.avatar,
@@ -62,6 +63,7 @@ export default function ChatBottombar({ isMobile, selectedGroup }) {
   const handleSend = () => {
     if (message.trim()) {
       const newMessage = {
+        senderName: profileData.name,
         senderId: profileData._id,
         name: profileData.name,
         avatar: profileData.avatar,

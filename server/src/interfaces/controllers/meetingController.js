@@ -6,11 +6,18 @@ const {
   DeleteMeeting,
 } = require("../../application/use-cases/meeting-use-cases");
 const {
+  CreateNotification,
+} = require("../../application/use-cases/notification-use-cases");
+const NotifyUser = require("../../application/use-cases/notification-use-cases/NotifyUser");
+const {
   ListAllProject,
+  ListAllMembers,
 } = require("../../application/use-cases/project-use-cases");
 
 const MeetingRepositoryImpl = require("../../infrastructure/database/repositories/meetingRepositoryImpl");
+const NotificationRepositoryImpl = require("../../infrastructure/database/repositories/notificationRepositoryImpl");
 const ProjectRepositoryImpl = require("../../infrastructure/database/repositories/projectRepositoryImpl");
+const UserNotificationRepositoryImpl = require("../../infrastructure/database/repositories/userNotificationRepositoryImpl");
 
 // projects
 const projectRepository = new ProjectRepositoryImpl();
@@ -24,11 +31,46 @@ const getMeetingUsecase = new GetMeeting(meetingRepository);
 const updateMeetingUsecase = new UpdateMeeting(meetingRepository);
 const deleteMeetingUsecase = new DeleteMeeting(meetingRepository);
 
+//notification
+const notificationRepository = new NotificationRepositoryImpl();
+const createNotificationUseCase = new CreateNotification(
+  notificationRepository
+);
+
+const userNotificationRepository = new UserNotificationRepositoryImpl();
+const notifyUserUseCase = new NotifyUser(userNotificationRepository);
+
+//get members
+
+const listAllMembersUseCase = new ListAllMembers(projectRepository);
+
 class MeetingController {
   async createMeeting(req, res) {
+    const userId = req.userId;
     try {
       const newMeeting = await creatMeetingUseCase.execute(req.body);
       console.log(newMeeting);
+      const notification = {
+        type: "meetingCreated",
+        title: `a new meeting created`,
+        message: newMeeting.name,
+      };
+      const newNotification = await createNotificationUseCase.execute(
+        notification
+      );
+      const allMembers = await listAllMembersUseCase.execute({
+        projectId: newMeeting.projectId,
+      });
+      console.log("members = ", allMembers);
+      console.log("sender = ", userId);
+      const memberIds = allMembers
+        .filter(
+          (member) => member.user._id != userId // TODO: consider the sending user
+        )
+        .map((member) => member.user._id);
+
+      await notifyUserUseCase.execute(memberIds, newNotification._id);
+
       res.status(200).json({ message: "successful", meeting: newMeeting });
     } catch (error) {
       console.log("Error from controller : ", error.message);

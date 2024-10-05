@@ -28,8 +28,11 @@ import {
   socketDisconnected,
 } from "./application/slice/socketSlice";
 
-import { initSocket } from "@/utils/socketClient.config";
+import { getSocket, initSocket } from "@/utils/socketClient.config";
 import MeetingPage from "@/pages/meeting/MeetingPage";
+import NotificationPage from "@/pages/notification/NotificationPage";
+import { toast } from "sonner";
+import { Toaster } from "sonner";
 
 function App() {
   const dispatch = useDispatch();
@@ -41,11 +44,16 @@ function App() {
     dispatch(checkAuth());
   }, []);
 
+  const handleNotification = (notification) => {
+    toast.info(notification.title);
+  };
+
   useEffect(() => {
-    const socket = initSocket(socketURL || "http://localhost:3000");
+    const userId = user?.id;
+    const socket = initSocket(userId, socketURL || "http://localhost:3000");
 
     socket.on("connect", () => {
-      console.log("socket connected ");
+      console.log("socket connected ", socket);
 
       dispatch(socketConnected());
     });
@@ -54,15 +62,21 @@ function App() {
       dispatch(socketDisconnected());
     });
 
+    socket.on("receiveNotification", (data) => {
+      handleNotification(data);
+      console.log("++++++++++++notification from app ++++++++++++", data);
+    });
+
     // Clean up when component unmounts
     return () => {
       socket.disconnect();
     };
-  }, [dispatch]);
+  }, [dispatch, auth]);
 
   return (
     <div className=" bg-white">
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <Toaster />
         <Router>
           <Routes>
             <Route
@@ -192,6 +206,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MeetingPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* notification routes */}
+            <Route
+              path="/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationPage />
                 </ProtectedRoute>
               }
             />

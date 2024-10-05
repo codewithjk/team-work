@@ -10,6 +10,7 @@ const moduleRouter = require("./interfaces/routes/moduleRouter");
 const taskRouter = require("./interfaces/routes/taskRouter");
 const chatRouter = require("./interfaces/routes/chatRouter");
 const meetingRouter = require("./interfaces/routes/meetingRouter");
+const notificationRouter = require("./interfaces/routes/notificationRouter");
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/v1/module", moduleRouter);
 app.use("/api/v1/task", taskRouter);
 app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/meeting", meetingRouter);
+app.use("/api/v1/notification", notificationRouter);
 
 app.use(errorHandlerMiddleware);
 module.exports = app;

@@ -4,6 +4,7 @@ import { Navigate } from "react-router-dom";
 import { getProfile } from "../../application/actions/profileActions";
 import { Skeleton } from "@/components/ui/skeleton";
 import PrivatePageLayout from "@/layouts/PrivatePageLayout";
+import { getSocket } from "@/utils/socketClient.config";
 
 const ProtectedRoute = ({ children }) => {
   const dispatch = useDispatch();

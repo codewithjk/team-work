@@ -103,9 +103,9 @@ class MessageRepositoryImpl {
       const messages = await messageModel
         .find({
           groupId,
-          timestamp: { $lt: new Date(timestamp) }, // Fetch messages older than the provided timestamp
+          timestamp: { $lt: new Date(timestamp) },
         })
-        .sort({ timestamp: -1 }) // Sort messages in descending order (newer to older)
+        .sort({ timestamp: -1 })
         .limit(parseInt(limit));
 
       return messages.reverse();

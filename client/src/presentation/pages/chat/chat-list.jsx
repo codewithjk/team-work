@@ -95,6 +95,7 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
 
   useEffect(() => {
     const socket = getSocket();
+    console.log(socket);
 
     socket.emit("joinProjectGroup", { groupId, userId });
 
@@ -103,6 +104,10 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
     };
 
     socket.on("receiveMessage", handleReceiveMessage);
+    socket.on("receiveNotification", (data) => {
+      // handleNotificaiton(data);
+      console.log("++++++++++++notification from chat list++++++++++++", data);
+    });
 
     return () => {
       socket.off("receiveMessage", handleReceiveMessage);
@@ -152,6 +157,10 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
                     variant={variant}
                     isLoading={message.isLoading}
                   >
+                    {profileData._id !== message.senderId && (
+                      <p className=" text-sm"> ~ {message.senderName}</p>
+                    )}
+
                     {message.content}
                     {message.timestamp && (
                       <ChatBubbleTimestamp timestamp={message.timestamp} />

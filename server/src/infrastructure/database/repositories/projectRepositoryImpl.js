@@ -109,6 +109,8 @@ class ProjectRepositoryImpl extends ProjectRepository {
     }
   }
   async getMembersByProjectId(projectId) {
+    console.log("from repo === ", projectId);
+
     try {
       const members = await membersModel.aggregate([
         { $match: { projectId: new mongoose.Types.ObjectId(projectId) } },
@@ -129,6 +131,7 @@ class ProjectRepositoryImpl extends ProjectRepository {
             status: 1,
             role: 1,
             user: {
+              _id: "$userDetails._id",
               name: "$userDetails.name",
               email: "$userDetails.email",
               avatar: "$userDetails.avatar",
@@ -136,6 +139,7 @@ class ProjectRepositoryImpl extends ProjectRepository {
           },
         },
       ]);
+      console.log(members);
 
       return members;
     } catch (error) {

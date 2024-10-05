@@ -5,6 +5,9 @@ module.exports = (httpServer) => {
   const io = socketIO(httpServer);
 
   io.on("connection", (socket) => {
+    const userId = socket.handshake.query.userId;
+    console.log("socket id ====", userId);
+
     socket.on("joinProjectGroup", ({ groupId, userId }) => {
       console.log("room  == ", groupId, userId);
 

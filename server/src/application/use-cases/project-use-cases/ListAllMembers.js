@@ -3,9 +3,8 @@ class ListAllMembers {
     this.projectRepository = projectRepository;
   }
 
+  // TODO : correct this argument .
   async execute({ projectId }) {
-    console.log(projectId);
-
     return this.projectRepository.getMembersByProjectId(projectId);
   }
 }
