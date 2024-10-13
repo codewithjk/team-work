@@ -11,6 +11,7 @@ const MessageRepositoryImpl = require("../../infrastructure/database/repositorie
 const NotificationRepositoryImpl = require("../../infrastructure/database/repositories/notificationRepositoryImpl");
 const ProjectRepositoryImpl = require("../../infrastructure/database/repositories/projectRepositoryImpl");
 const UserNotificationRepositoryImpl = require("../../infrastructure/database/repositories/userNotificationRepositoryImpl");
+const { SocketMap } = require("../../shared/constants/constants");
 
 //message
 const messageRepository = new MessageRepositoryImpl();
@@ -41,11 +42,25 @@ const chatSoketHandler = (io, socket) => {
       };
 
       const newMessage = await createMessageUseCase.execute(messageData);
-      const notification = {
-        type: "messageReceived",
-        title: `${message.senderName} sent a message`,
-        message: newMessage.content,
-      };
+      // const notification = {
+      //   type: "messageReceived",
+      //   title: `${message.senderName} sent a message`,
+      //   message: newMessage.content,
+      // };
+      let notification = {};
+      if (newMessage.attachmentUrl) {
+        notification = {
+          type: "messageReceived",
+          title: `${message.senderName} sent a file`,
+          previewUrl: newMessage.attachmentUrl,
+        };
+      } else {
+        notification = {
+          type: "messageReceived",
+          title: `${message.senderName} sent a message`,
+          message: newMessage.content,
+        };
+      }
       const newNotification = await createNotificationUseCase.execute(
         notification
       );
@@ -66,17 +81,17 @@ const chatSoketHandler = (io, socket) => {
       console.log(memberIds);
 
       memberIds.forEach((memberId) => {
-        const socketId = memberId.toString();
-        if (socketId) {
+        const mId = memberId.toString();
+        const socketId = SocketMap.get(mId);
+
+        if (socketId && socketId !== undefined) {
           console.log("loop ==", socketId);
 
-          // io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
-          // io.to(groupId).emit("receiveNotification", notification); // Send notification via socket
+          io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
         }
       });
-      // io.to(groupId).emit("receiveNotification", notification);
+
       io.to(groupId).emit("receiveMessage", newMessage);
-      socket.emit("receiveNotification", notification);
     } catch (error) {
       console.log("group message error = >", error);
 
@@ -87,7 +102,6 @@ const chatSoketHandler = (io, socket) => {
 
 const getAllChats = async (req, res) => {
   try {
-    console.log(req.query);
     const { groupId, timestamp } = req.query;
     const messages = await listAllMessageUseCase.execute({
       groupId,

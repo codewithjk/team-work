@@ -25,6 +25,8 @@ import notificationApi from "../../../infrastructure/api/notificationApi";
 import projectApi from "../../../infrastructure/api/projectApi";
 import { Video } from "lucide-react";
 import { MessageCircleIcon } from "lucide-react";
+import { clearNotification } from "../../../application/slice/notificationSlice";
+import { useDispatch } from "react-redux";
 
 const NotificationPage = () => {
   // const { projectId } = useParams();
@@ -36,8 +38,9 @@ const NotificationPage = () => {
   const handleClosePopover = () => setPopoverOpen(false);
   const [projects, setProjects] = useState([]);
   const [selectedProjectName, setSelectedProjectName] = useState(null);
-
+  const dispatch = useDispatch();
   useEffect(() => {
+    dispatch(clearNotification());
     const fetchProjects = async () => {
       try {
         const response = await projectApi.getAllProjects();
@@ -186,7 +189,7 @@ const NotificationPage = () => {
         />
       </div>
 
-      <Toaster />
+      {/* <Toaster /> */}
     </div>
   );
 };

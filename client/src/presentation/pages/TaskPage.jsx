@@ -11,9 +11,15 @@ import KanbanBoard from "@/components/kanban/KanbanBoard";
 import { useDispatch } from "react-redux";
 import { getTasks } from "../../application/actions/taskActions";
 import { useSelector } from "react-redux";
+import { getSocket } from "@/utils/socketClient.config";
 
 const TaskPage = () => {
   console.log(" task page rendered");
+
+  // useEffect(() => {
+  //   const socket = getSocket();
+  //   socket.on("");
+  // });
 
   const dispatch = useDispatch();
 

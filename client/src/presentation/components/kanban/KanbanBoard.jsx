@@ -13,32 +13,26 @@ import KanbanColumn from "./KanbanColumn";
 import { useSelector } from "react-redux";
 import { updateTask } from "../../../application/actions/taskActions";
 import { useDispatch } from "react-redux";
-
-// const socket = io("http://localhost:5000");
+import { getSocket } from "@/utils/socketClient.config";
+import { useParams } from "react-router-dom";
 
 const KanbanBoard = ({ isOwner }) => {
   const { tasks } = useSelector((state) => state.task);
+  const { projectId } = useParams();
   const dispatch = useDispatch();
 
-  // const [tasks, setTasks] = useState(initialTasks);
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } })
   );
 
-  // useEffect(() => {
-  //   // Listen for real-time task updates
-  //   socket.on("taskUpdated", (updatedTask) => {
-  //     setTasks((prevTasks) =>
-  //       prevTasks.map((task) =>
-  //         task._id === updatedTask._id ? updatedTask : task
-  //       )
-  //     );
-  //   });
-
-  //   return () => {
-  //     socket.off("taskUpdated");
-  //   };
-  // }, []);
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on("receiveUpdatedTask", (state) => {
+        console.log("receives the state ===== ", state);
+      });
+    }
+  });
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
@@ -49,32 +43,8 @@ const KanbanBoard = ({ isOwner }) => {
     const taskId = active.id;
     const state = over.id;
     dispatch(updateTask(taskId, { state }));
-
-    // const activeTask = tasks.find((task) => task._id === active.id);
-    // const overColumn = over.data.current?.state;
-
-    // if (overColumn && activeTask.state !== overColumn) {
-    //   const updatedTask = { ...activeTask, state: overColumn };
-
-    //   // Update task state locally
-    //   setTasks((prevTasks) =>
-    //     prevTasks.map((task) =>
-    //       task._id === activeTask._id ? updatedTask : task
-    //     )
-    //   );
-
-    //   try {
-    //     // Update task state on the backend
-    //     await axios.put(`/api/tasks/${activeTask._id}/state`, {
-    //       state: overColumn,
-    //     });
-
-    //     // Emit the real-time update to other clients
-    //     socket.emit("taskUpdated", updatedTask);
-    //   } catch (error) {
-    //     console.error("Failed to update task state", error);
-    //   }
-    // }
+    const socket = getSocket();
+    socket.emit("updateTask", { projectId, taskId, state });
   };
 
   const states = [

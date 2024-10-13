@@ -13,12 +13,12 @@ const notificationSchema = new mongoose.Schema({
   },
   message: {
     type: String,
-    required: true,
   },
   link: {
     type: String,
     required: false,
   },
+  previewUrl: String,
   createdAt: {
     type: Date,
     default: Date.now,

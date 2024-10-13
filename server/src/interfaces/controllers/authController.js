@@ -12,7 +12,6 @@ class AuthController {
       const { _id, name, email, isVerified, verificationTokenExpiresAt } =
         user.data;
       if (user.token) {
-        console.log("this  user has token ");
         res.cookie("access_token", user.token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
@@ -25,14 +24,13 @@ class AuthController {
         .status(201)
         .json({ id: _id, name, email, isVerified, verificationTokenExpiresAt });
     } catch (error) {
-      console.log("erorr: ", error);
       res.status(400).json({ error: error.message });
     }
   }
   async login(req, res) {
     try {
       const user = await loginUser.execute(req.body);
-      console.log("controller log ", user);
+
       res.cookie("access_token", user.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -52,9 +50,9 @@ class AuthController {
   async verify(req, res) {
     try {
       const { code } = req.body;
-      console.log(code);
+
       const user = await verifyUser.execute(code);
-      console.log(user);
+
       res.cookie("access_token", user.token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
@@ -87,7 +85,7 @@ class AuthController {
     try {
       const { password } = req.body;
       const { token } = req.params;
-      console.log(token);
+
       await updatePassword.execute(password, token);
       res.status(200).json({
         success: true,

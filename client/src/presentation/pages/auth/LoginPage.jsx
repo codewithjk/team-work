@@ -167,7 +167,7 @@ const LoginPage = () => {
           </div>
         </div>
       </section>
-      <Toaster />
+      {/* <Toaster /> */}
     </div>
   );
 };

@@ -14,7 +14,6 @@ const MessageSchema = new mongoose.Schema({
   senderName: String,
   content: {
     type: String,
-    required: true,
   },
   messageType: {
     type: String,
@@ -24,6 +23,7 @@ const MessageSchema = new mongoose.Schema({
   attachmentUrl: {
     type: String,
   },
+  downloadLink: String,
   timestamp: {
     type: Date,
     default: Date.now,

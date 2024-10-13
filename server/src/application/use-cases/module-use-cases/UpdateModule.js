@@ -4,7 +4,6 @@ class UpdateModule {
   }
 
   async execute(id, module) {
-    console.log(id, module);
     return this.moduleRepository.update(id, module);
   }
 }

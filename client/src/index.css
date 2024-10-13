@@ -67,3 +67,50 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Add this to your global CSS file or a relevant CSS module */
+@keyframes wavy-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.7), 0 0 15px rgba(255, 0, 0, 0.7);
+  }
+  25% {
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.7), 0 0 15px rgba(0, 255, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 5px rgba(0, 0, 255, 0.7), 0 0 15px rgba(0, 0, 255, 0.7);
+  }
+  75% {
+    box-shadow: 0 0 5px rgba(255, 255, 0, 0.7), 0 0 15px rgba(255, 255, 0, 0.7);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(255, 0, 255, 0.7), 0 0 15px rgba(255, 0, 255, 0.7);
+  }
+}
+
+.glowing-border {
+  position: relative;
+  border: 2px solid transparent; /* Adjust border size if necessary */
+  transition: border-color 0.3s ease-in-out;
+}
+
+.glowing-border:hover {
+  animation: wavy-glow 1.5s infinite alternate;
+}
+
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 3px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

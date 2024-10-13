@@ -81,8 +81,6 @@ class TaskRepositoryImpl {
   }
   async findAll(queries) {
     try {
-      console.log("queries : ", queries);
-
       const { search, filter, page, limit, projectId } = queries;
       const query = { projectId };
 

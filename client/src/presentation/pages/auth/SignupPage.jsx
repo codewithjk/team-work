@@ -209,7 +209,7 @@ function SignupPage() {
           </Button>
         </div>
       </section>
-      <Toaster />
+      {/* <Toaster /> */}
     </div>
   );
 }

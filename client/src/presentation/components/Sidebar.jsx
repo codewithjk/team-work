@@ -18,6 +18,8 @@ import { useSelector } from "react-redux";
 
 import { useEffect } from "react";
 import projectApi from "../../infrastructure/api/projectApi";
+import { Badge } from "./ui/badge";
+import { getSocket } from "@/utils/socketClient.config";
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +49,17 @@ function Sidebar() {
     fetchProjects();
   }, []);
 
+  //function to join the project group
+  const handleSelectTask = (project) => {
+    const userId = profileData._id;
+    console.log("this is when the task is selected == ", project);
+    const socket = getSocket();
+    socket.emit("joinProjectTask", { projectId: project._id, userId });
+  };
+
+  const { unread } = useSelector((state) => state.notification);
+  console.log(unread);
+
   const menuItems = [
     { name: "Home", icon: <LucideHome className="w-5 h-5" />, path: "/home" },
     { name: "Inbox", icon: <InboxIcon className="w-5 h-5" />, path: "/chats" },
@@ -64,6 +77,7 @@ function Sidebar() {
       name: "Notifications",
       icon: <Bell className="w-5 h-5" />,
       path: "/notifications",
+      //todo : add iconbutton from radis ui
     },
   ];
 
@@ -131,7 +145,7 @@ function Sidebar() {
               key={item.name}
               to={item.path}
               className={cn(
-                "flex items-center p-2 rounded-md hover:bg-muted transition-colors",
+                "flex items-center p-2 rounded-md hover:bg-muted transition-colors gap-2",
                 {
                   "bg-muted": location.pathname === item.path,
                 }
@@ -140,6 +154,9 @@ function Sidebar() {
             >
               <span className="mr-3">{item.icon}</span>
               <span>{item.name}</span>
+              {item.name == "Notifications" && unread.length > 0 && (
+                <Badge>{unread.length}</Badge>
+              )}
             </Link>
           ))}
 
@@ -181,6 +198,7 @@ function Sidebar() {
                     {openProjectDropdowns[project._id] && (
                       <div className="ml-4 space-y-2">
                         <Link
+                          onClick={() => handleSelectTask(project)}
                           to={`/projects/${project._id}/tasks`}
                           className="block p-2 text-sm rounded-md hover:bg-muted"
                         >

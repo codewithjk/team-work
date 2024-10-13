@@ -19,6 +19,16 @@ import { Textarea } from "@/components/ui/textarea";
 import ConfirmationPopover from "@/components/ui/conformationPopover";
 import ImageSelectorPopover from "@/components/ui/image-selector-popover";
 import AddMemberPopover from "@/components/ui/addMemberPopover";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 // Zod schema for form validation
 const projectSchema = z.object({
@@ -39,6 +49,7 @@ function ProjectSettingsPage() {
   const [coverImage, setCoverPhoto] = useState("");
   const [activeSection, setActiveSection] = useState("general");
   const [isPopoverOpen, setPopoverOpen] = useState(false);
+  const [members, setMembers] = useState([]);
 
   // Initialize form with react-hook-form
   const form = useForm({
@@ -73,6 +84,11 @@ function ProjectSettingsPage() {
       }
     }
     fetchProject(projectId);
+    async function getMembers() {
+      const response = await projectApi.getMembers(projectId);
+      setMembers(response.data.members);
+    }
+    getMembers();
   }, [projectId, reset]);
 
   const handleOpenPopover = () => setPopoverOpen(true);
@@ -211,7 +227,9 @@ function ProjectSettingsPage() {
                 />
 
                 <div className="flex justify-end space-x-4">
-                  <Button type="submit">Update Project</Button>
+                  <Button variant="glowing" type="submit">
+                    Update Project
+                  </Button>
                 </div>
               </form>
             </Form>
@@ -224,13 +242,49 @@ function ProjectSettingsPage() {
               <h3 className="text-lg font-medium">Project Members</h3>
               <Button onClick={handleOpenPopover}>Add member</Button>
             </div>
+            <div>
+              <Table>
+                <TableCaption>A list of your recent invoices.</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[100px]">Member</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Method</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {members.map((member) => (
+                    <TableRow>
+                      <TableCell className="font-medium flex gap-2 items-center flex-grow">
+                        <Avatar className="cursor-pointer overflow-hidden">
+                          <AvatarImage
+                            src={member.user.avatar}
+                            className="object-cover w-full h-full"
+                          />
+                          <AvatarFallback className=" font-extrabold text-2xl">
+                            {member.user.name[0].toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        {member.user.name}
+                      </TableCell>
+                      <TableCell>{member.status}</TableCell>
+                      <TableCell>{member.role}</TableCell>
+                      <TableCell className="text-right">
+                        {member.user.email}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
         )}
 
         {/* Actions */}
         {activeSection === "general" && (
           <div className="mt-12 space-y-4">
-            <Button variant="danger" onClick={handleOpenPopover}>
+            <Button variant="destructive" onClick={handleOpenPopover}>
               Delete project
             </Button>
             <ConfirmationPopover

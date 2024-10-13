@@ -33,52 +33,71 @@ import MeetingPage from "@/pages/meeting/MeetingPage";
 import NotificationPage from "@/pages/notification/NotificationPage";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
+import { setNotification } from "./application/slice/notificationSlice";
+import LandingPage from "@/pages/LandingPage";
+import { useState } from "react";
 
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const { user } = auth;
-  const socketURL = import.meta.env.VITE_SOCKET_BASE_URL;
+  const [socket, setSocket] = useState(null);
+  const socketURL =
+    import.meta.env.VITE_SOCKET_BASE_URL || "http://localhost:3000";
+
   useEffect(() => {
-    console.log("App refershed");
+    console.log("App refreshed");
     dispatch(checkAuth());
-  }, []);
+  }, [dispatch]);
 
   const handleNotification = (notification) => {
     toast.info(notification.title);
+    dispatch(setNotification(notification));
   };
 
   useEffect(() => {
-    const userId = user?.id;
-    const socket = initSocket(userId, socketURL || "http://localhost:3000");
+    if (user?.id && !socket) {
+      const newSocket = initSocket(user.id, socketURL);
 
-    socket.on("connect", () => {
-      console.log("socket connected ", socket);
+      newSocket.on("connect", () => {
+        console.log("Socket connected ", newSocket);
+        dispatch(socketConnected());
+      });
 
-      dispatch(socketConnected());
-    });
+      newSocket.on("disconnect", () => {
+        dispatch(socketDisconnected());
+      });
 
-    socket.on("disconnect", () => {
-      dispatch(socketDisconnected());
-    });
+      newSocket.on("receiveNotification", (data) => {
+        handleNotification(data);
+      });
 
-    socket.on("receiveNotification", (data) => {
-      handleNotification(data);
-      console.log("++++++++++++notification from app ++++++++++++", data);
-    });
+      setSocket(newSocket);
+    }
 
-    // Clean up when component unmounts
+    // Clean up when component unmounts or user changes
     return () => {
-      socket.disconnect();
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
     };
-  }, [dispatch, auth]);
-
+  }, [user, dispatch, socketURL]);
   return (
     <div className=" bg-white">
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <Toaster />
+        <Toaster richColors position="top-right" />
         <Router>
           <Routes>
+            <Route
+              path="/"
+              element={
+                <RedirectAuthenticatedUser>
+                  <LandingPage />
+                </RedirectAuthenticatedUser>
+              }
+            />
+
             <Route
               path="/home"
               element={
