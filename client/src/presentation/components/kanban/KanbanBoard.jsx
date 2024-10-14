@@ -15,6 +15,8 @@ import { updateTask } from "../../../application/actions/taskActions";
 import { useDispatch } from "react-redux";
 import { getSocket } from "@/utils/socketClient.config";
 import { useParams } from "react-router-dom";
+import { updateTasksSuccess } from "../../../application/slice/taskSlice";
+import { toast } from "sonner";
 
 const KanbanBoard = ({ isOwner }) => {
   const { tasks } = useSelector((state) => state.task);
@@ -27,24 +29,30 @@ const KanbanBoard = ({ isOwner }) => {
 
   useEffect(() => {
     const socket = getSocket();
+    console.log(socket);
     if (socket) {
-      socket.on("receiveUpdatedTask", (state) => {
-        console.log("receives the state ===== ", state);
+      socket.on("receiveUpdatedTask", (updatedTask) => {
+        console.log("receives the updatedTask ===== ", updatedTask);
+        dispatch(updateTasksSuccess(updatedTask));
       });
     }
   });
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
-    console.log(event);
 
     if (!over) return;
 
     const taskId = active.id;
     const state = over.id;
-    dispatch(updateTask(taskId, { state }));
+    // dispatch(updateTask(taskId, { state }));
     const socket = getSocket();
-    socket.emit("updateTask", { projectId, taskId, state });
+    console.log(socket);
+    if (socket.connected) {
+      socket.emit("updateTask", { projectId, taskId, state });
+    } else {
+      toast.error("unable to change state ");
+    }
   };
 
   const states = [

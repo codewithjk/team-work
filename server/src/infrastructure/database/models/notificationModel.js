@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const notificationSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ["taskAssigned", "messageReceived", "meetingCreated"],
+    enum: ["taskAssigned", "messageReceived", "meetingCreated", "taskUpdated"],
     required: true,
   },
   title: {

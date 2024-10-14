@@ -16,11 +16,6 @@ import { getSocket } from "@/utils/socketClient.config";
 const TaskPage = () => {
   console.log(" task page rendered");
 
-  // useEffect(() => {
-  //   const socket = getSocket();
-  //   socket.on("");
-  // });
-
   const dispatch = useDispatch();
 
   const { projectId } = useParams();
@@ -112,8 +107,6 @@ const TaskPage = () => {
           initialData={{}}
         />
       )}
-
-      <Toaster richColors />
     </div>
   );
 };

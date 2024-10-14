@@ -27,8 +27,8 @@ export const updateTask = (taskId, data) => async (dispatch) => {
   try {
     dispatch(updateTasksRequest());
     const task = await TaskService.updateTask(taskId, data);
-
-    dispatch(updateTasksSuccess(task));
+    const { updatedTask } = task;
+    dispatch(updateTasksSuccess(updatedTask));
   } catch (error) {
     console.error("task update failed", error);
     dispatch(updateTasksFail(error?.response?.data?.error || error.message));

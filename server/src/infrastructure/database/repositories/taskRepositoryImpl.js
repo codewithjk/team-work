@@ -72,8 +72,10 @@ class TaskRepositoryImpl {
     const newTask = new taskModel(task);
     return await newTask.save();
   }
-  async update(id, task) {
-    return await taskModel.findByIdAndUpdate(id, task, { new: true });
+  async update(taskId, task) {
+    console.log(taskId, task);
+    // const id = new mongoose.Types.ObjectId(taskId);
+    return await taskModel.findByIdAndUpdate(taskId, task, { new: true });
   }
 
   async delete(id) {

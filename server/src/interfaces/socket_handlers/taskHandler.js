@@ -13,6 +13,7 @@ const NotificationRepositoryImpl = require("../../infrastructure/database/reposi
 const ProjectRepositoryImpl = require("../../infrastructure/database/repositories/projectRepositoryImpl");
 const UserNotificationRepositoryImpl = require("../../infrastructure/database/repositories/userNotificationRepositoryImpl");
 const { SocketMap } = require("../../shared/constants/constants");
+const getProfile = require("../../application/use-cases/getProfile");
 
 // task
 const taskRepository = new TaskRepositoryImpl();
@@ -94,53 +95,53 @@ const taskSocketHandler = (io, socket) => {
   socket.on("updateTask", async ({ projectId, taskId, state }) => {
     try {
       console.log(`Task ${taskId} updated in project ${projectId} < ${state}`);
-      //   const taskData = {
-      //     ...updatedTask,
-      //     timestamp: new Date(),
-      //   };
+      const userId = socket.handshake.query.userId;
 
-      //   const updatedTaskData = await updateTaskUseCase.execute({
-      //     taskId,
-      //     taskData,
-      //   });
+      const updatedTaskData = await updateTaskUseCase.execute(taskId, {
+        state,
+      });
+      const updater = await getProfile.execute(userId);
 
-      //   let notification = {
-      //     type: "taskUpdated",
-      //     title: `${updatedTask.updaterName} updated a task`,
-      //     message: updatedTaskData.title,
-      //   };
+      console.log("updated task =>", updatedTaskData);
 
-      //   const newNotification = await createNotificationUseCase.execute(
-      //     notification
-      //   );
+      let notification = {
+        type: "taskUpdated",
+        title: `${updater.name} updated a task`,
+        message: `task state is changed to ${updatedTaskData.state}`,
+      };
+      console.log(notification);
 
-      //   const allMembers = await listAllMembersUseCase.execute({
-      //     projectId,
-      //   });
+      const newNotification = await createNotificationUseCase.execute(
+        notification
+      );
 
-      //   const memberIds = allMembers
-      //     .filter(
-      //       (member) => member.user._id != updatedTask.updaterId // Exclude the user who updated the task
-      //     )
-      //     .map((member) => member.user._id);
+      const allMembers = await listAllMembersUseCase.execute({
+        projectId,
+      });
 
-      //   await notifyUserUseCase.execute(memberIds, newNotification._id);
+      const memberIds = allMembers
+        .filter(
+          (member) => member.user._id != updater._id // Exclude the user who updated the task
+        )
+        .map((member) => member.user._id);
 
-      //   // Notify connected members
-      //   console.log(memberIds);
+      await notifyUserUseCase.execute(memberIds, newNotification._id);
 
-      //   memberIds.forEach((memberId) => {
-      //     const mId = memberId.toString();
-      //     const socketId = SocketMap.get(mId);
+      // Notify connected members
+      console.log(memberIds, updater);
 
-      //     if (socketId && socketId !== undefined) {
-      //       console.log("loop ==", socketId);
+      memberIds.forEach((memberId) => {
+        const mId = memberId.toString();
+        const socketId = SocketMap.get(mId);
 
-      //       io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
-      //     }
-      //   });
+        if (socketId && socketId !== undefined) {
+          console.log("loop ==", socketId);
 
-      io.to(projectId).emit("receiveUpdatedTask", { state });
+          io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
+        }
+      });
+
+      io.to(projectId).emit("receiveUpdatedTask", updatedTaskData);
     } catch (error) {
       console.log("task update error = >", error);
 

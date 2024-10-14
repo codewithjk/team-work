@@ -110,7 +110,6 @@ const KanbanCard = ({ task, isOwner }) => {
     dispatch(setCurrentTask(null));
     handleClosePopover();
   };
-  console.log(isOwner);
 
   return (
     <div
@@ -169,8 +168,6 @@ const KanbanCard = ({ task, isOwner }) => {
         onCancel={handleCancelDelete}
         onConfirm={handleConfirm}
       />
-
-      <Toaster richColors />
     </div>
   );
 };

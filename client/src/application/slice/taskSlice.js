@@ -26,8 +26,9 @@ const taskSlice = createSlice({
       state.taskLoading = true;
     },
     updateTasksSuccess: (state, action) => {
+      console.log("state updated : ", action.payload);
       state.taskLoading = false;
-      const updatedTask = action.payload.updatedTask;
+      const updatedTask = action.payload;
       const index = state.tasks.findIndex(
         (task) => task._id === updatedTask._id
       );
