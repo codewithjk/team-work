@@ -4,6 +4,9 @@ class AuthService {
   async authenticateUser(email, password) {
     const response = await authApi.login(email, password);
     if (response.status === 200) {
+      const {accessToken }= response.data
+      console.log(accessToken,response.data)
+      localStorage.setItem("accessToken", accessToken);
       return response.data;
     }
     throw new Error("Authentication failed");
@@ -48,9 +51,10 @@ class AuthService {
   }
   async logout() {
     const response = await authApi.logout();
-    console.log(response);
-
     if (response.status === 200) {
+      console.log("log out successful")
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       return response.data;
     }
     throw new Error("failed to logout");

@@ -41,6 +41,6 @@ app.use("/api/v1/task", taskRouter);
 app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/meeting", meetingRouter);
 app.use("/api/v1/notification", notificationRouter);
-app.use("/api/v1/upload", upload.single("file"), fileUploadRouter);
+app.use("/api/v1/upload", fileUploadRouter);
 app.use(errorHandlerMiddleware);
 module.exports = app;

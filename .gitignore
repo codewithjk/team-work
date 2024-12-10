@@ -129,3 +129,7 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+#firebase secrete key
+team-work-20ec3-firebase-adminsdk-4jk45-09016eba05.json
+

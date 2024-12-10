@@ -24,11 +24,12 @@ import ConfirmationPopover from "@/components/ui/conformationPopover";
 import meetingApi from "../../../infrastructure/api/meetingApi";
 import projectApi from "../../../infrastructure/api/projectApi";
 import { Video } from "lucide-react";
+import MeetingScreen from "./MeetingScreen";
 
 // Zod schema for form validation
 const meetingSchema = z.object({
   name: z.string().min(1, "Title is required"),
-  meetingUrl: z.string().min(1, "link is required"),
+  subject: z.string().min(1, "link is required"),
   projectId: z.string().min(1, "link is required"),
 });
 
@@ -43,6 +44,8 @@ const MeetingPage = () => {
   const handleClosePopover = () => setPopoverOpen(false);
   const [projects, setProjects] = useState([]);
   const [selectedProjectName, setSelectedProjectName] = useState(null);
+
+  const [roomId, setRoomId] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -168,13 +171,11 @@ const MeetingPage = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
-              <a
-                href={meeting.meetingUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button>Join now</Button>
-              </a>
+              
+
+              <Button onClick={() => setRoomId(meeting.roomId)}>
+                Join now
+              </Button>
 
               <DropdownMenu>
                 <DropdownMenuTrigger>
@@ -224,14 +225,14 @@ const MeetingPage = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="meetingUrl">Meeting url</Label>
+                  <Label htmlFor="subject">Meeting subject</Label>
                   <Input
-                    id="meetingUrl"
-                    placeholder="enter meeting url here"
-                    {...register("meetingUrl")}
+                    id="subject"
+                    placeholder="enter meeting subject here"
+                    {...register("subject")}
                   />
-                  {errors.meetingUrl && (
-                    <p className="text-red-500">{errors.meetingUrl.message}</p>
+                  {errors.subject && (
+                    <p className="text-red-500">{errors.subject.message}</p>
                   )}
                 </div>
 
@@ -279,6 +280,8 @@ const MeetingPage = () => {
           </Card>
         </div>
       )}
+
+      {roomId && <MeetingScreen setRoomId={setRoomId} roomId={roomId} />}
 
       <Toaster />
     </div>

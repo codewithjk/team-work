@@ -3,6 +3,7 @@ import { cva } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import MessageLoading from "./message-loading";
+import moment from "moment/moment";
 
 // ChatBubble
 const chatBubbleVariant = cva("flex gap-2 max-w-[60%] items-end relative", {
@@ -89,37 +90,9 @@ ChatBubbleMessage.displayName = "ChatBubbleMessage";
 
 // ChatBubbleTimestamp
 const ChatBubbleTimestamp = ({ timestamp, className, ...props }) => {
-  function convertIsoToHumanReadable(isoTime) {
-    const date = new Date(isoTime);
-    const now = new Date();
-
-    const isToday =
-      date.getFullYear() === now.getFullYear() &&
-      date.getMonth() === now.getMonth() &&
-      date.getDate() === now.getDate();
-
-    const optionsTime = {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    };
-
-    if (isToday) {
-      return date.toLocaleTimeString("en-US", optionsTime);
-    } else {
-      const optionsDate = {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      };
-      const datePart = date.toLocaleDateString("en-US", optionsDate);
-      const timePart = date.toLocaleTimeString("en-US", optionsTime);
-      return `${datePart}, ${timePart}`;
-    }
-  }
   return (
     <div className={cn("text-xs mt-2 text-right", className)} {...props}>
-      {convertIsoToHumanReadable(timestamp)}
+      {moment(timestamp).fromNow()}
     </div>
   );
 };

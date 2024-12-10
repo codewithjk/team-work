@@ -56,9 +56,9 @@ const taskSocketHandler = (io, socket) => {
         notification
       );
 
-      const allMembers = await listAllMembersUseCase.execute({
-        projectId,
-      });
+      const allMembers = await listAllMembersUseCase.execute(
+        projectId
+      );
 
       console.log("members = ", allMembers);
       console.log("creator = ", task.creatorId);
@@ -115,20 +115,20 @@ const taskSocketHandler = (io, socket) => {
         notification
       );
 
-      const allMembers = await listAllMembersUseCase.execute({
-        projectId,
-      });
+      const allMembers = await listAllMembersUseCase.execute(
+        projectId
+      );
 
       const memberIds = allMembers
         .filter(
-          (member) => member.user._id != updater._id // Exclude the user who updated the task
+          (member) => member.user._id.toString() !== updater._id.toString() // TODO: consider the sending user
         )
         .map((member) => member.user._id);
 
       await notifyUserUseCase.execute(memberIds, newNotification._id);
 
       // Notify connected members
-      console.log(memberIds, updater);
+      console.log(memberIds, updater._id, memberIds[0] == updater._id);
 
       memberIds.forEach((memberId) => {
         const mId = memberId.toString();
@@ -165,3 +165,4 @@ const getAllTasks = async (req, res) => {
 };
 
 module.exports = { getAllTasks, taskSocketHandler };
+

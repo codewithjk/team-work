@@ -16,6 +16,7 @@ import ImageSelectorPopover from "@/components/ui/image-selector-popover";
 import projectApi from "../../infrastructure/api/projectApi";
 import { SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import NoProjects from "@/components/empty-data-message/NoProjects";
 
 // Zod schema for form validation
 const projectSchema = z.object({
@@ -45,7 +46,6 @@ function ProjectPage() {
       try {
         const response = await projectApi.getAllProjects();
         const data = response.data.projects;
-        console.log(data);
         if (response.status === 200) {
           setProjects(data);
         } else {
@@ -82,10 +82,12 @@ function ProjectPage() {
     }
   };
 
-  console.log(projects);
   const handleImageSelect = (imageUrl) => {
     setCoverPhoto(imageUrl);
     setValue("coverImage", imageUrl); // Update cover photo field in the form
+  };
+  const han = () => {
+    console.log("kajlkd");
   };
 
   return (
@@ -96,32 +98,15 @@ function ProjectPage() {
       </div>
 
       {/* Project List */}
-      <div className="flex-1 overflow-scroll p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8  ">
-          {projects.map((project) => (
-            <Card key={project._id}>
-              <CardHeader>
-                <img
-                  src={project.coverImage || "default-cover.jpg"}
-                  alt="Cover"
-                  className="object-cover w-full h-32 rounded-t-lg"
-                />
-                <h3 className="text-lg font-medium mt-2">{project.name}</h3>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between">
-                  <p className="truncate overflow-hidden text-ellipsis whitespace-nowrap">
-                    {project.description}
-                  </p>
-                  <Link to={`/projects/${project._id}/settings`}>
-                    <SettingsIcon />
-                  </Link>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+
+      {projects.length > 0 ? (
+        <ProjectList projects={projects} />
+      ) : (
+        <NoProjects
+          isProjectFormOpen={isProjectFormOpen}
+          ButtonAction={() => setIsProjectFormOpen(true)}
+        />
+      )}
 
       {isProjectFormOpen && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -185,3 +170,34 @@ function ProjectPage() {
 }
 
 export default ProjectPage;
+
+const ProjectList = ({ projects }) => {
+  return (
+    <div className="flex-1 overflow-scroll p-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-8  ">
+        {projects.map((project) => (
+          <Card key={project._id}>
+            <CardHeader>
+              <img
+                src={project.coverImage || "default-cover.jpg"}
+                alt="Cover"
+                className="object-cover w-full h-32 rounded-t-lg"
+              />
+              <h3 className="text-lg font-medium mt-2">{project.name}</h3>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between">
+                <p className="truncate overflow-hidden text-ellipsis whitespace-nowrap">
+                  {project.description}
+                </p>
+                <Link to={`/projects/${project._id}/settings`}>
+                  <SettingsIcon />
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};

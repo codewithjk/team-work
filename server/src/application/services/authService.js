@@ -13,7 +13,6 @@ class AuthService {
   async createUser(data, userRepository) {
     try {
       const { name, email, password, oauthId } = data;
-      console.log(data);
       const existingUser = await userRepository.findByEmail(email);
       if (existingUser && oauthId) {
         console.log("git login", existingUser);

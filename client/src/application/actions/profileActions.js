@@ -9,6 +9,7 @@ export const getProfile = (id) => async (dispatch) => {
   try {
     dispatch(profileRequest());
     const user = await ProfileService.getProfile(id);
+    console.log(user);
     dispatch(profileSuccess(user));
   } catch (error) {
     console.error("profile failed", error);

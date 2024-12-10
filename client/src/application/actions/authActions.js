@@ -30,7 +30,7 @@ export const login = (email, password) => async (dispatch) => {
   try {
     dispatch(loginRequest());
     const user = await AuthService.authenticateUser(email, password);
-    console.log(user);
+    console.log(user)
     dispatch(loginSuccess(user));
   } catch (error) {
     console.error("Login failed", error);
@@ -42,7 +42,6 @@ export const signup = (data) => async (dispatch) => {
   try {
     dispatch(signupRequest());
     const user = await AuthService.createUser(data);
-    console.log(user);
     dispatch(signupSuccess(user));
   } catch (error) {
     dispatch(signupFail(error?.response?.data?.error || error.message));

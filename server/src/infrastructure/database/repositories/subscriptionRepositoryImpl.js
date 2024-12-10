@@ -89,8 +89,12 @@ class SubscriptionRepositoryImpl {
     const newSubscription = new subscriptionModel(subscription);
     return await newSubscription.save();
   }
-  async update(id, subscription) {
-    return await subscriptionModel.findByIdAndUpdate(id, subscription);
+  async update(query, subscription, options) {
+    return await subscriptionModel.findOneAndUpdate(
+      query,
+      subscription,
+      options
+    );
   }
   async delete(id) {
     return await subscriptionModel.findByIdAndDelete(id);

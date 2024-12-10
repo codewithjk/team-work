@@ -20,6 +20,7 @@ import { toast } from "sonner";
 
 const KanbanBoard = ({ isOwner }) => {
   const { tasks } = useSelector((state) => state.task);
+  const { user } = useSelector((state) => state.auth);
   const { projectId } = useParams();
   const dispatch = useDispatch();
 
@@ -29,7 +30,6 @@ const KanbanBoard = ({ isOwner }) => {
 
   useEffect(() => {
     const socket = getSocket();
-    console.log(socket);
     if (socket) {
       socket.on("receiveUpdatedTask", (updatedTask) => {
         console.log("receives the updatedTask ===== ", updatedTask);
@@ -42,12 +42,19 @@ const KanbanBoard = ({ isOwner }) => {
     const { active, over } = event;
 
     if (!over) return;
+    console.log(event);
+
+    const task = active.data.current;
 
     const taskId = active.id;
     const state = over.id;
     // dispatch(updateTask(taskId, { state }));
     const socket = getSocket();
     console.log(socket);
+    console.log(task.assignees, user.id);
+    if (!task.assignees.includes(user.id)) {
+      console.log("not assigned task");
+    }
     if (socket.connected) {
       socket.emit("updateTask", { projectId, taskId, state });
     } else {

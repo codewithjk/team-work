@@ -8,6 +8,9 @@ class UserRepositoryImpl extends UserRepository {
   async findById(id) {
     return User.findOne({ _id: id });
   }
+  async find(query) {
+    return User.findOne(query);
+  }
   async findByVerificationToken(code) {
     return User.findOne({
       verificationToken: code,
@@ -22,6 +25,9 @@ class UserRepositoryImpl extends UserRepository {
   }
   async findByIdAndUpdate(id, data) {
     return User.findOneAndUpdate({ _id: id }, data, { new: true });
+  }
+  async update(id, data) {
+    return User.findByIdAndUpdate(id, data);
   }
 
   async save(user) {

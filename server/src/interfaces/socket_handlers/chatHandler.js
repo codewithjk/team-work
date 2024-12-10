@@ -46,7 +46,7 @@ const chatSoketHandler = (io, socket) => {
       //   type: "messageReceived",
       //   title: `${message.senderName} sent a message`,
       //   message: newMessage.content,
-      // };
+      // }
       let notification = {};
       if (newMessage.attachmentUrl) {
         notification = {
@@ -64,9 +64,9 @@ const chatSoketHandler = (io, socket) => {
       const newNotification = await createNotificationUseCase.execute(
         notification
       );
-      const allMembers = await listAllMembersUseCase.execute({
-        projectId: groupId,
-      });
+      const allMembers = await listAllMembersUseCase.execute(
+         groupId
+      );
       console.log("members = ", allMembers);
       console.log("sender = ", message.senderId);
       const memberIds = allMembers
@@ -90,7 +90,6 @@ const chatSoketHandler = (io, socket) => {
           io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
         }
       });
-
       io.to(groupId).emit("receiveMessage", newMessage);
     } catch (error) {
       console.log("group message error = >", error);

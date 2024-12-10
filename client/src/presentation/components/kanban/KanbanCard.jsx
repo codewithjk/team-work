@@ -64,6 +64,7 @@ const KanbanCard = ({ task, isOwner }) => {
 
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task._id,
+    data: task,
   });
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -71,7 +72,6 @@ const KanbanCard = ({ task, isOwner }) => {
 
   const handleEditTask = async (task) => {
     const response = await taskApi.getTask(task._id);
-    console.log("handle edit task:", response);
 
     await dispatch(setCurrentTask(response.data.task[0]));
     setOpenEditForm(true);
@@ -115,7 +115,7 @@ const KanbanCard = ({ task, isOwner }) => {
     <div
       ref={setNodeRef}
       style={style}
-      className=" shadow bg-background p-2 flex-col justify-between items-center border border-foreground-50 rounded hover:border-blue-400"
+      className=" group shadow bg-background p-2 flex-col justify-between items-center border border-foreground-50 rounded hover:border-blue-400"
       {...attributes}
       {...listeners}
     >
@@ -124,7 +124,7 @@ const KanbanCard = ({ task, isOwner }) => {
         {isOwner && (
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <MoreHorizontal className="m-0 p-0 " />
+              <MoreHorizontal className="m-0 p-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => handleEditTask(task)}>

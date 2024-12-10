@@ -18,6 +18,7 @@ const MeetingRepositoryImpl = require("../../infrastructure/database/repositorie
 const NotificationRepositoryImpl = require("../../infrastructure/database/repositories/notificationRepositoryImpl");
 const ProjectRepositoryImpl = require("../../infrastructure/database/repositories/projectRepositoryImpl");
 const UserNotificationRepositoryImpl = require("../../infrastructure/database/repositories/userNotificationRepositoryImpl");
+const generateVerificationCode = require("../../shared/utils/generateVerificationCode");
 
 // projects
 const projectRepository = new ProjectRepositoryImpl();
@@ -47,8 +48,9 @@ const listAllMembersUseCase = new ListAllMembers(projectRepository);
 class MeetingController {
   async createMeeting(req, res) {
     const userId = req.userId;
+    const roomId = generateVerificationCode()
     try {
-      const newMeeting = await creatMeetingUseCase.execute(req.body);
+      const newMeeting = await creatMeetingUseCase.execute({...req.body,roomId});
       console.log(newMeeting);
       const notification = {
         type: "meetingCreated",
@@ -58,11 +60,9 @@ class MeetingController {
       const newNotification = await createNotificationUseCase.execute(
         notification
       );
-      const allMembers = await listAllMembersUseCase.execute({
-        projectId: newMeeting.projectId,
-      });
-      console.log("members = ", allMembers);
-      console.log("sender = ", userId);
+      const allMembers = await listAllMembersUseCase.execute(
+        newMeeting.projectId,
+      );
       const memberIds = allMembers
         .filter(
           (member) => member.user._id != userId // TODO: consider the sending user

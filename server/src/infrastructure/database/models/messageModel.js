@@ -24,6 +24,7 @@ const MessageSchema = new mongoose.Schema({
     type: String,
   },
   downloadLink: String,
+  previewLink: String,
   timestamp: {
     type: Date,
     default: Date.now,

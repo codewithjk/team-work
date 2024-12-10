@@ -14,6 +14,8 @@ import {
   resetMessages,
   setMessages,
   addOldMessages,
+  setGroups,
+  sortGroups,
 } from "../../../application/slice/chatSlice";
 import chatApi from "../../../infrastructure/api/chatApi";
 import ImageWithDownload from "@/components/imageWithDownload";
@@ -122,6 +124,7 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
 
     const handleReceiveMessage = (message) => {
       dispatch(setMessages(message));
+      dispatch(sortGroups(message))
     };
 
     socket.on("receiveMessage", handleReceiveMessage);

@@ -1,18 +1,20 @@
 const express = require("express");
 const ProjectController = require("../controllers/projectController");
-const verifyJwtToken = require("../middlewares/verifyJwtToken");
+const verifyProjectMember = require("../middlewares/verifyProjectMember");
 const router = express.Router();
 
 const projectController = new ProjectController();
+
+//Todo: add a middleware to protect project access from other user.
+
 
 router
   .route("/")
   .get(projectController.getProjects)
   .post(projectController.createProject);
-
 router
-  .route("/:projectId")
-  .get(projectController.getProjectById)
+  .route("/:projectId").all(verifyProjectMember)// middleware to check isMember
+  .get( projectController.getProjectById)
   .put(projectController.updateProjectById)
   .delete(projectController.deleteProjectById);
 router

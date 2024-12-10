@@ -249,8 +249,8 @@ function ProjectSettingsPage() {
                   <TableRow>
                     <TableHead className="w-[100px]">Member</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Method</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead>Role</TableHead>
+                    <TableHead className="text-right">Email</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

@@ -1,114 +1,10 @@
-// const socketIO = require("socket.io");
-// const chatHandler = require("../../interfaces/socket_handlers/chatHandler");
-// const { SocketMap } = require("../../shared/constants/constants");
-// const getProfile = require("../../application/use-cases/getProfile");
-
-// module.exports = (httpServer) => {
-//   const io = socketIO(httpServer);
-
-//   // Store online users per group
-//   const groupOnlineUsers = new Map();
-//   // Store user's joined groups for cleanup
-//   const userGroups = new Map();
-
-//   io.on("connection", async (socket) => {
-//     const userId = socket.handshake.query.userId;
-//     console.log("Socket connected:", userId, socket.id);
-
-//     SocketMap.set(userId, socket.id);
-
-//     userGroups.set(userId, new Set());
-
-//     socket.on("joinProjectGroup", async ({ groupId, userId }) => {
-//       try {
-//         console.log("User joining group:", groupId, userId);
-//         socket.join(groupId);
-//         const user = await getProfile.execute(userId);
-//         const userObject = user.toObject();
-
-//         if (!groupOnlineUsers.has(groupId)) {
-//           groupOnlineUsers.set(groupId, new Map());
-//         }
-
-//         const groupUsers = groupOnlineUsers.get(groupId);
-//         groupUsers.set(userId, userObject);
-
-//         userGroups.get(userId).add(groupId);
-
-//         socket.emit("onlineUsers", Array.from(groupUsers.values()));
-
-//         socket.to(groupId).emit("userJoined", userObject);
-//       } catch (error) {
-//         console.error("Error in joinProjectGroup:", error);
-//       }
-//     });
-
-//     socket.on("leaveProjectGroup", async ({ groupId, userId }) => {
-//       try {
-//         console.log("User leaving group:", groupId, userId);
-//         socket.leave(groupId);
-
-//         if (groupOnlineUsers.has(groupId)) {
-//           const groupUsers = groupOnlineUsers.get(groupId);
-//           groupUsers.delete(userId);
-
-//           if (groupUsers.size === 0) {
-//             groupOnlineUsers.delete(groupId);
-//           }
-//         }
-
-//         userGroups.get(userId)?.delete(groupId);
-
-//         io.to(groupId).emit("userLeft", userId);
-//       } catch (error) {
-//         console.error("Error in leaveProjectGroup:", error);
-//       }
-//     });
-
-//     socket.on("disconnect", async () => {
-//       try {
-//         console.log("User disconnected:", userId);
-
-//         const userGroupSet = userGroups.get(userId);
-
-//         if (userGroupSet) {
-//           for (const groupId of userGroupSet) {
-//             const groupUsers = groupOnlineUsers.get(groupId);
-//             if (groupUsers) {
-//               groupUsers.delete(userId);
-
-//               if (groupUsers.size === 0) {
-//                 groupOnlineUsers.delete(groupId);
-//               }
-
-//               io.to(groupId).emit("userLeft", userId);
-//             }
-//           }
-//         }
-
-//         userGroups.delete(userId);
-//         SocketMap.delete(userId);
-//       } catch (error) {
-//         console.error("Error in disconnect handler:", error);
-//       }
-//     });
-
-//     chatHandler.chatSoketHandler(io, socket);
-//   });
-
-//   const getOnlineUsersInGroup = (groupId) => {
-//     const groupUsers = groupOnlineUsers.get(groupId);
-//     return groupUsers ? Array.from(groupUsers.values()) : [];
-//   };
-
-//   return io;
-// };
 
 const socketIO = require("socket.io");
 const chatHandler = require("../../interfaces/socket_handlers/chatHandler");
 const taskHandler = require("../../interfaces/socket_handlers/taskHandler");
 const { SocketMap } = require("../../shared/constants/constants");
 const getProfile = require("../../application/use-cases/getProfile");
+const UpdateUser = require("../../application/use-cases/updateProfile")
 // const getTasks = require("../../application/use-cases/getTasks");
 
 module.exports = (httpServer) => {
@@ -125,6 +21,9 @@ module.exports = (httpServer) => {
   io.on("connection", async (socket) => {
     const userId = socket.handshake.query.userId;
     console.log("Socket connected:", userId, socket.id);
+  const res = await UpdateUser.execute(userId,{socketId:socket.id});
+  console.log(res)
+
 
     SocketMap.set(userId, socket.id);
     userGroups.set(userId, new Set());

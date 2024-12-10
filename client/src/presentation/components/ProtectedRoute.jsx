@@ -4,9 +4,9 @@ import { Navigate } from "react-router-dom";
 import { getProfile } from "../../application/actions/profileActions";
 import { Skeleton } from "@/components/ui/skeleton";
 import PrivatePageLayout from "@/layouts/PrivatePageLayout";
-import { getSocket } from "@/utils/socketClient.config";
 
 const ProtectedRoute = ({ children }) => {
+  console.log("protected route");
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const { isAuthenticated, user, loading } = auth;
@@ -21,7 +21,6 @@ const ProtectedRoute = ({ children }) => {
   }, [user, loading, dispatch]);
 
   if (loading || isLoading) {
-    // return <h1>loading </h1>;
     return <Skeleton className="w-full h-full">{children}</Skeleton>;
   }
 

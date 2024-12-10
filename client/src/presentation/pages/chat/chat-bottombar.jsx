@@ -65,7 +65,12 @@ export default function ChatBottombar({ isMobile, selectedGroup }) {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_API_BASE_URL}/upload`,
-        formData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -129,6 +134,7 @@ export default function ChatBottombar({ isMobile, selectedGroup }) {
           ...createMessage(message.trim(), "file"),
           attachmentUrl: urlObject.url,
           downloadLink: urlObject.downloadLink,
+          previewLink: urlObject.previewLink,
         });
       }
     }

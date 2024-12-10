@@ -27,6 +27,7 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Subscription",
   },
+  socketId:String,
 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

@@ -36,6 +36,7 @@ import { Toaster } from "sonner";
 import { setNotification } from "./application/slice/notificationSlice";
 import LandingPage from "@/pages/LandingPage";
 import { useState } from "react";
+import NotFoundPage from "@/pages/error/Error404";
 
 function App() {
   const dispatch = useDispatch();
@@ -238,7 +239,7 @@ function App() {
               }
             />
             {/* catch all routes */}
-            <Route path="*" element={<Navigate to="/home" replace />} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Router>
       </ThemeProvider>

@@ -221,16 +221,19 @@ import { useNavigate } from "react-router-dom";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function HomePage() {
+  console.log("Home page is loaded");
   const [assignedTasks, setAssignedTasks] = useState([]);
   const [projects, setProjects] = useState([]);
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
   const { user } = auth;
+  const profile = useSelector((state) => state.profile);
+  const { profileData } = profile;
+  console.log(profileData);
 
   useEffect(() => {
     const stripePaymentLink = localStorage.getItem("stripePaymentLink");
-
-    if (stripePaymentLink && user !== null) {
+    if (stripePaymentLink && user !== null && profileData?.plan === "free") {
       const fullLink = `${stripePaymentLink}?prefilled_email=${user.email}`;
       console.log(`${stripePaymentLink}?prefilled_email=${user.email}`);
       localStorage.removeItem("stripePaymentLink");
@@ -247,6 +250,8 @@ function HomePage() {
           projectApi.getAllProjects(),
         ]);
 
+        console.log(tasksResponse, projectsResponse)
+
         setAssignedTasks(tasksResponse.data.tasksAssignedToUser);
         setProjects(projectsResponse.data.projects);
       } catch (error) {
@@ -254,13 +259,13 @@ function HomePage() {
       }
     };
 
-    fetchData();
+    // fetchData();
   }, []);
 
   const filterAssignedTasksByState = (state) =>
-    assignedTasks.filter((task) => task.state === state);
+    assignedTasks?.filter((task) => task.state === state);
   const filterAssignedTasksByPriority = (priority) =>
-    assignedTasks.filter((task) => task.priority === priority);
+    assignedTasks?.filter((task) => task.priority === priority);
 
   const taskStates = [
     "backlog",
@@ -271,7 +276,7 @@ function HomePage() {
     "cancelled",
   ];
   const taskCounts = taskStates.map(
-    (state) => filterAssignedTasksByState(state).length
+    (state) => filterAssignedTasksByState(state)?.length
   );
   const Taskcolors = [
     "#B0BEC5",

@@ -3,9 +3,9 @@ class UpdateSubscription {
     this.subscriptionRepository = subscriptionRepository;
   }
 
-  async execute(id, subscription) {
-    console.log(id, subscription);
-    return this.subscriptionRepository.update(id, subscription);
+  async execute(query, subscription, options) {
+    console.log(query, subscription, options);
+    return this.subscriptionRepository.update(query, subscription, options);
   }
 }
 

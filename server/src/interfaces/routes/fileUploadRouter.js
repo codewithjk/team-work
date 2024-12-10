@@ -1,47 +1,59 @@
 const express = require("express");
+const multer = require("multer");
+const admin = require("firebase-admin");
 
 const router = express.Router();
 
-const cloudinary = require("cloudinary").v2;
+const serviceAccount = require("../../../team-work-20ec3-firebase-adminsdk-4jk45-09016eba05.json");
 
-const CLOUDINARY_DB_NAME = process.env.CLOUDINARY_DB_NAME;
-const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY;
-const CLOUDINARY_API_SECRETE = process.env.CLOUDINARY_API_SECRETE;
-
-cloudinary.config({
-  cloud_name: CLOUDINARY_DB_NAME,
-  api_key: CLOUDINARY_API_KEY,
-  api_secret: CLOUDINARY_API_SECRETE,
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
 });
 
-router.route("/").post(async (req, res) => {
-  console.log("reached", req.file);
+const bucket = admin.storage().bucket(); // Firebase Storage bucket
+
+// Multer middleware for handling file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+});
+
+router.post("/", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const uploadStream = cloudinary.uploader.upload_stream(
-      { resource_type: "auto" },
-      (error, result) => {
-        if (error) {
-          console.error("Cloudinary upload error:", error);
-          return res.status(500).json({ error: "Failed to upload file" });
-        }
+    const fileName = req.file.originalname;
+    const file = bucket.file(fileName);
+    const fileStream = file.createWriteStream({
+      metadata: {
+        contentType: req.file.mimetype, // Use the file's MIME type
+      },
+    });
 
-        const downloadLink = `https://res.cloudinary.com/${CLOUDINARY_DB_NAME}/image/upload/v${result.version}/${result.public_id}.${result.format}`;
+    fileStream.on("error", (error) => {
+      console.error("File upload error:", error);
+      res.status(500).json({ error: "Failed to upload file" });
+    });
 
-        res.status(200).json({
-          url: result.secure_url,
-          downloadLink: downloadLink,
-        });
-      }
-    );
+    fileStream.on("finish", async () => {
+      await file.makePublic();
 
-    uploadStream.end(req.file.buffer);
-    console.log("success");
+      const downloadLink = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+      const previewLink = downloadLink;
+
+      res.status(200).json({
+        url: downloadLink,
+        downloadLink,
+        previewLink,
+        fileType: req.file.mimetype,
+      });
+    });
+
+    fileStream.end(req.file.buffer);
   } catch (error) {
-    console.log("error from file uploader == ", error);
+    console.error("Error from file uploader:", error);
     res.status(500).json({ error: "Failed to upload file" });
   }
 });

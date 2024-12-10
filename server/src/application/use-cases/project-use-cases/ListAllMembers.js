@@ -2,9 +2,7 @@ class ListAllMembers {
   constructor(projectRepository) {
     this.projectRepository = projectRepository;
   }
-
-  // TODO : correct this argument .
-  async execute({ projectId }) {
+  async execute( projectId ) {
     return this.projectRepository.getMembersByProjectId(projectId);
   }
 }

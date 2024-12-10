@@ -10,10 +10,12 @@ const Navbar = () => (
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
       <a href="#about">About</a>
-      <a href="#pricing">
+      <a href="/login">
         <Button variant="outline">Log in</Button>
       </a>
-      <Button>Sign up</Button>
+      <a href="/signup">
+        <Button>Sign up</Button>
+      </a>
     </div>
   </nav>
 );

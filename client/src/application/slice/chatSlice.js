@@ -14,12 +14,16 @@ const initialState = {
   hasInitialAIResponse: false,
   hasInitialResponse: false,
   selectedGroup: null,
+  groups:[],
 };
 
 const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
+    setGroups:(state,action)=>{
+      state.groups = action.payload
+    },
     setSelectedExample: (state, action) => {
       state.selectedExample = action.payload;
     },
@@ -40,7 +44,7 @@ const chatSlice = createSlice({
       state.selectedGroup = action.payload;
     },
     setMessages: (state, action) => {
-      console.log("called");
+      console.log("called",action.payload);
       state.messages.push(action.payload);
     },
     addOldMessages: (state, action) => {
@@ -56,11 +60,28 @@ const chatSlice = createSlice({
     resetMessages: (state, action) => {
       state.messages = [];
     },
+    sortGroups: (state, action) => {
+      const lastMessageGroupId = action.payload.groupId;
+      state.groups = state.groups.map((group) => {
+        if (group._id === lastMessageGroupId) {
+          group.lastMessage = action.payload; 
+        }
+        return group;
+      });
+      state.groups = state.groups.sort((a, b) => {
+        if (a.lastMessage && b.lastMessage) {
+          return new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp);
+        }
+        return b.lastMessage ? 1 : -1; 
+      });
+    }
+    
   },
 });
 
 // Export actions
 export const {
+  setGroups,
   setSelectedExample,
   setExamples,
   setInput,
@@ -72,5 +93,6 @@ export const {
   resetMessages,
   setSelectedGroup,
   addOldMessages,
+  sortGroups
 } = chatSlice.actions;
 export default chatSlice.reducer;

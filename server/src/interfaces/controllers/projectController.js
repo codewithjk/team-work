@@ -123,9 +123,9 @@ class ProjectController {
       const projectId = req.params.projectId;
       const ownerId = req.userId;
 
-      const members = await listAllMemebersOfProjectUsecase.execute({
+      const members = await listAllMemebersOfProjectUsecase.execute(
         projectId,
-      });
+      );
 
       res.status(200).json({
         members,
