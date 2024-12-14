@@ -68,7 +68,6 @@ const ModulePage = () => {
     getMembers();
     async function getModules() {
       const response = await moduleApi.getAllModules(projectId);
-      console.log(response);
       setModules(response.data.modules);
     }
     getModules();
@@ -393,8 +392,6 @@ const ModulePage = () => {
           onSubmit={submitEditForm}
         />
       )}
-
-      <Toaster />
     </div>
   );
 };

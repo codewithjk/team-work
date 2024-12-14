@@ -5,26 +5,19 @@ const taskHandler = require("../../interfaces/socket_handlers/taskHandler");
 const { SocketMap } = require("../../shared/constants/constants");
 const getProfile = require("../../application/use-cases/getProfile");
 const UpdateUser = require("../../application/use-cases/updateProfile")
-// const getTasks = require("../../application/use-cases/getTasks");
+
 
 module.exports = (httpServer) => {
   const io = socketIO(httpServer);
-
-  // Store online users per group (for chat) and per project (for Kanban)
   const groupOnlineUsers = new Map(); // For chat groups
   const projectUsers = new Map(); // For Kanban board
 
-  // Store user's joined groups and projects for cleanup
   const userGroups = new Map();
   const userProjects = new Map();
 
   io.on("connection", async (socket) => {
     const userId = socket.handshake.query.userId;
-    console.log("Socket connected:", userId, socket.id);
-  const res = await UpdateUser.execute(userId,{socketId:socket.id});
-  console.log(res)
-
-
+    const res = await UpdateUser.execute(userId, { socketId: socket.id });
     SocketMap.set(userId, socket.id);
     userGroups.set(userId, new Set());
     userProjects.set(userId, new Set());
@@ -34,7 +27,6 @@ module.exports = (httpServer) => {
      */
     socket.on("joinProjectGroup", async ({ groupId, userId }) => {
       try {
-        console.log("User joining chat group:", groupId, userId);
         socket.join(groupId);
         const user = await getProfile.execute(userId);
         const userObject = user.toObject();
@@ -57,9 +49,7 @@ module.exports = (httpServer) => {
 
     socket.on("leaveProjectGroup", async ({ groupId, userId }) => {
       try {
-        console.log("User leaving chat group:", groupId, userId);
         socket.leave(groupId);
-
         if (groupOnlineUsers.has(groupId)) {
           const groupUsers = groupOnlineUsers.get(groupId);
           groupUsers.delete(userId);
@@ -81,12 +71,8 @@ module.exports = (httpServer) => {
      */
     socket.on("joinProjectTask", async ({ projectId, userId }) => {
       try {
-        console.log("User joining project task room:", projectId, userId);
-        console.log(projectId, userId);
         socket.join(projectId);
-
-        // const tasks = await getTasks.execute(projectId); // Fetch current tasks for the project
-        const userObject = { userId }; // Modify as needed based on what you want to store
+        const userObject = { userId };
 
         if (!projectUsers.has(projectId)) {
           projectUsers.set(projectId, new Map());
@@ -94,16 +80,10 @@ module.exports = (httpServer) => {
 
         const projectRoomUsers = projectUsers.get(projectId);
         projectRoomUsers.set(userId, userObject);
-
-        console.log("userProjects === ", userProjects);
+        console.log(userProjects);
 
         userProjects.get(userId).add(projectId);
-
-        console.log("groupUsers ========", projectRoomUsers);
-        console.log("userGroup ========", userProjects);
-
         // Send the current task state to the user joining the project
-        // socket.emit("currentTasks", tasks);
         socket.to(projectId).emit("userJoinedProject", userObject);
       } catch (error) {
         console.error("Error in joinProjectTask:", error);
@@ -112,9 +92,7 @@ module.exports = (httpServer) => {
 
     socket.on("leaveProjectTask", async ({ projectId, userId }) => {
       try {
-        console.log("User leaving project task room:", projectId, userId);
         socket.leave(projectId);
-
         if (projectUsers.has(projectId)) {
           const projectRoomUsers = projectUsers.get(projectId);
           projectRoomUsers.delete(userId);
@@ -123,7 +101,6 @@ module.exports = (httpServer) => {
             projectUsers.delete(projectId);
           }
         }
-
         userProjects.get(userId)?.delete(projectId);
         io.to(projectId).emit("userLeftProject", userId);
       } catch (error) {
@@ -131,25 +108,11 @@ module.exports = (httpServer) => {
       }
     });
 
-    // Task update event
-    // socket.on("taskUpdated", async ({ projectId, taskId, state }) => {
-    //   try {
-    //     console.log(`Task ${taskId} updated in project ${projectId}`);
-
-    //     // Broadcast the updated task to all users in the project room
-    //     io.to(projectId).emit("taskUpdated", { taskId, state });
-    //   } catch (error) {
-    //     console.error("Error in taskUpdated:", error);
-    //   }
-    // });
-
     /**
      * Handle disconnection and cleanup
      */
     socket.on("disconnect", async () => {
       try {
-        console.log("User disconnected:", userId);
-
         const userGroupSet = userGroups.get(userId);
         const userProjectSet = userProjects.get(userId);
 
@@ -195,17 +158,6 @@ module.exports = (httpServer) => {
     taskHandler.taskSocketHandler(io, socket);
   });
 
-  // Helper to get users in chat group
-  const getOnlineUsersInGroup = (groupId) => {
-    const groupUsers = groupOnlineUsers.get(groupId);
-    return groupUsers ? Array.from(groupUsers.values()) : [];
-  };
-
-  // Helper to get users in Kanban project room
-  const getOnlineUsersInProject = (projectId) => {
-    const projectRoomUsers = projectUsers.get(projectId);
-    return projectRoomUsers ? Array.from(projectRoomUsers.values()) : [];
-  };
 
   return io;
 };

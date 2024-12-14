@@ -30,7 +30,6 @@ export const login = (email, password) => async (dispatch) => {
   try {
     dispatch(loginRequest());
     const user = await AuthService.authenticateUser(email, password);
-    console.log(user)
     dispatch(loginSuccess(user));
   } catch (error) {
     console.error("Login failed", error);
@@ -101,12 +100,8 @@ export const resendVerificationCode = (id) => async (dispatch) => {
   try {
     dispatch(resendRequest());
     const data = await AuthService.resendCode(id);
-    console.log(data);
-
     dispatch(resendSuccess(data.user));
   } catch (error) {
-    console.log(error);
-
     dispatch(resendFail(error?.response?.data?.error || error.message));
   }
 };

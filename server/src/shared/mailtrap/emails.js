@@ -21,7 +21,6 @@ const sendVerificationEmail = async (email, verificationToken) => {
       category: "Email Verification",
     });
 
-    console.log("Email sent successfully", response);
   } catch (error) {
     console.error(`Error sending verification`, error);
 
@@ -46,8 +45,6 @@ const sendWelcomeEmail = async (email, name) => {
         company_info_country: "India",
       },
     });
-
-    console.log("Welcome email sent successfully", response);
   } catch (error) {
     console.error(`Error sending welcome email`, error);
 
@@ -84,8 +81,6 @@ const sendResetSuccessEmail = async (email) => {
       html: PASSWORD_RESET_SUCCESS_TEMPLATE,
       category: "Password Reset",
     });
-
-    console.log("Password reset email sent successfully", response);
   } catch (error) {
     console.error(`Error sending password reset success email`, error);
 
@@ -107,7 +102,6 @@ const sendInviteEmail = async (email, url, projectName) => {
       ),
       category: "invite member",
     });
-    console.log("Invitation email sent successfully", response);
   } catch (error) {
     console.error(`Error sending password reset email`, error);
     throw new Error(`Error sending password reset email: ${error}`);

@@ -27,9 +27,11 @@ const KanbanBoard = ({ isOwner }) => {
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 5 } })
   );
+  const socket = getSocket();
 
   useEffect(() => {
-    const socket = getSocket();
+    console.log(socket);
+    
     if (socket) {
       socket.on("receiveUpdatedTask", (updatedTask) => {
         console.log("receives the updatedTask ===== ", updatedTask);
@@ -55,8 +57,10 @@ const KanbanBoard = ({ isOwner }) => {
     if (!task.assignees.includes(user.id)) {
       console.log("not assigned task");
     }
-    if (socket.connected) {
+    if (socket?.connected) {
       socket.emit("updateTask", { projectId, taskId, state });
+      dispatch(updateTask(taskId, { state }));
+      toast.success("task updated successfully")
     } else {
       toast.error("unable to change state ");
     }

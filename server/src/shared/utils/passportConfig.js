@@ -31,26 +31,8 @@ passport.use(
     },
     (accessToken, refreshToken, profile, done) => {
       // Here, you can create/find a user in your database based on the profile information
-
-      console.log(profile);
-
       done(null, { accessToken });
     }
   )
 );
 
-// Serialize user into JWT
-// passport.serializeUser((user, done) => {
-//   const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
-//   done(null, token);
-// });
-
-// // Deserialize user from JWT
-// passport.deserializeUser((token, done) => {
-//   try {
-//     const user = jwt.verify(token, process.env.JWT_SECRET);
-//     done(null, user);
-//   } catch (err) {
-//     done(err);
-//   }
-// });

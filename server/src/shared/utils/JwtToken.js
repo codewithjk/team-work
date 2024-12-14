@@ -7,10 +7,10 @@ class Jwt {
     const accessToken = jwt.sign({ userId: _id, name, email, role: "user" }, secret, {
       expiresIn: "1h",
     });
-    const refreshToken  = jwt.sign({ userId: _id, name, email, role: "user" }, secret, {
+    const refreshToken = jwt.sign({ userId: _id, name, email, role: "user" }, secret, {
       expiresIn: "1y",
     });
-    return { user, refreshToken,accessToken};
+    return { user, refreshToken, accessToken };
   }
 }
 

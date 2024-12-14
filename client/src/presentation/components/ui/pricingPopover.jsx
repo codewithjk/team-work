@@ -1,39 +1,18 @@
-import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Check } from "lucide-react";
+import React from 'react'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './card'
+import { Badge } from 'lucide-react'
+import PaymentLink from '../PaymentLink'
+import { Check } from 'lucide-react'
+import { PopularPlanType, pricingList } from '../../../constants/pricelist'
+import { XCircleIcon } from 'lucide-react'
 
-import PaymentLink from "./PaymentLink";
-import { PopularPlanType, pricingList } from "../../constants/pricelist";
-
-
-
-
-
-const Pricing = () => {
+function PricingPopover({closepopup}) {
   return (
-    <section id="pricing" className="container py-24 sm:py-32">
-      <h2 className="text-3xl md:text-4xl font-bold text-center">
-        Get{" "}
-        <span className="bg-gradient-to-b from-[#667EEA] to-[#764BA2] uppercase text-transparent bg-clip-text">
-          Unlimited{" "}
-        </span>
-        Access
-      </h2>
-      <h3 className="text-xl text-center text-muted-foreground pt-4 pb-8">
-        Our plans are packaged for value and priced for you so switching to
-        Team-Work is a no-brainer, no matter where you are in your project
-        management journey.
-      </h3>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {pricingList.map((pricing) => (
+    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          
+          <div className="relative flex gap-8 bg-background p-3  rounded">
+            <XCircleIcon onClick={()=>closepopup(false)} className='absolute top-0 end-0'/>        {pricingList.map((pricing,index) => (
+            (index != 0) &&
           <Card
             key={pricing.title}
             className={
@@ -85,8 +64,8 @@ const Pricing = () => {
           </Card>
         ))}
       </div>
-    </section>
-  );
-};
+        </div>
+  )
+}
 
-export default Pricing;
+export default PricingPopover

@@ -47,6 +47,7 @@ export default function TaskForm({
   modules,
   onClose,
   initialData,
+  title = "Create Task"
 }) {
   const {
     register,
@@ -112,7 +113,7 @@ export default function TaskForm({
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ">
       <Card className="p-6 w-full max-w-fit bg-background shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Create Task</h2>
+        <h2 className="text-xl font-bold mb-4">{title}</h2>
         <form onSubmit={handleSubmit(submitHandler)}>
           <div className="space-y-4">
             <div>
@@ -262,7 +263,7 @@ export default function TaskForm({
             >
               Cancel
             </Button>
-            <Button type="submit">Create Task</Button>
+            <Button type="submit">{title}</Button>
           </div>
         </form>
       </Card>

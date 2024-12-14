@@ -29,7 +29,6 @@ class ProjectController {
       });
       res.status(200).json({ message: "successful", project: newProject });
     } catch (error) {
-      console.log("Error from controller : ", error.message);
       res.status(400).json({ error: error.message });
     }
   }
@@ -66,7 +65,6 @@ class ProjectController {
     try {
       const project = req.body;
       const id = req.params.projectId;
-      console.log(project);
       await updateProjectUsecase.execute(id, project);
       res.status(200).json({ message: "successful", project });
     } catch (error) {
@@ -90,7 +88,6 @@ class ProjectController {
     try {
       const projectId = req.params.projectId;
       const { email, role } = req.body;
-      console.log(req.body);
       const newMember = await addMemberUsecase.execute({
         email,
         projectId,

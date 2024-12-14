@@ -7,5 +7,4 @@ export const TIMEZONES = [
   "Africa/Asmara",
   "Africa/Bamako",
   "Africa/Bangui",
-  // Add the rest of the timezones here
 ];

@@ -50,8 +50,7 @@ class MeetingController {
     const userId = req.userId;
     const roomId = generateVerificationCode()
     try {
-      const newMeeting = await creatMeetingUseCase.execute({...req.body,roomId});
-      console.log(newMeeting);
+      const newMeeting = await creatMeetingUseCase.execute({ ...req.body, roomId });
       const notification = {
         type: "meetingCreated",
         title: `a new meeting created`,
@@ -73,7 +72,6 @@ class MeetingController {
 
       res.status(200).json({ message: "successful", meeting: newMeeting });
     } catch (error) {
-      console.log("Error from controller : ", error.message);
       res.status(400).json({ error: error.message });
     }
   }

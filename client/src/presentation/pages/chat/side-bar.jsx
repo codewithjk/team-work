@@ -14,16 +14,16 @@ import { useSelector } from "react-redux";
 const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
   const {user} = useSelector(state=>state.auth);
   const {groups} = useSelector(state=>state.chat);
-  console.log(chats)
-// Sort the chats based on the latest message timestamp
-const sortedChats = chats.sort((a, b) => {
-  // Get the latest message's timestamp for each chat
-  const latestMessageA = a.messages[a.messages.length - 1];
-  const latestMessageB = b.messages[b.messages.length - 1];
+
+// // Sort the chats based on the latest message timestamp
+// const sortedChats = chats.sort((a, b) => {
+//   // Get the latest message's timestamp for each chat
+//   const latestMessageA = a.messages[a.messages.length - 1];
+//   const latestMessageB = b.messages[b.messages.length - 1];
   
-  // Compare timestamps (ISO strings can be directly compared)
-  return new Date(latestMessageB.timestamp) - new Date(latestMessageA.timestamp);
-});
+//   // Compare timestamps (ISO strings can be directly compared)
+//   return new Date(latestMessageB.timestamp) - new Date(latestMessageA.timestamp);
+// });
 
 
   return (

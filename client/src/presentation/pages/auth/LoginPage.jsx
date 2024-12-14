@@ -57,14 +57,12 @@ const LoginPage = () => {
   }, [user, error, loading]);
 
   const googleLogin = () => {
-    console.log("google");
     window.location.href = `${
       import.meta.env.VITE_BACKEND_API_BASE_URL
     }/auth/google`;
   };
 
   const githubLogin = () => {
-    console.log("github");
     window.location.href = `${
       import.meta.env.VITE_BACKEND_API_BASE_URL
     }/auth/github`;
@@ -167,7 +165,6 @@ const LoginPage = () => {
           </div>
         </div>
       </section>
-      {/* <Toaster /> */}
     </div>
   );
 };

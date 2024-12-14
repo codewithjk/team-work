@@ -4,13 +4,18 @@ import { Navigate } from "react-router-dom";
 import { getProfile } from "../../application/actions/profileActions";
 import { Skeleton } from "@/components/ui/skeleton";
 import PrivatePageLayout from "@/layouts/PrivatePageLayout";
+import { checkAuth } from "../../application/actions/authActions";
 
 const ProtectedRoute = ({ children }) => {
-  console.log("protected route");
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const { isAuthenticated, user, loading } = auth;
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // console.log("App refreshed");
+    dispatch(checkAuth());
+  }, [dispatch]);
 
   useEffect(() => {
     if (user && !loading) {

@@ -50,7 +50,6 @@ function HandleGithubOauthPage() {
     if (token) {
       getUserData(token).then(async (user) => {
         if (user) {
-          console.log("github :", user);
           await dispatch(signup(user));
           if (isAuthenticated) {
             navigate("/home");

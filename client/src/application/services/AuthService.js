@@ -4,8 +4,7 @@ class AuthService {
   async authenticateUser(email, password) {
     const response = await authApi.login(email, password);
     if (response.status === 200) {
-      const {accessToken }= response.data
-      console.log(accessToken,response.data)
+      const { accessToken } = response.data
       localStorage.setItem("accessToken", accessToken);
       return response.data;
     }
@@ -13,7 +12,6 @@ class AuthService {
   }
   async createUser(user) {
     const response = await authApi.signup(user);
-    console.log(response);
     if (response.status === 201) {
       // const { _id, name, email } = response.data;
       return response.data;
@@ -43,7 +41,6 @@ class AuthService {
   }
   async checkAuth() {
     const response = await authApi.checkAuth();
-    console.log("checkauth");
     if (response.status === 200) {
       return response.data;
     }
@@ -52,7 +49,6 @@ class AuthService {
   async logout() {
     const response = await authApi.logout();
     if (response.status === 200) {
-      console.log("log out successful")
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
       return response.data;
@@ -60,7 +56,6 @@ class AuthService {
     throw new Error("failed to logout");
   }
   async resendCode(userId) {
-    console.log(userId);
     const response = await authApi.resendCode(userId);
     if (response.status === 200) {
       return response.data;

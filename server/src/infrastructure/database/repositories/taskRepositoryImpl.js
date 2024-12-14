@@ -73,7 +73,6 @@ class TaskRepositoryImpl {
     return await newTask.save();
   }
   async update(taskId, task) {
-    console.log(taskId, task);
     // const id = new mongoose.Types.ObjectId(taskId);
     return await taskModel.findByIdAndUpdate(taskId, task, { new: true });
   }
@@ -83,7 +82,8 @@ class TaskRepositoryImpl {
   }
   async findAll(queries) {
     try {
-      const { search, filter, page, limit, projectId } = queries;
+      let { search, filter, page, limit, projectId } = queries;
+      projectId = new mongoose.Types.ObjectId(projectId);
       const query = { projectId };
 
       if (search) {
@@ -97,10 +97,79 @@ class TaskRepositoryImpl {
       const totalProjects = await taskModel.countDocuments(query);
       const totalPages = Math.ceil(totalProjects / limit);
 
-      const tasks = await taskModel
-        .find(query)
-        .skip((page - 1) * limit)
-        .limit(parseInt(limit));
+      // const tasks = await taskModel
+      //   .find(query)
+      //   .skip((page - 1) * limit)
+      //   .limit(parseInt(limit));
+      const tasks = await taskModel.aggregate([
+        {
+          $match: query, // Apply the query conditions
+        },
+        {
+          $lookup: {
+            from: "members",
+            localField: "assignees",
+            foreignField: "_id",
+            as: "assignees",
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "assignees.userId",
+            foreignField: "_id",
+            as: "assigneeDetails",
+          },
+        },
+        {
+          $lookup: {
+            from: "projects",
+            localField: "projectId",
+            foreignField: "_id",
+            as: "project",
+          },
+        },
+        {
+          $unwind: {
+            path: "$project",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $lookup: {
+            from: "modules",
+            localField: "module",
+            foreignField: "_id",
+            as: "moduleDetails",
+          },
+        },
+        {
+          $unwind: {
+            path: "$moduleDetails",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            name: 1,
+            description: 1,
+            startDate: 1,
+            endDate: 1,
+            state: 1,
+            priority: 1,
+            assignees: "$assigneeDetails",
+            project: { name: "$project.name" },
+            module: "$moduleDetails",
+          },
+        },
+        {
+          $skip: (page - 1) * limit, // Pagination: skip documents
+        },
+        {
+          $limit: parseInt(limit), // Pagination: limit documents
+        },
+      ]);
+
 
       return { tasks, totalPages };
     } catch (error) {
@@ -109,28 +178,10 @@ class TaskRepositoryImpl {
   }
   async findByUserId(userId) {
     try {
-      const members = await mongoose.model("Member").aggregate([
-        {
-          $match: { userId: new mongoose.Types.ObjectId(userId) },
-        },
-        {
-          $project: { _id: 1 },
-        },
-      ]);
-      const memberIds = members.map((member) => member._id);
-
-      if (memberIds.length === 0) {
-        return {
-          tasksAssignedToUser: [],
-          totalTasks: 0,
-          completedTasks: [],
-        };
-      }
-
       const result = await mongoose.model("Task").aggregate([
         {
           $match: {
-            assignees: { $in: memberIds },
+            assignees: new mongoose.Types.ObjectId(userId), // Match userId within the assignees array
           },
         },
         {
@@ -191,15 +242,16 @@ class TaskRepositoryImpl {
       return result.length > 0
         ? result[0]
         : {
-            tasksAssignedToUser: [],
-            totalTasks: 0,
-            completedTasks: [],
-          };
+          tasksAssignedToUser: [],
+          totalTasks: 0,
+          completedTasks: [],
+        };
     } catch (error) {
       console.error("Error fetching assigned tasks for user:", error);
       throw error;
     }
   }
+
 }
 
 module.exports = TaskRepositoryImpl;

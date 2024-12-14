@@ -34,7 +34,6 @@ const clearAllNotificationUsecase = new ClearAllNotification(
 
 class NotificationController {
   async getAllNotifications(req, res) {
-    console.log("reached");
     try {
       const userId = req.userId;
       const projectData = await listAllProjectUseCase.execute({
@@ -45,15 +44,15 @@ class NotificationController {
       const projectIds = projects.map((pro) => pro._id);
 
       const { search, filter, page = 1, limit = 10 } = req.query;
-      const { notifications, totalPages } =
-        await listAllNotificationUseCase.execute({
-          search,
-          filter,
-          page,
-          limit,
-          projectIds,
-          userId,
-        });
+      const { notifications, totalPages } = await listAllNotificationUseCase.execute({
+        search,
+        filter,
+        page,
+        limit,
+        projectIds,
+        userId,
+      });
+
 
       res.status(200).json({
         notifications,
@@ -106,7 +105,6 @@ class NotificationController {
 
   async clearAll(req, res) {
     const userId = req.userId;
-    console.log(userId);
     try {
       await clearAllNotificationUsecase.execute(userId);
       res.status(200).json({ message: "successful" });

@@ -22,16 +22,13 @@ class TaskController {
     try {
       const { projectId } = req.query;
       const createdBy = req.userId;
-      console.log({ projectId, ...req.body });
       const newTask = await creatTaskUseCase.execute({
         projectId,
         ...req.body,
         createdBy,
       });
-      console.log(newTask);
       res.status(200).json({ message: "successful", task: newTask });
     } catch (error) {
-      console.log("Error from controller : ", error.message);
       res.status(400).json({ error: error.message });
     }
   }
@@ -53,14 +50,14 @@ class TaskController {
         });
       } else {
         const userId = req.userId;
+
         let result = await getAllTaskByUserIdUsecase.execute(userId);
-        console.log(res);
+
         res.status(200).json({
           ...result,
         });
       }
     } catch (error) {
-      console.log(error);
       res
         .status(500)
         .json({ error: "Failed to fetch tasks", message: error.message });

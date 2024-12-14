@@ -8,7 +8,6 @@ import { useEffect } from "react";
 
 function NoProjects({ ButtonAction, isProjectFormOpen }) {
   const [isLaunched, setIsLaunched] = useState(true);
-  console.log(isLaunched);
 
   const handleClick = () => {
     // setIsLaunched(!isLaunched);

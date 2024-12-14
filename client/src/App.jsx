@@ -37,6 +37,7 @@ import { setNotification } from "./application/slice/notificationSlice";
 import LandingPage from "@/pages/LandingPage";
 import { useState } from "react";
 import NotFoundPage from "@/pages/error/Error404";
+import ErrorPage from "@/pages/error/ErrorPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -46,10 +47,10 @@ function App() {
   const socketURL =
     import.meta.env.VITE_SOCKET_BASE_URL || "http://localhost:3000";
 
-  useEffect(() => {
-    console.log("App refreshed");
-    dispatch(checkAuth());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   console.log("App refreshed");
+  //   dispatch(checkAuth());
+  // }, [dispatch]);
 
   const handleNotification = (notification) => {
     toast.info(notification.title);
@@ -236,6 +237,14 @@ function App() {
                 <ProtectedRoute>
                   <NotificationPage />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/error/403"
+              element={
+           
+                  <ErrorPage status={403} title="Forbiden" message="We are sorry. You do not have access to this page"/>
+               
               }
             />
             {/* catch all routes */}

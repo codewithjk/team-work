@@ -16,7 +16,6 @@ class ProfileController {
   async updateUser(req, res) {
     try {
       const userId = req.userId;
-      console.log(req.body, userId);
       const userDocument = await updateProfile.execute(userId, req.body);
       const user = userDocument.toObject();
       res.status(200).json({ message: "successful", user });
@@ -27,10 +26,8 @@ class ProfileController {
   async getProjectList(req, res) {
     try {
       const userId = req.userId;
-      console.log(req.body, userId);
       const projectList = await getProjectList.execute(userId);
-
-      res.status(200).json({ message: "successful", user });
+      res.status(200).json({ message: "successful", projectList });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

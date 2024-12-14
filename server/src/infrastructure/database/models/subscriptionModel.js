@@ -20,6 +20,7 @@ const SubscriptionSchema = new Schema(
     endDate: {
       type: Date,
       required: [true, "End date is required"],
+      
     },
   },
   {

@@ -100,8 +100,6 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
 
     // Handle new user joining
     socket.on("userJoined", (user) => {
-      console.log(user);
-      console.log(user._id, userId);
       if (user._id !== userId) {
         setOnlineUsers((prev) => {
           const newMap = new Map(prev);
@@ -187,7 +185,6 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
     );
   };
 
-  console.log("online users == ", onlineUsers);
   return (
     <div className="w-full overflow-y-auto h-full flex flex-col">
       {renderOnlineUsers()}

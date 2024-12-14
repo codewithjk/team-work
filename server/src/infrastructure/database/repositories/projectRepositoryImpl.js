@@ -25,10 +25,7 @@ class ProjectRepositoryImpl extends ProjectRepository {
   }
   async findAll(queries) {
     try {
-      console.log(queries);
-
       const { search, filter, page, limit, ownerId } = queries;
-
       //find project that is assigned to
       const assignedProjects = await membersModel.aggregate([
         { $match: { userId: new mongoose.Types.ObjectId(ownerId) } },
@@ -72,7 +69,6 @@ class ProjectRepositoryImpl extends ProjectRepository {
     try {
       const inviteTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
       const exitstingMemeber = await membersModel.findOne({ email, projectId });
-      console.log(exitstingMemeber);
 
       if (exitstingMemeber) {
         throw new Error("email is alrady used by other member");
@@ -95,6 +91,7 @@ class ProjectRepositoryImpl extends ProjectRepository {
         inviteToken: token,
         inviteTokenExpiresAt: { $gt: Date.now() },
       });
+
       if (member) {
         member.userId = userId;
         member.status = "active";
@@ -137,7 +134,6 @@ class ProjectRepositoryImpl extends ProjectRepository {
           },
         },
       ]);
-      console.log("members == ",members);
 
       return members;
     } catch (error) {

@@ -34,7 +34,6 @@ const listAllMembersUseCase = new ListAllMembers(projectRepository);
 const chatSoketHandler = (io, socket) => {
   socket.on("sendMessage", async ({ groupId, message }) => {
     try {
-      console.log(message, groupId);
       const messageData = {
         groupId,
         ...message,
@@ -42,11 +41,6 @@ const chatSoketHandler = (io, socket) => {
       };
 
       const newMessage = await createMessageUseCase.execute(messageData);
-      // const notification = {
-      //   type: "messageReceived",
-      //   title: `${message.senderName} sent a message`,
-      //   message: newMessage.content,
-      // }
       let notification = {};
       if (newMessage.attachmentUrl) {
         notification = {
@@ -65,10 +59,8 @@ const chatSoketHandler = (io, socket) => {
         notification
       );
       const allMembers = await listAllMembersUseCase.execute(
-         groupId
+        groupId
       );
-      console.log("members = ", allMembers);
-      console.log("sender = ", message.senderId);
       const memberIds = allMembers
         .filter(
           (member) => member.user._id != message.senderId // TODO: consider the sending user
@@ -78,22 +70,16 @@ const chatSoketHandler = (io, socket) => {
       await notifyUserUseCase.execute(memberIds, newNotification._id);
 
       // Notify connected members
-      console.log(memberIds);
-
       memberIds.forEach((memberId) => {
         const mId = memberId.toString();
         const socketId = SocketMap.get(mId);
 
         if (socketId && socketId !== undefined) {
-          console.log("loop ==", socketId);
-
           io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
         }
       });
       io.to(groupId).emit("receiveMessage", newMessage);
     } catch (error) {
-      console.log("group message error = >", error);
-
       socket.emit("error", { message: "Failed to send message" });
     }
   });
@@ -106,7 +92,6 @@ const getAllChats = async (req, res) => {
       groupId,
       timestamp,
     });
-
     res.status(200).json({ messages });
   } catch (error) {
     res.status(500).json({ error: error.message });

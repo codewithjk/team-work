@@ -17,6 +17,7 @@ import projectApi from "../../infrastructure/api/projectApi";
 import { SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import NoProjects from "@/components/empty-data-message/NoProjects";
+import PricingPopover from "@/components/ui/pricingPopover";
 
 // Zod schema for form validation
 const projectSchema = z.object({
@@ -29,6 +30,7 @@ function ProjectPage() {
   const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
   const [coverImage, setCoverPhoto] = useState("");
   const [projects, setProjects] = useState([]);
+  const [isPaymentPopup,setIsPaymentPopup] = useState(false)
 
   const {
     register,
@@ -49,6 +51,7 @@ function ProjectPage() {
         if (response.status === 200) {
           setProjects(data);
         } else {
+          
           toast.error("Failed to fetch projects.");
         }
       } catch (error) {
@@ -62,23 +65,25 @@ function ProjectPage() {
   const handleFormSubmit = async (data) => {
     try {
       const response = await projectApi.createProject(data);
-      console.log(response);
-
       if (response.status === 200) {
         const newProject = await response.data.project;
-        console.log("new proect : ", newProject);
+    
 
         setProjects((prevProjects) => [...prevProjects, newProject]);
 
         toast.success("Project added successfully!");
         setIsProjectFormOpen(false);
         reset();
-      } else {
+      } else{
         toast.error("Failed to add project.");
       }
     } catch (error) {
-      console.error("Error saving project:", error);
-      toast.error("Failed to add project.");
+      if(error.response.status == 402){
+        setIsPaymentPopup(true)
+      }else{
+        toast.error(error.message || "Failed to add project.");
+      }
+     
     }
   };
 
@@ -86,9 +91,7 @@ function ProjectPage() {
     setCoverPhoto(imageUrl);
     setValue("coverImage", imageUrl); // Update cover photo field in the form
   };
-  const han = () => {
-    console.log("kajlkd");
-  };
+  
 
   return (
     <div className=" max-w-screen flex flex-col ">
@@ -164,7 +167,7 @@ function ProjectPage() {
         </div>
       )}
 
-      <Toaster />
+      {isPaymentPopup &&(<PricingPopover closepopup={setIsPaymentPopup}/>)}
     </div>
   );
 }

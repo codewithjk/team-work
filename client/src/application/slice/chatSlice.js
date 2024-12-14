@@ -14,14 +14,14 @@ const initialState = {
   hasInitialAIResponse: false,
   hasInitialResponse: false,
   selectedGroup: null,
-  groups:[],
+  groups: [],
 };
 
 const chatSlice = createSlice({
   name: "chat",
   initialState,
   reducers: {
-    setGroups:(state,action)=>{
+    setGroups: (state, action) => {
       state.groups = action.payload
     },
     setSelectedExample: (state, action) => {
@@ -40,15 +40,12 @@ const chatSlice = createSlice({
       state.chatBotMessages = action.payload(state.chatBotMessages);
     },
     setSelectedGroup: (state, action) => {
-      console.log(action.payload);
       state.selectedGroup = action.payload;
     },
     setMessages: (state, action) => {
-      console.log("called",action.payload);
       state.messages.push(action.payload);
     },
     addOldMessages: (state, action) => {
-      console.log("Old messages loaded");
       state.messages = [...action.payload, ...state.messages]; // Prepend old messages
     },
     setHasInitialAIResponse: (state, action) => {
@@ -61,10 +58,12 @@ const chatSlice = createSlice({
       state.messages = [];
     },
     sortGroups: (state, action) => {
+      console.log('sort group worked');
+
       const lastMessageGroupId = action.payload.groupId;
       state.groups = state.groups.map((group) => {
         if (group._id === lastMessageGroupId) {
-          group.lastMessage = action.payload; 
+          group.lastMessage = action.payload;
         }
         return group;
       });
@@ -72,10 +71,10 @@ const chatSlice = createSlice({
         if (a.lastMessage && b.lastMessage) {
           return new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp);
         }
-        return b.lastMessage ? 1 : -1; 
+        return b.lastMessage ? 1 : -1;
       });
     }
-    
+
   },
 });
 

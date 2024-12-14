@@ -14,7 +14,6 @@ const resetPassword = (token, password) => {
   return axios.post(`/auth/reset-password/${token}`, { password });
 };
 const verifyMail = (code) => {
-  console.log(code);
   return axios.post(`/auth/verify-email/`, { code });
 };
 const checkAuth = () => {

@@ -9,7 +9,7 @@ const mailtrapClient = new MailtrapClient({
 });
 
 const sender = {
-  email: "mailtrap@demomailtrap.com",
+  email: "hello@sprintflow.site",
   name: "Mailtrap Test",
 };
 module.exports = { mailtrapClient, sender };

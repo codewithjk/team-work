@@ -19,15 +19,12 @@ class ModuleController {
   async createModule(req, res) {
     try {
       const { projectId } = req.query;
-      console.log({ projectId, ...req.body });
       const newModule = await creatModuleUseCase.execute({
         projectId,
         ...req.body,
       });
-      console.log(newModule);
       res.status(200).json({ message: "successful", module: newModule });
     } catch (error) {
-      console.log("Error from controller : ", error.message);
       res.status(400).json({ error: error.message });
     }
   }

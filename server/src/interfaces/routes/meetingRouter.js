@@ -1,5 +1,6 @@
 const express = require("express");
 const MeetingController = require("../controllers/meetingController");
+const checkPremium = require("../middlewares/checkPremium");
 
 const router = express.Router();
 
@@ -8,7 +9,7 @@ const meetingController = new MeetingController();
 router
   .route("/")
   .get(meetingController.getAllMeetings)
-  .post(meetingController.createMeeting);
+  .post(checkPremium, meetingController.createMeeting);
 
 router
   .route("/:meetingId")

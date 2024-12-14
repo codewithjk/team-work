@@ -17,7 +17,7 @@ router.post(`/oauth-signup`, authController.oauthSignup);
 router.post(`/logout`, authController.logout);
 router.put(`/resend-code`, authController.resendCode);
 
-router.post(`/refresh`,authController.refresh)
+router.post(`/refresh`, authController.refresh)
 
 // Google OAuth routes
 router.get(

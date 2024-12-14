@@ -71,10 +71,6 @@ const NotificationPage = () => {
     }
     getNotifications();
   }, []);
-
-  console.log(projects);
-  console.log(notifications);
-
   const handleDeleteNotification = async (notification) => {
     setCurrentNotification(notification);
     handleOpenPopover();
@@ -140,16 +136,16 @@ const NotificationPage = () => {
             <div className="flex items-center space-x-4">
               <div
                 className="radial-progress text-blue-500"
-                style={{ "--value": notification.progress, "--size": "3rem" }}
+                style={{ "--value": notification?.progress, "--size": "3rem" }}
               >
                 <MessageCircleIcon />
               </div>
               <div className="">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {notification.notification.title}
+                  {notification?.notification?.title}
                 </h2>
                 <p className=" text-sm text-zinc-500">
-                  {notification.notification.message}
+                  {notification?.notification?.message}
                 </p>
               </div>
             </div>
@@ -188,8 +184,6 @@ const NotificationPage = () => {
           onConfirm={handleConfirm}
         />
       </div>
-
-      {/* <Toaster /> */}
     </div>
   );
 };

@@ -37,7 +37,6 @@ const listAllMembersUseCase = new ListAllMembers(projectRepository);
 const taskSocketHandler = (io, socket) => {
   socket.on("createTask", async ({ projectId, task }) => {
     try {
-      console.log(task, projectId);
       const taskData = {
         projectId,
         ...task,
@@ -59,9 +58,6 @@ const taskSocketHandler = (io, socket) => {
       const allMembers = await listAllMembersUseCase.execute(
         projectId
       );
-
-      console.log("members = ", allMembers);
-      console.log("creator = ", task.creatorId);
       const memberIds = allMembers
         .filter(
           (member) => member.user._id != task.creatorId // Exclude the task creator
@@ -71,46 +67,34 @@ const taskSocketHandler = (io, socket) => {
       await notifyUserUseCase.execute(memberIds, newNotification._id);
 
       // Notify connected members
-      console.log(memberIds);
-
       memberIds.forEach((memberId) => {
         const mId = memberId.toString();
         const socketId = SocketMap.get(mId);
 
         if (socketId && socketId !== undefined) {
-          console.log("loop ==", socketId);
-
           io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
         }
       });
 
       io.to(projectId).emit("receiveTask", newTask);
     } catch (error) {
-      console.log("task creation error = >", error);
-
       socket.emit("error", { message: "Failed to create task" });
     }
   });
 
   socket.on("updateTask", async ({ projectId, taskId, state }) => {
     try {
-      console.log(`Task ${taskId} updated in project ${projectId} < ${state}`);
       const userId = socket.handshake.query.userId;
 
       const updatedTaskData = await updateTaskUseCase.execute(taskId, {
         state,
       });
       const updater = await getProfile.execute(userId);
-
-      console.log("updated task =>", updatedTaskData);
-
       let notification = {
         type: "taskUpdated",
         title: `${updater.name} updated a task`,
         message: `task state is changed to ${updatedTaskData.state}`,
       };
-      console.log(notification);
-
       const newNotification = await createNotificationUseCase.execute(
         notification
       );
@@ -126,25 +110,25 @@ const taskSocketHandler = (io, socket) => {
         .map((member) => member.user._id);
 
       await notifyUserUseCase.execute(memberIds, newNotification._id);
-
       // Notify connected members
-      console.log(memberIds, updater._id, memberIds[0] == updater._id);
-
       memberIds.forEach((memberId) => {
         const mId = memberId.toString();
         const socketId = SocketMap.get(mId);
 
         if (socketId && socketId !== undefined) {
-          console.log("loop ==", socketId);
-
           io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
+          let res = io.to(socketId).emit("receiveUpdatedTask", updatedTaskData);
+
         }
       });
+      console.log("reached here", projectId);
 
-      io.to(projectId).emit("receiveUpdatedTask", updatedTaskData);
+
+      // let res = io.to(socketId).emit("receiveUpdatedTask", updatedTaskData);
+
+
     } catch (error) {
       console.log("task update error = >", error);
-
       socket.emit("error", { message: "Failed to update task" });
     }
   });

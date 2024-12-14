@@ -84,6 +84,9 @@ class SubscriptionRepositoryImpl {
       },
     ]);
   }
+  async findOne(query) {
+    return await subscriptionModel.findOne(query)
+  }
 
   async save(subscription) {
     const newSubscription = new subscriptionModel(subscription);

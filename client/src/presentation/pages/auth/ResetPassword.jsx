@@ -136,7 +136,6 @@ function ResetPassword() {
           </Form>
         </div>
       </section>
-      <Toaster />
     </div>
   );
 }

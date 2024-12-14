@@ -14,11 +14,10 @@ import { useSelector } from "react-redux";
 import { getSocket } from "@/utils/socketClient.config";
 
 const TaskPage = () => {
-  console.log(" task page rendered");
-
   const dispatch = useDispatch();
 
   const { projectId } = useParams();
+
   dispatch(getTasks(projectId));
 
   const [isTaskFormOpen, setIsTaskFormOpen] = useState(false);
@@ -26,7 +25,7 @@ const TaskPage = () => {
   const [tasks, setTasks] = useState([]);
   const [members, setMembers] = useState([]);
   const [modules, setModules] = useState([]);
-  const [project, setProject] = useState([]);
+  const [project, setProject] = useState({});
   const { profileData } = useSelector((state) => state.profile);
 
   useEffect(() => {
@@ -42,20 +41,18 @@ const TaskPage = () => {
     getModules();
     async function getTasks() {
       const response = await taskApi.getAllTasks(projectId);
-      console.log(response);
       setTasks(response.data.tasks);
     }
     getTasks();
     async function getProject(projectId) {
       const response = await projectApi.getProject(projectId);
-      console.log(response);
       setProject(response.data.project);
     }
     getProject(projectId);
+    
   }, [projectId]);
 
   const isOwner = project.ownerId === profileData?._id;
-  console.log(isOwner, project.ownerId, profileData?._id);
 
   const handleAddTask = async (data) => {
     try {
@@ -64,7 +61,6 @@ const TaskPage = () => {
       toast.success("Task created successfully!");
       setIsTaskFormOpen(false);
     } catch (error) {
-      console.log(error);
       toast.error("Failed to create task");
     }
   };

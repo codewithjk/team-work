@@ -32,7 +32,6 @@ function VerifyEmail() {
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
   const { loading, error, message, user } = auth;
-  console.log(user);
   const userId = user.id;
   const verificationTokenExpiresAt = user.verificationTokenExpiresAt;
 
@@ -161,7 +160,6 @@ function VerifyEmail() {
           </form>
         </Form>
       </section>
-      <Toaster />
     </div>
   );
 }

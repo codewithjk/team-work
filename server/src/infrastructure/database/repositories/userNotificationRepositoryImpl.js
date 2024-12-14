@@ -1,15 +1,11 @@
-const mongoose = require("mongoose");
-const membersModel = require("../models/membersModel");
+
 const userNotificationModel = require("../models/userNotificationModel");
 
 class UserNotificationRepositoryImpl {
   async findById(id) {
     return await userNotificationModel.findById(id);
   }
-
   async save(userNotifications) {
-    // const newUserNotification = new userNotificationModel(userNotification);
-    // return await newUserNotification.save();
     return await userNotificationModel.insertMany(userNotifications);
   }
   async update(id, userNotification) {
@@ -22,7 +18,6 @@ class UserNotificationRepositoryImpl {
   async findAll(queries) {
     try {
       const { search, filter, page, limit, projectIds, userId } = queries;
-      // const query = { projectId: { $in: projectIds } };
       const query = { user: userId };
 
       if (search) {

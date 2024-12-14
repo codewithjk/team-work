@@ -15,7 +15,6 @@ class AuthService {
       const { name, email, password, oauthId } = data;
       const existingUser = await userRepository.findByEmail(email);
       if (existingUser && oauthId) {
-        console.log("git login", existingUser);
         return await JwtToken.setToken(existingUser);
       } else if (existingUser) {
         throw new Error("User already exists");
@@ -40,9 +39,8 @@ class AuthService {
           ...user,
           verificationTokenExpiresAt: Date.now() + 1 * 60 * 1000,
         });
-        console.log("new user", newUser);
         await sendVerificationEmail(newUser.email, newUser.verificationToken);
-        return { data: newUser };
+        return await JwtToken.setToken(newUser);
       }
     } catch (error) {
       throw error;
@@ -75,7 +73,6 @@ class AuthService {
       verifiedUser.verificationTokenExpiresAt = undefined;
       await userRepository.save(verifiedUser);
       sendWelcomeEmail(verifiedUser.email, verifiedUser.name);
-      // return verifiedUser;
       return await JwtToken.setToken(verifiedUser);
     } catch (error) {
       throw error;
@@ -115,13 +112,11 @@ class AuthService {
       await sendResetSuccessEmail(user.email);
       return user;
     } catch (error) {
-      console.log("before", error);
       throw new Error(error);
     }
   }
   async checkAuth(id, userRepository) {
     try {
-      console.log("check auth called ");
       const user = await userRepository.findById(id);
       return user;
     } catch (error) {
@@ -130,7 +125,6 @@ class AuthService {
   }
   async getProfile(id, userRepository) {
     try {
-      console.log("get profile called ");
       const user = await userRepository.findById(id);
       return user;
     } catch (error) {
@@ -141,7 +135,6 @@ class AuthService {
     try {
       const { userId } = data;
       const user = await userRepository.findById(userId);
-      console.log(user, userId);
       const verificationToken = generateVerificationCode();
       user.verificationTokenExpiresAt = Date.now() + 1 * 60 * 1000;
       user.verificationToken = verificationToken;

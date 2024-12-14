@@ -21,7 +21,7 @@ class NotificationRepositoryImpl {
   async findAll(queries) {
     try {
       const { search, filter, page, limit, projectIds, userId } = queries;
-      // const query = { projectId: { $in: projectIds } };
+      const query = { projectId: { $in: projectIds } };
 
       if (search) {
         query.name = { $regex: search, $options: "i" };

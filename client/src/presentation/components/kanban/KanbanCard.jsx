@@ -81,7 +81,6 @@ const KanbanCard = ({ task, isOwner }) => {
       dispatch(updateTask(currentTask._id, data));
       toast.success("Task updated successfully!");
     } catch (error) {
-      console.log(error);
       toast.error("Failed to update task");
     } finally {
       dispatch(setCurrentTask(null));
@@ -158,6 +157,7 @@ const KanbanCard = ({ task, isOwner }) => {
           members={members}
           modules={modules}
           initialData={currentTask}
+          title="Update task"
         />
       )}
 

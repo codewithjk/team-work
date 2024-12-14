@@ -70,7 +70,6 @@ function ProfileSettingsPage() {
 
   const onSubmit = async (data) => {
     const response = await profileApi.updateProfile(data);
-    console.log(response);
     if (response.status === 200) {
       const updatedUser = await response.data.user;
       toast.success("Profile updated successfully");
@@ -176,7 +175,6 @@ function ProfileSettingsPage() {
           </form>
         </Form>
       </Card>
-      <Toaster />
     </div>
   );
 }

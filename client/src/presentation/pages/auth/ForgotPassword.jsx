@@ -106,7 +106,6 @@ function ForgotPassword() {
           </Form>
         </div>
       </section>
-      <Toaster />
     </div>
   );
 }

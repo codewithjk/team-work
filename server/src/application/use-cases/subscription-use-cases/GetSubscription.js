@@ -1,10 +1,12 @@
+
+
 class GetSubscription {
   constructor(subscriptionRepository) {
     this.subscriptionRepository = subscriptionRepository;
   }
 
-  async execute(subscriptionId) {
-    return await this.subscriptionRepository.findById(subscriptionId);
+  async execute(query) {
+    return await this.subscriptionRepository.findOne(query);
   }
 }
 

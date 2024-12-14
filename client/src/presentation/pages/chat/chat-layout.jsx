@@ -25,9 +25,6 @@ export function ChatLayout({
   const dispatch = useDispatch()
 
   const { messages,groups } = useSelector((state) => state.chat);
-  console.log(messages)
-
-
 
   useEffect(() => {
     async function getAllGroups() {
@@ -43,9 +40,6 @@ export function ChatLayout({
           return { ...group, messages: fetchedMessages };
         })
       );
-  
-      console.log(groupsWithMessages);  // Now groupsWithMessages contains all groups with their respective messages
-      
       // Dispatch the groups with messages
       dispatch(setGroups(groupsWithMessages));
       

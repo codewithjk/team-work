@@ -39,8 +39,6 @@ function AddMemberPopover({ isOpen, onClose }) {
     resolver: zodResolver(addMemberSchema),
   });
   const { projectId } = useParams("projectId");
-  console.log(projectId);
-
   const selectedRole = watch("role");
 
   const handleAddMember = async (data) => {
@@ -54,7 +52,7 @@ function AddMemberPopover({ isOpen, onClose }) {
       if (error.response.status == 403) {
         toast.error(error.response.data.message);
       } else {
-        toast.error("Failed to invite member.");
+        toast.error("Failed to invite member. or member already exists ");
       }
     }
   };

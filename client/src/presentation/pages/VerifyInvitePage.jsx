@@ -13,29 +13,33 @@ function VerifyInvitationPage() {
     async function verifyToken() {
       try {
         const response = await projectApi.verifyInvitationToken(token);
-        console.log(response);
-        if (response.status === 200) {
-          // Successfully verified
-          toast.success("Invitation verified successfully!");
-          // Redirect to the login or dashboard page
-          navigate("/home");
-        } else {
-          // Verification failed
-          toast.error("Invalid or expired token.");
-          navigate("/error");
-        }
+        console.log(response)
+        // if (response.status === 200) {
+        //   // Successfully verified
+        //   toast.success("Invitation verified successfully!");
+        //   // Redirect to the login or dashboard page
+        //   navigate("/home");
+        // } else {
+        //   // Verification failed
+          
+        //   toast.error("Invalid or expired token.");
+        //   navigate("/error");
+        // }
       } catch (err) {
-        // Handle errors
+        // Handle errors   
         toast.error("An error occurred. Please try again.");
         setError(err.message);
         navigate("/error");
       } finally {
         setLoading(false);
+        setError('')
       }
     }
-
     verifyToken();
-  }, [token, navigate]);
+    return ()=>{
+      setError("")
+    }
+  }, [token]);
 
   if (loading) {
     return (

@@ -1,9 +1,12 @@
 const express = require("express");
 const TaskController = require("../controllers/taskController");
+const verifyProjectMember = require("../middlewares/verifyProjectMember");
 
 const router = express.Router();
 
 const taskController = new TaskController();
+
+// router.use(verifyProjectMember)
 
 router
   .route("/")

@@ -5,8 +5,6 @@ const getChat = (id) => {
 };
 
 const getAllChats = (groupId, timestamp) => {
-  console.log(groupId, timestamp);
-
   return axios.get(`/chat`, {
     params: {
       groupId,

@@ -48,7 +48,6 @@ function HandleGoogleOauthPage() {
 
     if (token) {
       getUserData(token).then(async (user) => {
-        console.log("this is the google user : ", user);
         if (user) {
           await dispatch(signup(user));
           if (isAuthenticated) {

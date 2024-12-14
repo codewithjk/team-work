@@ -25,6 +25,7 @@ import meetingApi from "../../../infrastructure/api/meetingApi";
 import projectApi from "../../../infrastructure/api/projectApi";
 import { Video } from "lucide-react";
 import MeetingScreen from "./MeetingScreen";
+import PricingPopover from "@/components/ui/pricingPopover";
 
 // Zod schema for form validation
 const meetingSchema = z.object({
@@ -44,6 +45,8 @@ const MeetingPage = () => {
   const handleClosePopover = () => setPopoverOpen(false);
   const [projects, setProjects] = useState([]);
   const [selectedProjectName, setSelectedProjectName] = useState(null);
+  const [isPaymentPopup,setIsPaymentPopup] = useState(false)
+
 
   const [roomId, setRoomId] = useState(null);
 
@@ -77,8 +80,6 @@ const MeetingPage = () => {
     getMeetings();
   }, []);
 
-  console.log(projects);
-
   const {
     register,
     handleSubmit,
@@ -98,7 +99,13 @@ const MeetingPage = () => {
       setIsMeetingFormOpen(false);
       reset();
     } catch (error) {
-      toast.error("Failed to create meeting");
+      if(error.response.status == 402){
+        setIsPaymentPopup(true)
+      }else{
+        toast.error("Failed to create meeting");
+      }
+     
+   
     }
   };
 
@@ -280,10 +287,11 @@ const MeetingPage = () => {
           </Card>
         </div>
       )}
+      {isPaymentPopup && <PricingPopover closepopup={setIsPaymentPopup}/>
+      }
 
-      {roomId && <MeetingScreen setRoomId={setRoomId} roomId={roomId} />}
+      {roomId && <MeetingScreen closepopup={setRoomId} setRoomId={setRoomId} roomId={roomId} />}
 
-      <Toaster />
     </div>
   );
 };

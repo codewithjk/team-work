@@ -38,7 +38,6 @@ function Sidebar() {
         if (response.status === 200) {
           setProjects(data);
         } else {
-          console.log(response);
           // toast.error("Failed to fetch projects.");
         }
       } catch (error) {
@@ -52,13 +51,11 @@ function Sidebar() {
   //function to join the project group
   const handleSelectTask = (project) => {
     const userId = profileData._id;
-    console.log("this is when the task is selected == ", project);
     const socket = getSocket();
     socket.emit("joinProjectTask", { projectId: project._id, userId });
   };
 
   const { unread } = useSelector((state) => state.notification);
-  console.log(unread);
 
   const menuItems = [
     { name: "Home", icon: <LucideHome className="w-5 h-5" />, path: "/home" },
@@ -90,7 +87,6 @@ function Sidebar() {
   };
 
   const toggleProjectMenu = (projectId) => {
-    console.log(projectId);
     setOpenProjectDropdowns((prevState) => ({
       [projectId]: !prevState[projectId],
     }));

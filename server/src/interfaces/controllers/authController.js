@@ -5,10 +5,14 @@ const resendCode = require("../../application/use-cases/resendCode");
 const sendResetPasswordMail = require("../../application/use-cases/sendResetPasswordMail");
 const updatePassword = require("../../application/use-cases/updatePassword");
 const verifyUser = require("../../application/use-cases/verifyUser");
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.JWT_SECRET;
+
+
 class AuthController {
   async register(req, res, next) {
     try {
-      const {user,accessToken,refreshToken} = await createUser.execute(req.body);
+      const { user, accessToken, refreshToken } = await createUser.execute(req.body);
       const { _id, name, email, isVerified, verificationTokenExpiresAt } =
         user;
       if (accessToken && refreshToken) {
@@ -18,7 +22,7 @@ class AuthController {
           sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
           maxAge: 7 * 24 * 60 * 60 * 1000,
         })
-        .header('Authorization', accessToken);
+          .header('Authorization', accessToken);
       }
 
       res
@@ -30,7 +34,7 @@ class AuthController {
   }
   async login(req, res) {
     try {
-      const {user,refreshToken,accessToken} = await loginUser.execute(req.body);
+      const { user, refreshToken, accessToken } = await loginUser.execute(req.body);
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -53,7 +57,7 @@ class AuthController {
     try {
       const { code } = req.body;
 
-      const {user,refreshToken,accessToken} = await verifyUser.execute(code);
+      const { user, refreshToken, accessToken } = await verifyUser.execute(code);
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
@@ -61,7 +65,7 @@ class AuthController {
         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       }).header('Authorization', accessToken);
-      const { _id, name, email, isVerified } = user.data;
+      const { _id, name, email, isVerified } = user;
       res.status(200).json({
         success: true,
         message: "validation success",
@@ -102,7 +106,6 @@ class AuthController {
       const id = req.userId;
       const user = await checkAuth.execute(id);
       const { _id, name, email, isVerified } = user;
-      console.log("check auth called", id);
       res.status(200).json({
         message: "success",
         user: { id: _id, name, email, isVerified },
@@ -124,7 +127,6 @@ class AuthController {
       const { _id, name, email, isVerified } = user;
       res.status(201).json({ id: _id, name, email, isVerified });
     } catch (error) {
-      console.log("erororrrrrr: ", error);
       res.status(400).json({ error: error.message });
     }
   }
@@ -141,7 +143,6 @@ class AuthController {
         message: 'Logged out successfully',
       });
     } catch (error) {
-      console.log(error);
       res.status(500).json({
         success: false,
         message: 'Logout failed',
@@ -151,10 +152,7 @@ class AuthController {
   async resendCode(req, res) {
     try {
       const { userId } = req.body;
-      console.log(userId);
-
       const user = await resendCode.execute({ userId });
-      console.log(user);
       const { _id, name, email, isVerified, verificationTokenExpiresAt } = user;
       res.status(200).json({
         message: "successfully resend code",
@@ -164,23 +162,25 @@ class AuthController {
       res.status(400).json({ error: error.message });
     }
   }
-  async refresh(req,res){
+
+
+  async refresh(req, res) {
     const refreshToken = req.cookies['refreshToken'];
-  if (!refreshToken) {
-    return res.status(401).send('Access Denied. No refresh token provided.');
+    if (!refreshToken) {
+      return res.status(401).send('Access Denied. No refresh token provided.');
+    }
+    try {
+      const decoded = jwt.verify(refreshToken, secretKey);
+      // Generate a new access token
+      const accessToken = jwt.sign({ user: decoded.user }, secretKey, { expiresIn: '1h' });
+      return res.status(200).json({ accessToken });
+    } catch (error) {
+      return res.status(403).send('Invalid or expired refresh token.');
+    }
   }
 
-  try {
-    const decoded = jwt.verify(refreshToken, secretKey);
-    const accessToken = jwt.sign({ user: decoded.user }, secretKey, { expiresIn: '1h' });
 
-    res
-      .header('Authorization', accessToken)
-      .send(decoded.user);
-  } catch (error) {
-    return res.status(400).send('Invalid refresh token.');
-  }
-  }
+
 }
 
 module.exports = new AuthController();
