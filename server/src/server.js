@@ -4,9 +4,10 @@ const mongoose = require("mongoose");
 const app = require("./app");
 const http = require("http");
 const socketServer = require("../src/infrastructure/sockets/socketServer");
+require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.NODE_ENV === "production" ? process.env.MONGODB_URI : 'mongodb://mongo:27017/sprintflow';
 
 if (!MONGODB_URI) {
   console.error(
