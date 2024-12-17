@@ -38,9 +38,12 @@ class NotificationRepositoryImpl {
         .find(query)
         .skip((page - 1) * limit)
         .limit(parseInt(limit));
+      console.log(notifications);
+
 
       return { notifications, totalPages };
     } catch (error) {
+      console.log(error)
       throw error;
     }
   }

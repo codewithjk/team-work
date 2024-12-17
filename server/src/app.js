@@ -14,6 +14,7 @@ const meetingRouter = require("./interfaces/routes/meetingRouter");
 const notificationRouter = require("./interfaces/routes/notificationRouter");
 const fileUploadRouter = require("./interfaces/routes/fileUploadRouter");
 const upload = require("./shared/utils/multer");
+require("dotenv").config()
 
 
 const app = express();

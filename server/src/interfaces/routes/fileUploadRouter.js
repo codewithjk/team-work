@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const admin = require("firebase-admin");
+require("dotenv").config()
 
 const router = express.Router();
 

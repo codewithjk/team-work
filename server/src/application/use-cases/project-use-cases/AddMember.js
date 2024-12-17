@@ -3,6 +3,7 @@ const {
   sendInviteEmail,
 } = require("../../../shared/mailtrap/emails");
 const generateVerificationCode = require("../../../shared/utils/generateVerificationCode");
+require("dotenv").config()
 
 class AddMember {
   constructor(projectRepository) {

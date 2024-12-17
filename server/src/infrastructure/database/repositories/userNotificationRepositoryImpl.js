@@ -39,6 +39,7 @@ class UserNotificationRepositoryImpl {
         .populate("notification")
         .skip((page - 1) * limit)
         .limit(parseInt(limit));
+      console.log(notifications)
 
       return { notifications, totalPages };
     } catch (error) {

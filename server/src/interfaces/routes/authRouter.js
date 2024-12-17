@@ -3,6 +3,7 @@ const authController = require("../controllers/authController");
 const router = express.Router();
 const passport = require("passport");
 const verifyToken = require("../middlewares/verifyJwtToken");
+require('dotenv').config();
 
 require("../../shared/utils/passportConfig");
 

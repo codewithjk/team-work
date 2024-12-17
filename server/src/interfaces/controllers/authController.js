@@ -6,6 +6,7 @@ const sendResetPasswordMail = require("../../application/use-cases/sendResetPass
 const updatePassword = require("../../application/use-cases/updatePassword");
 const verifyUser = require("../../application/use-cases/verifyUser");
 const jwt = require('jsonwebtoken');
+require("dotenv").config()
 const secretKey = process.env.JWT_SECRET;
 
 
@@ -29,6 +30,8 @@ class AuthController {
         .status(201)
         .json({ id: _id, name, email, isVerified, verificationTokenExpiresAt });
     } catch (error) {
+
+
       res.status(400).json({ error: error.message });
     }
   }
@@ -50,6 +53,7 @@ class AuthController {
         accessToken
       });
     } catch (error) {
+      console.log(error);
       res.status(400).json({ error: error.message });
     }
   }

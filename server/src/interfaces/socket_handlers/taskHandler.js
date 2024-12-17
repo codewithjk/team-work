@@ -121,7 +121,6 @@ const taskSocketHandler = (io, socket) => {
 
         }
       });
-      console.log("reached here", projectId);
 
 
       // let res = io.to(socketId).emit("receiveUpdatedTask", updatedTaskData);

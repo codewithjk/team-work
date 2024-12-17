@@ -8,6 +8,7 @@ const {
   sendPasswordResetEmail,
   sendResetSuccessEmail,
 } = require("../../shared/mailtrap/emails");
+require('dotenv').config()
 
 class AuthService {
   async createUser(data, userRepository) {
@@ -50,6 +51,7 @@ class AuthService {
     try {
       const { email, password } = data;
       const user = await userRepository.findByEmail(email);
+      console.log(user)
       if (!user) {
         throw new Error("User not found");
       }
@@ -59,6 +61,8 @@ class AuthService {
       }
       return await JwtToken.setToken(user);
     } catch (error) {
+      console.log("servive", error);
+
       throw error;
     }
   }

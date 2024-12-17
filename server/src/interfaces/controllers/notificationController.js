@@ -42,6 +42,7 @@ class NotificationController {
       });
       const projects = projectData.projects;
       const projectIds = projects.map((pro) => pro._id);
+      console.log(projectIds, userId)
 
       const { search, filter, page = 1, limit = 10 } = req.query;
       const { notifications, totalPages } = await listAllNotificationUseCase.execute({
@@ -52,6 +53,7 @@ class NotificationController {
         projectIds,
         userId,
       });
+
 
 
       res.status(200).json({

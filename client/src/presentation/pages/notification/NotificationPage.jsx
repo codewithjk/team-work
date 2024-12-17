@@ -63,10 +63,9 @@ const NotificationPage = () => {
       let projects = allProjectsResponse.data.projects;
       let projectIds = projects.map((pro) => pro._id);
 
-      const response = await notificationApi.getAllNotifications({
-        projectIds,
-      });
-
+      const response = await notificationApi.getAllNotifications();
+      console.log(response.data.notifications.reverse());
+      
       setNotifications(response.data.notifications.reverse());
     }
     getNotifications();
@@ -112,7 +111,7 @@ const NotificationPage = () => {
     });
   };
 
-  const handleCleatAll = async () => {
+  const handleClearAll = async () => {
     const response = await notificationApi.clearAll();
     if (response.status === 200) {
       setNotifications([]);
@@ -125,7 +124,7 @@ const NotificationPage = () => {
     <div className="min-h-screen p-4 max-w-screen">
       {/* Add notification Button */}
       <div className="flex justify-end pb-2 ">
-        <Button onClick={handleCleatAll}>clear all</Button>
+        <Button onClick={handleClearAll}>clear all</Button>
       </div>
       <div className="flex flex-col gap-2">
         {notifications.map((notification) => (
