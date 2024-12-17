@@ -1,16 +1,6 @@
 name: sprintflow
 
 services:
-    
-  mongo:
-    image: mongo:7.0.12
-    ports:
-      - 27017:27017
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - sprintflow
-
   api:
     build:
       context: ./server
@@ -25,9 +15,7 @@ services:
       - sprintflow
     ports:
       - 8080:8080
-    depends_on:
-      - mongo
-
+    
   frontend:
     build:
       context: ./client
@@ -48,8 +36,6 @@ services:
 
 
 
-volumes:
-  mongo_data:
 networks:
   sprintflow:
     driver: bridge
