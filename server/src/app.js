@@ -22,8 +22,9 @@ const app = express();
 
 const allowedOrigin = process.env.WEB_APP_ORIGIN;
 var corsOptions = {
-  origin: allowedOrigin,
+  origin: '*',
   credentials: true,
+  allowedHeaders: 'Content-Type,Authorization'
 };
 app.use(cors(corsOptions));
 app.use(cookieParser());
