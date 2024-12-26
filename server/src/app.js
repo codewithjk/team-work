@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const verifyJwtToken = require("./interfaces/middlewares/verifyJwtToken");
 const moduleRouter = require("./interfaces/routes/moduleRouter");
 const taskRouter = require("./interfaces/routes/taskRouter");
+const commentRouter = require("./interfaces/routes/commentRouter");
 const stripeRouter = require("./interfaces/routes/stripeRouter");
 const chatRouter = require("./interfaces/routes/chatRouter");
 const meetingRouter = require("./interfaces/routes/meetingRouter");
@@ -44,5 +45,6 @@ app.use("/api/v1/chat", chatRouter);
 app.use("/api/v1/meeting", meetingRouter);
 app.use("/api/v1/notification", notificationRouter);
 app.use("/api/v1/upload", fileUploadRouter);
+app.use('/api/v1/comment', commentRouter)
 app.use(errorHandlerMiddleware);
 module.exports = app;

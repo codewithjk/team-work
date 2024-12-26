@@ -1,5 +1,4 @@
-name: sprintflow
-
+version: '3.8'
 services:
   api:
     build:
@@ -14,7 +13,7 @@ services:
     networks:
       - sprintflow
     ports:
-      - 8080:8080
+      - 8080:80
     
   frontend:
     build:

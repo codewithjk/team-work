@@ -7,6 +7,9 @@ const router = express.Router();
 
 const serviceAccount = require("../../../team-work-20ec3-firebase-adminsdk-4jk45-09016eba05.json");
 
+// const path = require('path');
+// const serviceAccount = require(path.join(__dirname, '../../team-work-20ec3-firebase-adminsdk-4jk45-09016eba05.json'));
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,

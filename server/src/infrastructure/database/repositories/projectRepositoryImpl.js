@@ -69,7 +69,7 @@ class ProjectRepositoryImpl extends ProjectRepository {
     try {
       const inviteTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
       const exitstingMemeber = await membersModel.findOne({ email, projectId });
-
+      console.log("seic ==== ", exitstingMemeber)
       if (exitstingMemeber) {
         throw new Error("email is alrady used by other member");
       }

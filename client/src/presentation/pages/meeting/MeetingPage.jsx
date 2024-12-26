@@ -26,17 +26,38 @@ import projectApi from "../../../infrastructure/api/projectApi";
 import { Video } from "lucide-react";
 import MeetingScreen from "./MeetingScreen";
 import PricingPopover from "@/components/ui/pricingPopover";
+import moment from "moment/moment";
 
 // Zod schema for form validation
 const meetingSchema = z.object({
   name: z.string().min(1, "Title is required"),
-  subject: z.string().min(1, "link is required"),
-  projectId: z.string().min(1, "link is required"),
+  subject: z.string().min(1, "Subject is required"),
+  projectId: z.string().min(1, "Project is required"),
+  startTime: z.string().refine((val) => !!val, "Start time is required"),
+  endTime: z.string().refine((val) => !!val, "End time is required")
+}).superRefine((data, ctx) => {
+  const start = new Date(data.startTime);
+  const end = new Date(data.endTime);
+  console.log(data.startTime,start,ctx)
+
+  if (end <= start) {
+    ctx.addIssue({
+      path: ["endTime"],
+      code: z.ZodIssueCode.custom,
+      message: "End time must be after start time",
+    });
+    
+  }
 });
 
-const MeetingPage = () => {
-  const { projectId } = useParams();
 
+
+
+const MeetingPage = () => {
+
+  const { projectId } = useParams();
+  const now = new Date();
+  const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
   const [isMeetingFormOpen, setIsMeetingFormOpen] = useState(false);
   const [meetings, setMeetings] = useState([]);
   const [currentMeeting, setCurrentMeeting] = useState(null);
@@ -79,6 +100,15 @@ const MeetingPage = () => {
     }
     getMeetings();
   }, []);
+  
+
+  // initial value for the form 
+  const initialValue = {
+    
+    startTime: getFormattedDates(now),
+    endTime: getFormattedDates(oneHourLater)
+  };
+  
 
   const {
     register,
@@ -89,6 +119,7 @@ const MeetingPage = () => {
     setValue,
   } = useForm({
     resolver: zodResolver(meetingSchema),
+    defaultValues:initialValue
   });
 
   const handleAddMeeting = async (data) => {
@@ -159,51 +190,68 @@ const MeetingPage = () => {
         <Button onClick={() => setIsMeetingFormOpen(true)}>Add Meeting</Button>
       </div>
       <div className="flex flex-col gap-2">
-        {meetings.map((meeting) => (
-          <Card
-            key={meeting.id}
-            className="shadow-md dark:bg-gray-800 p-4 flex flex-col md:flex-row justify-between items-center"
-          >
-            <div className="flex items-center space-x-4">
-              <div
-                className="radial-progress text-blue-500"
-                style={{ "--value": meeting.progress, "--size": "3rem" }}
-              >
-                <Video />
+        {meetings.map((meeting) => {
+          // Parse the endTime to a Date object
+          const meetingStartTime = new Date(meeting.startTime);
+          const meetingEndTime = new Date(meeting.endTime);
+  
+          // Compare meeting end time with current time
+          const beforMeetingStart = meetingStartTime > now
+          const afterMeetingEnd = meetingEndTime  < now
+          const canJoinMeeting = meetingEndTime > now && now > meetingStartTime;
+          console.log(meetingEndTime , now)
+          return (
+          
+            <Card
+              key={meeting.id}
+              className="shadow-md dark:bg-gray-800 p-4 flex flex-col md:flex-row justify-between items-center"
+            >
+              <div className="flex items-center space-x-4">
+                <div
+                  className="radial-progress text-blue-500"
+                  style={{ "--value": meeting.progress, "--size": "3rem" }}
+                >
+                  <Video />
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                    {meeting.name}
+                  </h2>
+                  <p className="text-muted-foreground">{meeting.subject}</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {meeting.name}
-                </h2>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4 mt-4 md:mt-0">
+              <div className="flex items-center space-x-4 mt-4 md:mt-0">
               
+              {canJoinMeeting && (
+          <Button onClick={() => setRoomId(meeting.roomId)}>
+            Join now
+          </Button>
+                )}
+                
+                {afterMeetingEnd && (<Badge variant="destructive"> meeting ended {moment(meeting.endTime).fromNow() }</Badge>)}
+                {beforMeetingStart && (<Badge variant="secondary"> meeting will start {moment(meeting.startTime).fromNow() }</Badge>)}
 
-              <Button onClick={() => setRoomId(meeting.roomId)}>
-                Join now
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <Button variant="ghost">
-                    <MoreVertical className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  {/* <DropdownMenuItem onClick={() => handleEditMeeting(meeting)}>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button variant="ghost">
+                      <MoreVertical className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    {/* <DropdownMenuItem onClick={() => handleEditMeeting(meeting)}>
                     Edit
                   </DropdownMenuItem> */}
-                  <DropdownMenuItem
-                    onClick={() => handleDeleteMeeting(meeting)}
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </Card>
-        ))}
+                    <DropdownMenuItem
+                      onClick={() => handleDeleteMeeting(meeting)}
+                    >
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </Card>
+          )
+        })}
 
         <ConfirmationPopover
           isOpen={isPopoverOpen}
@@ -268,6 +316,17 @@ const MeetingPage = () => {
                     <p className="text-red-500">{errors.projectId.message}</p>
                   )}
                 </div>
+                <div>
+                  <Label htmlFor="startTime">Start Time</Label>
+                  <Input type="datetime-local"   id="startTime" {...register("startTime")} />
+                  {errors.startTime && <p className="text-red-500">{errors.startTime.message}</p>}
+                </div>
+
+                <div>
+                  <Label htmlFor="endTime">End Time</Label>
+                  <Input type="datetime-local"  id="endTime" {...register("endTime")} />
+                  {errors.endTime && <p className="text-red-500">{errors.endTime.message}</p>}
+                </div>
               </div>
               <div className="flex justify-end mt-4">
                 <Button
@@ -297,3 +356,10 @@ const MeetingPage = () => {
 };
 
 export default MeetingPage;
+
+
+function getFormattedDates(date) {
+
+return date.toISOString().slice(0, 16);
+
+}

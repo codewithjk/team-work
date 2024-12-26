@@ -10,17 +10,34 @@ import {
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import moment from "moment/moment";
+import { useEffect } from "react";
+import { useState } from "react";
 
 const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
   const {user} = useSelector(state=>state.auth);
-  const {groups} = useSelector(state=>state.chat);
+  const { groups } = useSelector(state => state.chat);
+
+  const [sortedChats,setSortedChats] = useState([])
+  
+  useEffect(() => {
+    console.log("this useeffet")
+    let sorted = [...groups].sort((a, b) => {
+      // Get the latest message's timestamp for each chat
+      const latestMessageA = a.messages[a.messages.length - 1];
+      const latestMessageB = b.messages[b.messages.length - 1];
+      // Compare timestamps (ISO strings can be directly compared)
+      return new Date(latestMessageB.timestamp) - new Date(latestMessageA.timestamp);
+    });
+    setSortedChats(sorted)
+  },[groups])
+  console.log(chats,groups)
 
 // // Sort the chats based on the latest message timestamp
-// const sortedChats = chats.sort((a, b) => {
+// const sortedChats = [...groups].sort((a, b) => {
 //   // Get the latest message's timestamp for each chat
 //   const latestMessageA = a.messages[a.messages.length - 1];
 //   const latestMessageB = b.messages[b.messages.length - 1];
-  
 //   // Compare timestamps (ISO strings can be directly compared)
 //   return new Date(latestMessageB.timestamp) - new Date(latestMessageA.timestamp);
 // });
@@ -65,7 +82,7 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
         </div>
       )}
       <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-        {groups.map((chat, index) =>
+        {sortedChats.map((chat, index) =>
           isCollapsed ? (
             <TooltipProvider key={index}>
               <Tooltip key={index} delayDuration={0}>
@@ -109,7 +126,7 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
                 buttonVariants({ variant: chat.variant, size: "xl" }),
                 chat.variant !== "secondary" &&
                   "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white shrink",
-                "justify-start gap-4"
+                "justify-start gap-4","p-2 flex content-between"
               )}
             >
               <Avatar className="flex justify-center items-center">
@@ -132,7 +149,10 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
                       :(chat.lastMessage?chat.lastMessage.content :chat.messages[chat.messages.length - 1].content)}
                   </span>
                 )}
-              </div>
+                </div>
+                <div className="text-muted-foreground ">
+                  {moment(chat.messages[chat.messages.length - 1].timestamp).fromNow()}
+                </div>
             </Link>
           )
         )}

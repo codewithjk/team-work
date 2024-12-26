@@ -2,6 +2,17 @@ import React from "react";
 
 import { CSS } from "@dnd-kit/utilities";
 import { useDraggable } from "@dnd-kit/core";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
+
 
 import {
   DropdownMenu,
@@ -32,6 +43,9 @@ import {
   deleteTask,
   updateTask,
 } from "../../../application/actions/taskActions";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import TaskDetailedView from "../TaskDetailedView";
 
 const KanbanCard = ({ task, isOwner }) => {
   const { projectId } = useParams();
@@ -43,7 +57,7 @@ const KanbanCard = ({ task, isOwner }) => {
   const [isPopoverOpen, setPopoverOpen] = useState(false);
   const handleOpenPopover = () => setPopoverOpen(true);
   const handleClosePopover = () => setPopoverOpen(false);
-
+console.log(task)
   useEffect(() => {
     async function getMembers() {
       const response = await projectApi.getMembers(projectId);
@@ -111,15 +125,24 @@ const KanbanCard = ({ task, isOwner }) => {
   };
 
   return (
+   
     <div
       ref={setNodeRef}
       style={style}
-      className=" group shadow bg-background p-2 flex-col justify-between items-center border border-foreground-50 rounded hover:border-blue-400"
+      className=" drag group shadow bg-background p-2 flex-col justify-between items-center border border-foreground-50 rounded hover:border-blue-400"
       {...attributes}
       {...listeners}
     >
-      <div className="flex items-center justify-between p-0 mb-2 ">
-        <p className="p-0 m-0 font-normal md:text-sm">{task.name}</p>
+     
+      <div className="drag flex items-center justify-between p-0 mb-2 ">
+      <Drawer>
+      <DrawerTrigger className="">
+            <p className="p-0 m-0 font-normal md:text-sm">{task.name}</p>
+            </DrawerTrigger>
+      <DrawerContent>
+        <TaskDetailedView task={task}/>
+  </DrawerContent>
+</Drawer>
         {isOwner && (
           <DropdownMenu>
             <DropdownMenuTrigger>
@@ -136,7 +159,7 @@ const KanbanCard = ({ task, isOwner }) => {
           </DropdownMenu>
         )}
       </div>
-      <div className="flex flex-col gap-2 items-start space-x-4 mt-4 md:mt-0 text-gray-600 dark:text-gray-400 ">
+      <div className="drag flex flex-col gap-2 items-start space-x-4 mt-4 md:mt-0 text-gray-600 dark:text-gray-400 ">
         <div className=" grid grid-flow-col gap-2">
           <button className="border rounded border-foreground-50 p-1 text-sm ">
             {task.state}
@@ -147,7 +170,8 @@ const KanbanCard = ({ task, isOwner }) => {
           <CalendarDaysIcon className="w-4 h-4 " />
           {formatDate(task.startDate)} - {formatDate(task.endDate)}
         </p>
-      </div>
+          </div>
+        
 
       {openEditForm && currentTask && (
         <TaskForm
@@ -168,7 +192,9 @@ const KanbanCard = ({ task, isOwner }) => {
         onCancel={handleCancelDelete}
         onConfirm={handleConfirm}
       />
-    </div>
+        </div>
+       
+
   );
 };
 

@@ -10,3 +10,4 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 
+CMD [ "npm", "run","dev","--","host" ]

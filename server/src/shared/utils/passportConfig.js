@@ -1,8 +1,10 @@
+require('dotenv').config();
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const GitHubStrategy = require("passport-github2").Strategy;
 const jwt = require("jsonwebtoken");
-require('dotenv').config();
+console.log(process.env.GOOGLE_CLIENT_ID)
+
 
 // Google OAuth configuration
 passport.use(

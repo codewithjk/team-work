@@ -41,6 +41,12 @@ const KanbanBoard = ({ isOwner }) => {
   });
 
   const handleDragEnd = async (event) => {
+    console.log(event.activatorEvent.srcElement.classList.contains("drag"))
+    console.log(event.activatorEvent.srcElement)
+    if (!event.activatorEvent.srcElement.classList.contains("drag")) {
+      event.stopPropagation();
+      return
+    }
     const { active, over } = event;
 
     if (!over) return;
