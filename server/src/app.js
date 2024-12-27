@@ -22,7 +22,7 @@ const app = express();
 
 const allowedOrigin = process.env.WEB_APP_ORIGIN;
 var corsOptions = {
-  origin: '*',
+  origin: allowedOrigin,
   credentials: true,
   allowedHeaders: 'Content-Type,Authorization'
 };
@@ -37,15 +37,15 @@ app.use(
 
 app.use(express.json());
 app.use("/api/v1/auth", authRouter);
-app.use(verifyJwtToken);
-app.use("/api/v1/profile", profileRouter);
-app.use("/api/v1/project", projectRouter);
-app.use("/api/v1/module", moduleRouter);
-app.use("/api/v1/task", taskRouter);
-app.use("/api/v1/chat", chatRouter);
-app.use("/api/v1/meeting", meetingRouter);
-app.use("/api/v1/notification", notificationRouter);
-app.use("/api/v1/upload", fileUploadRouter);
-app.use('/api/v1/comment', commentRouter)
+// app.use(verifyJwtToken);
+app.use("/api/v1/profile", verifyJwtToken, profileRouter);
+app.use("/api/v1/project", verifyJwtToken, projectRouter);
+app.use("/api/v1/module", verifyJwtToken, moduleRouter);
+app.use("/api/v1/task", verifyJwtToken, taskRouter);
+app.use("/api/v1/chat", verifyJwtToken, chatRouter);
+app.use("/api/v1/meeting", verifyJwtToken, meetingRouter);
+app.use("/api/v1/notification", verifyJwtToken, notificationRouter);
+app.use("/api/v1/upload", verifyJwtToken, fileUploadRouter);
+app.use('/api/v1/comment', verifyJwtToken, commentRouter)
 app.use(errorHandlerMiddleware);
 module.exports = app;
