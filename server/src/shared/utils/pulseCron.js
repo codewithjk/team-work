@@ -39,4 +39,4 @@ pulse.on('fail', (error, job) => {
 
 
 
-module.exports = { pulse };
+module.exports = pulse;

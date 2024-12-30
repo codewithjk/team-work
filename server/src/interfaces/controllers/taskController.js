@@ -11,7 +11,9 @@ const membersModel = require("../../infrastructure/database/models/membersModel"
 const userModel = require("../../infrastructure/database/models/userModel");
 const TaskRepositoryImpl = require("../../infrastructure/database/repositories/taskRepositoryImpl");
 const convertToHumanReadableDate = require("../../shared/utils/convertDateToReadbel");
-const { pulse } = require("../../shared/utils/pulsecron");
+
+const pulse = require("../../shared/utils/pulseCron")
+
 
 const taskRepository = new TaskRepositoryImpl();
 
