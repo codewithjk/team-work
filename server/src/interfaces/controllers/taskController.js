@@ -1,4 +1,4 @@
-const moment = require('moment');
+
 const {
   CreateTask,
   ListAllTask,
@@ -10,6 +10,7 @@ const {
 const membersModel = require("../../infrastructure/database/models/membersModel");
 const userModel = require("../../infrastructure/database/models/userModel");
 const TaskRepositoryImpl = require("../../infrastructure/database/repositories/taskRepositoryImpl");
+const convertToHumanReadableDate = require("../../shared/utils/convertDateToReadbel");
 const { pulse } = require("../../shared/utils/pulsecron");
 
 const taskRepository = new TaskRepositoryImpl();
@@ -40,8 +41,7 @@ class TaskController {
       const email = assignedUser.email;
       const name = assignedUser.name;
       const taskName = newTask.name;
-      const taskEndIn = moment(endDate).fromNow();
-      console.log(taskEndIn, "  ==  ", moment(endDate).from(endDate.getTime() - 24 * 60 * 60 * 1000));
+      const taskEndIn = convertToHumanReadableDate(endDate);
       const scheduleTime = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
       const job = pulse.create('send email', { email, name, taskName, taskEndIn });
       await job.schedule(new Date(scheduleTime)).save();
@@ -104,8 +104,7 @@ class TaskController {
       const email = assignedUser.email;
       const name = assignedUser.name;
       const taskName = updatedTask.name;
-      const taskEndIn = moment(endDate).fromNow();
-      console.log(" edit task == ", taskEndIn, "  ==  ", moment(endDate).from(endDate.getTime() - 24 * 60 * 60 * 1000));
+      const taskEndIn = convertToHumanReadableDate(endDate);
       const scheduleTime = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
       const job = pulse.create('send email', { email, name, taskName, taskEndIn });
       await job.schedule(new Date(scheduleTime)).save();
