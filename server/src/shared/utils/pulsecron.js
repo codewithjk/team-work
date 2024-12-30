@@ -13,10 +13,8 @@ const pulse = new Pulse({
 });
 
 
-
 pulse.define('send email', async (job, done) => {
     const { email, name, taskName, taskEndIn } = job.attrs.data;
-
     try {
         await sendAlertEmail(email, { name, taskName, taskEndIn })
         console.log(`Email sent to ${email}`);
@@ -34,9 +32,5 @@ pulse.on('success', (job) => {
 pulse.on('fail', (error, job) => {
     console.log(`Job <${job?.attrs?.name}> failed:`, error);
 });
-
-
-
-
 
 module.exports = pulse;
