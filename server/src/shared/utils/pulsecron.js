@@ -34,3 +34,4 @@ pulse.on('fail', (error, job) => {
 });
 
 module.exports = pulse;
+

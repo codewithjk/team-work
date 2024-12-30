@@ -12,9 +12,7 @@ const userModel = require("../../infrastructure/database/models/userModel");
 const TaskRepositoryImpl = require("../../infrastructure/database/repositories/taskRepositoryImpl");
 const convertToHumanReadableDate = require("../../shared/utils/convertDateToReadbel");
 
-const pulse = require("../../shared/utils/pulseCron")
-
-
+const pulse = require("../../shared/utils/pulsecron")
 const taskRepository = new TaskRepositoryImpl();
 
 const creatTaskUseCase = new CreateTask(taskRepository);
