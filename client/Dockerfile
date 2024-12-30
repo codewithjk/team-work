@@ -1,13 +1,13 @@
-FROM node:20-bookworm-slim
-
-RUN npm install -g pnpm
-
+# Stage 1: Build React App
+FROM node:20-bookworm-slim AS build
 WORKDIR /app
-
 COPY package.json pnpm-lock.yaml ./
-
-RUN pnpm install --frozen-lockfile
-
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
 COPY . .
+RUN npm run build
 
-CMD [ "npm", "run","dev","--","host" ]
+# Stage 2: Serve with NGINX
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

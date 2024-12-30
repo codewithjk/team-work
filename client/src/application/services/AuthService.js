@@ -14,6 +14,8 @@ class AuthService {
     const response = await authApi.signup(user);
     if (response.status === 201) {
       // const { _id, name, email } = response.data;
+      const { accessToken } = response.data
+      localStorage.setItem("accessToken", accessToken);
       return response.data;
     }
     throw new Error("Signup failed");

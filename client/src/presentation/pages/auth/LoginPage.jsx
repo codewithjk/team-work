@@ -21,6 +21,7 @@ import { useEffect } from "react";
 import { toast, Toaster } from "sonner";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
+import { resetAuthState } from "../../../application/slice/authSlice";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -54,6 +55,10 @@ const LoginPage = () => {
     if (error) {
       toast.error(error);
     }
+    return () => {
+      dispatch(resetAuthState())
+    }
+   
   }, [user, error, loading]);
 
   const googleLogin = () => {

@@ -38,6 +38,7 @@ import LandingPage from "@/pages/LandingPage";
 import { useState } from "react";
 import NotFoundPage from "@/pages/error/Error404";
 import ErrorPage from "@/pages/error/ErrorPage";
+import { useNavigate } from "react-router-dom";
 
 function App() {
   const dispatch = useDispatch();
@@ -46,11 +47,13 @@ function App() {
   const [socket, setSocket] = useState(null);
   const socketURL =
     import.meta.env.VITE_SOCKET_BASE_URL || "http://localhost:3000";
+  const navigate = useNavigate()
+  const accessToken = localStorage.getItem("accessToken");
+  useEffect(() => {
+    console.log("App refreshed");
+    dispatch(checkAuth());
+  }, [dispatch]);
 
-  // useEffect(() => {
-  //   console.log("App refreshed");
-  //   dispatch(checkAuth());
-  // }, [dispatch]);
 
   const handleNotification = (notification) => {
     toast.info(notification.title);
@@ -89,7 +92,7 @@ function App() {
     <div className=" bg-white">
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Toaster richColors position="top-right" />
-        <Router>
+     
           <Routes>
             <Route
               path="/"
@@ -250,7 +253,7 @@ function App() {
             {/* catch all routes */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
-        </Router>
+     
       </ThemeProvider>
     </div>
   );

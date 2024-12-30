@@ -29,6 +29,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useDispatch } from "react-redux";
+import { setProjcetAction } from "../../application/actions/projectAction";
 
 // Zod schema for form validation
 const projectSchema = z.object({
@@ -50,6 +52,7 @@ function ProjectSettingsPage() {
   const [activeSection, setActiveSection] = useState("general");
   const [isPopoverOpen, setPopoverOpen] = useState(false);
   const [members, setMembers] = useState([]);
+  const dispatch = useDispatch()
 
   // Initialize form with react-hook-form
   const form = useForm({
@@ -101,6 +104,7 @@ function ProjectSettingsPage() {
   const handleDeleteProject = async () => {
     const response = await projectApi.deleteProject(projectId);
     if (response.status === 200) {
+      dispatch(setProjcetAction())
       toast.success("Project deleted successfully");
       navigate("/projects");
     } else {
@@ -112,6 +116,7 @@ function ProjectSettingsPage() {
     try {
       const response = await projectApi.updateProject(projectId, data);
       if (response.status === 200) {
+        dispatch(setProjcetAction())
         toast.success("Project updated successfully!");
         const fetchedProject = response.data.project;
         setProject(fetchedProject);
@@ -227,7 +232,7 @@ function ProjectSettingsPage() {
                 />
 
                 <div className="flex justify-end space-x-4">
-                  <Button variant="glowing" type="submit">
+                  <Button  type="submit">
                     Update Project
                   </Button>
                 </div>

@@ -2,7 +2,10 @@ const userRepository = require("../../infrastructure/database/repositories/userR
 
 class updateProfile {
   async execute(id, data) {
-    return userRepository.findByIdAndUpdate(id, data);
+    let res = userRepository.findByIdAndUpdate(id, data);
+    console.log(res);
+    return res
+
   }
 }
 

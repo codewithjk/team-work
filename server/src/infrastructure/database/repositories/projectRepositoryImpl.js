@@ -59,6 +59,7 @@ class ProjectRepositoryImpl extends ProjectRepository {
       if (filter == "true") {
         projects = [...projects, ...assignedProjects];
       }
+      console.log(projects, assignedProjects)
       return { projects, totalPages };
     } catch (error) {
       throw error;

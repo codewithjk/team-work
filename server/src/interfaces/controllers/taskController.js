@@ -1,3 +1,4 @@
+const moment = require("moment/moment");
 const {
   CreateTask,
   ListAllTask,
@@ -6,7 +7,10 @@ const {
   DeleteTask,
   GetAllTasksByUserId,
 } = require("../../application/use-cases/task-use-cases");
+const membersModel = require("../../infrastructure/database/models/membersModel");
+const userModel = require("../../infrastructure/database/models/userModel");
 const TaskRepositoryImpl = require("../../infrastructure/database/repositories/taskRepositoryImpl");
+const { pulse } = require("../../shared/utils/pulsecron");
 
 const taskRepository = new TaskRepositoryImpl();
 
@@ -27,6 +31,20 @@ class TaskController {
         ...req.body,
         createdBy,
       });
+      // create a cron job
+      await pulse.start();
+      const { assignees, endDate } = newTask;
+      const memberId = assignees[0];
+      const { userId } = await membersModel.findById(memberId)
+      const assignedUser = await userModel.findById(userId);
+      const email = assignedUser.email;
+      const name = assignedUser.name;
+      const taskName = newTask.name;
+      const taskEndIn = moment(endDate).fromNow();
+      console.log(taskEndIn, "  ==  ", moment(endDate).from(endDate.getTime() - 24 * 60 * 60 * 1000));
+      const scheduleTime = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
+      const job = pulse.create('send email', { email, name, taskName, taskEndIn });
+      await job.schedule(new Date(scheduleTime)).save();
       res.status(200).json({ message: "successful", task: newTask });
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -78,6 +96,19 @@ class TaskController {
       const task = req.body;
       const id = req.params.taskId;
       const updatedTask = await updateTaskUsecase.execute(id, task);
+      await pulse.start();
+      const { assignees, endDate } = updatedTask;
+      const memberId = assignees[0];
+      const { userId } = await membersModel.findById(memberId)
+      const assignedUser = await userModel.findById(userId);
+      const email = assignedUser.email;
+      const name = assignedUser.name;
+      const taskName = updatedTask.name;
+      const taskEndIn = moment(endDate).fromNow();
+      console.log(" edit task == ", taskEndIn, "  ==  ", moment(endDate).from(endDate.getTime() - 24 * 60 * 60 * 1000));
+      const scheduleTime = new Date(endDate.getTime() - 24 * 60 * 60 * 1000);
+      const job = pulse.create('send email', { email, name, taskName, taskEndIn });
+      await job.schedule(new Date(scheduleTime)).save();
       res.status(200).json({ message: "successful", updatedTask });
     } catch (error) {
       res

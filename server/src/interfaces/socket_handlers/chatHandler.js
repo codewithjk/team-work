@@ -76,9 +76,10 @@ const chatSoketHandler = (io, socket) => {
 
         if (socketId && socketId !== undefined) {
           io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
+          io.to(groupId).emit("receiveMessage", newMessage);
         }
       });
-      io.to(groupId).emit("receiveMessage", newMessage);
+      // io.to(groupId).emit("receiveMessage", newMessage);
     } catch (error) {
       socket.emit("error", { message: "Failed to send message" });
     }

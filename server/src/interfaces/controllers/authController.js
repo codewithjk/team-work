@@ -6,6 +6,7 @@ const sendResetPasswordMail = require("../../application/use-cases/sendResetPass
 const updatePassword = require("../../application/use-cases/updatePassword");
 const verifyUser = require("../../application/use-cases/verifyUser");
 const jwt = require('jsonwebtoken');
+const JwtToken = require("../../shared/utils/JwtToken");
 require("dotenv").config()
 const secretKey = process.env.JWT_SECRET;
 
@@ -28,10 +29,8 @@ class AuthController {
 
       res
         .status(201)
-        .json({ id: _id, name, email, isVerified, verificationTokenExpiresAt });
+        .json({ id: _id, name, email, isVerified, verificationTokenExpiresAt, accessToken });
     } catch (error) {
-
-
       res.status(400).json({ error: error.message });
     }
   }
@@ -54,7 +53,7 @@ class AuthController {
       });
     } catch (error) {
       console.log(error);
-      res.status(400).json({ error: error.message });
+      res.status(401).json({ error: error.message });
     }
   }
   async verify(req, res) {
@@ -108,6 +107,7 @@ class AuthController {
   async checkAuth(req, res) {
     try {
       const id = req.userId;
+      console.log(id)
       const user = await checkAuth.execute(id);
       const { _id, name, email, isVerified } = user;
       res.status(200).json({
@@ -121,15 +121,18 @@ class AuthController {
   async oauthSignup(req, res) {
     try {
       const user = await oauthSignup.execute(req.body);
-      // res.cookie("access_token", user.token, {
-      //   httpOnly: true,
-      //   secure: process.env.NODE_ENV === "production",
-      //   sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-      //   maxAge: 7 * 24 * 60 * 60 * 1000,
-      // });
+      const { refreshToken, accessToken } = JwtToken.setToken(user)
 
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
       const { _id, name, email, isVerified } = user;
-      res.status(201).json({ id: _id, name, email, isVerified });
+
+
+      res.status(201).json({ id: _id, name, email, isVerified, accessToken });
     } catch (error) {
       res.status(400).json({ error: error.message });
     }

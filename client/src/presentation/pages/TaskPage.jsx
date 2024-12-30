@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import { getTasks } from "../../application/actions/taskActions";
 import { useSelector } from "react-redux";
 import { getSocket } from "@/utils/socketClient.config";
+import { uploadFiles } from "@/utils/uploadFiles";
 
 const TaskPage = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,8 @@ const TaskPage = () => {
   const [members, setMembers] = useState([]);
   const [modules, setModules] = useState([]);
   const [project, setProject] = useState({});
+  const [files, setFiles] = useState([]);
+
   const { profileData } = useSelector((state) => state.profile);
 
   useEffect(() => {
@@ -55,11 +58,20 @@ const TaskPage = () => {
   const isOwner = project.ownerId === profileData?._id;
 
   const handleAddTask = async (data) => {
+
     try {
+      if (files.length > 0) {
+        const fileData = await uploadFiles(files);
+        if (fileData) {
+          data.files = fileData
+        }
+      }
+     
       const response = await taskApi.createTask(projectId, data);
       setTasks([...tasks, response.data.task]);
       toast.success("Task created successfully!");
       setIsTaskFormOpen(false);
+      setFiles([])
     } catch (error) {
       toast.error("Failed to create task");
     }
@@ -101,6 +113,8 @@ const TaskPage = () => {
           members={members}
           modules={modules}
           initialData={{}}
+          files = {files}
+          setFiles={setFiles}
         />
       )}
     </div>

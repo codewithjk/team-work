@@ -22,17 +22,22 @@ import {
 import DateRangePicker from "../date-range-picker/DateRangePicker";
 import { useState } from "react";
 import { useEffect } from "react";
+import DragDrop from "../file-uploader/DragDrop";
 
 // Zod schema
 const taskSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  state: z.enum(
+  state: z.string(
     ["backlog", "planned", "in-progress", "paused", "completed", "cancelled"],
     { required_error: "State is required" }
-  ),
-  priority: z.enum(["urgent", "high", "medium", "low", "none"], {
+  ).refine(val => ["backlog", "planned", "in-progress", "paused", "completed", "cancelled"].includes(val), {
+    message: "Please choose a valid state."
+  }),
+  priority: z.string(["urgent", "high", "medium", "low", "none"], {
     required_error: "Priority is required",
+  }).refine(val => ["urgent", "high", "medium", "low", "none"].includes(val), {
+    message: "Please select a valid priority."
   }),
   assignees: z.array(z.string()).min(1, "At least one assignee is required"),
   startDate: z.string().min(1, "Start date is required"),
@@ -47,6 +52,8 @@ export default function TaskForm({
   modules,
   onClose,
   initialData,
+  files,
+  setFiles,
   title = "Create Task"
 }) {
   const {
@@ -68,6 +75,7 @@ export default function TaskForm({
       endDate: initialData?.endDate || "",
     },
   });
+
 
   const handleDateRange = (range) => {
     const startDate = range?.from
@@ -252,6 +260,9 @@ export default function TaskForm({
                 )}
               </div>
             </div>
+            <div className="flex flex-wrap gap-4">
+              <DragDrop files={files} setFiles={setFiles} />
+            </div>
           </div>
 
           <div className="flex justify-end mt-4">
@@ -270,3 +281,6 @@ export default function TaskForm({
     </div>
   );
 }
+
+
+

@@ -123,9 +123,39 @@ const INVITE_EMAIL_TEMPLATE = `
 </html>
 `;
 
+
+const ALERT_EMAIL_TEMPLATE = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Deadline Reminder</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #FF6347, #FF6347); padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">Task Deadline Reminder</h1>
+  </div>
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p>Dear <b>{user_name}</b>,</p>
+    <p>We wanted to remind you that the task "<b>{task_name}</b>" that has been assigned to you is due tomorrow.</p>
+    <p><b>Task will end {deadline_date}</b></p>
+    <p>Please make sure to complete the task before the deadline. If you have any issues or need further assistance, feel free to reach out to your team lead.</p>
+    
+    <p>This is an automated reminder, but if you have any questions, don't hesitate to contact the team.</p>
+
+    <p>Best regards,<br>Your App Team</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+`;
+
 module.exports = {
   VERIFICATION_EMAIL_TEMPLATE,
   PASSWORD_RESET_REQUEST_TEMPLATE,
   PASSWORD_RESET_SUCCESS_TEMPLATE,
   INVITE_EMAIL_TEMPLATE,
+  ALERT_EMAIL_TEMPLATE
 };

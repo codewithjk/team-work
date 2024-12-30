@@ -121,7 +121,9 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
     });
 
     const handleReceiveMessage = (message) => {
+      console.log("recieved message : ",message)
       dispatch(setMessages(message));
+
       dispatch(sortGroups(message))
     };
 

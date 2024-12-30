@@ -41,8 +41,7 @@ const KanbanBoard = ({ isOwner }) => {
   });
 
   const handleDragEnd = async (event) => {
-    console.log(event.activatorEvent.srcElement.classList.contains("drag"))
-    console.log(event.activatorEvent.srcElement)
+   
     if (!event.activatorEvent.srcElement.classList.contains("drag")) {
       event.stopPropagation();
       return
@@ -58,8 +57,6 @@ const KanbanBoard = ({ isOwner }) => {
     const state = over.id;
     // dispatch(updateTask(taskId, { state }));
     const socket = getSocket();
-    console.log(socket);
-    console.log(task.assignees, user.id);
     if (!task.assignees.includes(user.id)) {
       console.log("not assigned task");
     }

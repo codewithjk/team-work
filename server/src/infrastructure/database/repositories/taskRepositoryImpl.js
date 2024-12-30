@@ -160,6 +160,7 @@ class TaskRepositoryImpl {
             assignees: "$assigneeDetails",
             project: { name: "$project.name" },
             module: "$moduleDetails",
+            files: 1
           },
         },
         {

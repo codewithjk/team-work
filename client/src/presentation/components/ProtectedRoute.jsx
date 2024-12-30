@@ -25,6 +25,7 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [user, loading, dispatch]);
 
+  console.log(user)
   if (loading || isLoading) {
     return <Skeleton className="w-full h-full">{children}</Skeleton>;
   }

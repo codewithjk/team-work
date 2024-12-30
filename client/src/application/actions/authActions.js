@@ -32,7 +32,6 @@ export const login = (email, password) => async (dispatch) => {
     const user = await AuthService.authenticateUser(email, password);
     dispatch(loginSuccess(user));
   } catch (error) {
-    console.error("Login failed", error);
     dispatch(loginFail(error?.response?.data?.error || error.message)); // TODO : display exact error from response
   }
 };

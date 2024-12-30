@@ -27,9 +27,14 @@ class ProjectController {
         ...req.body,
         ownerId,
       });
+      console.log(newProject);
+
       res.status(200).json({ message: "successful", project: newProject });
     } catch (error) {
-      res.status(400).json({ error: error.message });
+      if (error.code == 11000) {
+        return res.status(409).json({ error: "project name is already exists" })
+      }
+      return res.status(400).json({ error: error.message });
     }
   }
   async getProjects(req, res) {

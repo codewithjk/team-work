@@ -57,7 +57,7 @@ const KanbanCard = ({ task, isOwner }) => {
   const [isPopoverOpen, setPopoverOpen] = useState(false);
   const handleOpenPopover = () => setPopoverOpen(true);
   const handleClosePopover = () => setPopoverOpen(false);
-console.log(task)
+
   useEffect(() => {
     async function getMembers() {
       const response = await projectApi.getMembers(projectId);

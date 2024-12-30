@@ -18,10 +18,11 @@ import { ChatInput } from "@/components/ui/chat/chat-input";
 import { EmojiPicker } from "./emoji-picker";
 import { useSelector, useDispatch } from "react-redux";
 import { getSocket } from "@/utils/socketClient.config";
-import { setMessages } from "../../../application/slice/chatSlice";
+import { setMessages, sortGroups } from "../../../application/slice/chatSlice";
 import WaveSurfer from "wavesurfer.js";
 import RecordRTC from "recordrtc";
 import axios from "@/utils/axiosInstance";
+import { uploadFiles } from "@/utils/uploadFiles";
 
 export default function ChatBottombar({ isMobile, selectedGroup }) {
   const [message, setMessage] = useState("");
@@ -121,6 +122,7 @@ export default function ChatBottombar({ isMobile, selectedGroup }) {
     setFile(null);
     setPreviewUrl(null);
     inputRef.current?.focus();
+    dispatch(sortGroups(message))
   };
 
   const handleSend = async () => {
@@ -128,8 +130,9 @@ export default function ChatBottombar({ isMobile, selectedGroup }) {
       sendMessage(createMessage(message.trim()));
     }
     if (file) {
-      const urlObject = await uploadFile();
-      if (urlObject) {
+      const fileArray = await uploadFiles([file])
+      if (fileArray) {
+        const urlObject = fileArray[0];
         sendMessage({
           ...createMessage(message.trim(), "file"),
           attachmentUrl: urlObject.url,

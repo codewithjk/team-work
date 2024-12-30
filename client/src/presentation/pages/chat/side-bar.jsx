@@ -13,35 +13,42 @@ import { useSelector } from "react-redux";
 import moment from "moment/moment";
 import { useEffect } from "react";
 import { useState } from "react";
+import { sortGroupsInitially } from "../../../application/slice/chatSlice";
+import { useDispatch } from "react-redux";
 
 const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
   const {user} = useSelector(state=>state.auth);
   const { groups } = useSelector(state => state.chat);
 
-  const [sortedChats,setSortedChats] = useState([])
-  
+  const [sortedChats, setSortedChats] = useState([]);
   useEffect(() => {
-    console.log("this useeffet")
+    console.log("this useEffect");
+  
     let sorted = [...groups].sort((a, b) => {
-      // Get the latest message's timestamp for each chat
-      const latestMessageA = a.messages[a.messages.length - 1];
-      const latestMessageB = b.messages[b.messages.length - 1];
-      // Compare timestamps (ISO strings can be directly compared)
+      // Get the latest message's timestamp for each chat, or null if there are no messages
+      const latestMessageA = a.messages.length > 0 ? a.messages[a.messages.length - 1] : null;
+      const latestMessageB = b.messages.length > 0 ? b.messages[b.messages.length - 1] : null;
+  
+      // If both chats have no messages, consider them equal
+      if (!latestMessageA && !latestMessageB) {
+        return 0;
+      }
+  
+      // If only one chat has no messages, prioritize the one with messages
+      if (!latestMessageA) {
+        return 1; // Move b to the front
+      }
+      if (!latestMessageB) {
+        return -1; // Move a to the front
+      }
+  
+      // Both chats have messages, so compare their timestamps
       return new Date(latestMessageB.timestamp) - new Date(latestMessageA.timestamp);
     });
-    setSortedChats(sorted)
-  },[groups])
-  console.log(chats,groups)
-
-// // Sort the chats based on the latest message timestamp
-// const sortedChats = [...groups].sort((a, b) => {
-//   // Get the latest message's timestamp for each chat
-//   const latestMessageA = a.messages[a.messages.length - 1];
-//   const latestMessageB = b.messages[b.messages.length - 1];
-//   // Compare timestamps (ISO strings can be directly compared)
-//   return new Date(latestMessageB.timestamp) - new Date(latestMessageA.timestamp);
-// });
-
+  
+    setSortedChats(sorted);
+  }, [groups]);
+  
 
   return (
     // ToDo :  sort the chat list according to the latest chat.
@@ -126,7 +133,7 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
                 buttonVariants({ variant: chat.variant, size: "xl" }),
                 chat.variant !== "secondary" &&
                   "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white shrink",
-                "justify-start gap-4","p-2 flex content-between"
+                "justify-start gap-4","p-2 flex content-end  items-center relative"
               )}
             >
               <Avatar className="flex justify-center items-center">
@@ -150,9 +157,10 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
                   </span>
                 )}
                 </div>
-                <div className="text-muted-foreground ">
-                  {moment(chat.messages[chat.messages.length - 1].timestamp).fromNow()}
-                </div>
+                
+                {(chat.messages[chat.messages.length - 1]) && <div className="text-muted-foreground ">
+                  {moment(chat.messages[chat.messages.length - 1]?.timestamp).fromNow()}
+                </div>}
             </Link>
           )
         )}

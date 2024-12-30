@@ -43,7 +43,8 @@ const chatSlice = createSlice({
       state.selectedGroup = action.payload;
     },
     setMessages: (state, action) => {
-      state.messages.push(action.payload);
+      // state.messages = [...state.messages, action.payload];
+      state.messages.push(action.payload)
     },
     addOldMessages: (state, action) => {
       state.messages = [...action.payload, ...state.messages]; // Prepend old messages
@@ -58,7 +59,7 @@ const chatSlice = createSlice({
       state.messages = [];
     },
     sortGroups: (state, action) => {
-      console.log('sort group worked');
+      console.log('sort group worked', action.payload);
 
       const lastMessageGroupId = action.payload.groupId;
       state.groups = state.groups.map((group) => {
@@ -73,7 +74,34 @@ const chatSlice = createSlice({
         }
         return b.lastMessage ? 1 : -1;
       });
+    },
+    sortGroupsInitially: (state, action) => {
+      console.log('sort group worked');
+
+      // Sort the groups based on the latest message's timestamp
+      state.groups = state.groups.sort((a, b) => {
+        // Get the latest message for each group, or null if there are no messages
+        const latestMessageA = a.messages.length > 0 ? a.messages[a.messages.length - 1] : null;
+        const latestMessageB = b.messages.length > 0 ? b.messages[b.messages.length - 1] : null;
+
+        // If both groups have no messages, consider them equal
+        if (!latestMessageA && !latestMessageB) {
+          return 0;
+        }
+
+        // If only one group has no messages, move the other group to the front
+        if (!latestMessageA) {
+          return 1;  // Move group `b` ahead
+        }
+        if (!latestMessageB) {
+          return -1;  // Move group `a` ahead
+        }
+
+        // Both groups have messages, compare their timestamps
+        return new Date(latestMessageB.timestamp) - new Date(latestMessageA.timestamp);
+      });
     }
+
 
   },
 });
@@ -92,6 +120,7 @@ export const {
   resetMessages,
   setSelectedGroup,
   addOldMessages,
-  sortGroups
+  sortGroups,
+  sortGroupsInitially
 } = chatSlice.actions;
 export default chatSlice.reducer;

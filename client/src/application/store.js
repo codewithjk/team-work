@@ -5,6 +5,7 @@ import chatReducer from "./slice/chatSlice";
 import taskReducer from "./slice/taskSlice";
 import socketReducer from "./slice/socketSlice";
 import notificationReducer from "./slice/notificationSlice";
+import projectReducer from "./slice/projectSlice";
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -13,6 +14,7 @@ const store = configureStore({
     task: taskReducer,
     socket: socketReducer,
     notification: notificationReducer,
+    project: projectReducer
   },
 });
 

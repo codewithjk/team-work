@@ -7,6 +7,8 @@ const getUserUseCase = new GetUser(userRepository);
 const checkPremium = async (req, res, next) => {
     const userId = req.userId;
     const user = await getUserUseCase.execute({ _id: userId })
+    console.log(userId, user)
+
     if (user?.plan === "free") {
         return res.status(402).json({ message: "premium membership is required." })
     } else {

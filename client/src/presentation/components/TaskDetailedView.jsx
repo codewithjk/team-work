@@ -77,9 +77,54 @@ function TaskDetailedView({ task }) {
   return (
     <div className="bg-background overflow-y-scroll p-4">
       <div className="flex w-full">
-  <div className="bg-red-500  overflow-y-scroll p-3 flex-1">
-    {/* First column content */}
-  </div>
+      <div className="  p-3 flex-1 max-h-fit overflow-hidden">
+        {/* First column content */}
+        <h3 className="text-lg font-semibold mb-4">Files</h3>
+
+        <div className=" space-y-3 max-h-full max-h-80 overflow-y-scroll ">
+          {task.files && task.files.length > 0 ? (
+            task.files.map((file, index) => {
+              const { fileType, previewLink, downloadLink, url } = file;
+
+              return (
+                <div key={index} className="flex flex-col space-y-2 border border-solid-foreground rounded p-3">
+                  {/* File Preview */}
+                  {fileType.startsWith('image/') ? (
+                    <div className="flex justify-center mb-2">
+                      <img src={previewLink} alt={`Preview of ${file.name}`} className="max-w-xs max-h-40 object-cover" />
+                    </div>
+                  ) : fileType === 'application/pdf' ? (
+                    <div className="flex justify-center mb-2">
+                      <iframe src={previewLink} width="100%" height="200px" title={`Preview of ${file.name}`} />
+                    </div>
+                  ) : (
+                    <div className="flex justify-center mb-2">
+                      {/* For unsupported file types, display a generic icon */}
+                      <span className="text-gray-500">No preview available</span>
+                    </div>
+                  )}
+
+                  {/* File Download Button */}
+                  <div className="flex justify-between items-center">
+                    <div className="text-sm font-medium text-blue-600">
+                      <a href={downloadLink} target="_blank" download>
+                        Download
+                      </a>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      <a href={url} target="_blank" rel="noopener noreferrer">
+                        View File
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p>No files attached</p>
+          )}
+        </div>
+      </div>
 
   <div className="p-3 flex-1">
     <div className='flex flex-col gap-3'>

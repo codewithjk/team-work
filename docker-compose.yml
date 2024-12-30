@@ -7,33 +7,22 @@ services:
     restart: unless-stopped
     env_file:
       - ./server/.env
-    volumes:
-      - ./server:/app
-      - /app/node_modules
     networks:
       - sprintflow
     ports:
-      - 8080:80
-    
+      - 8080:8080
+
   frontend:
     build:
       context: ./client
       dockerfile: Dockerfile
     restart: unless-stopped
-    env_file:
-      - ./client/.env
-    volumes:
-      - ./client:/app
-      - /app/node_modules
     networks:
       - sprintflow
     ports:
-      - 5173:5173
-    command: npm run dev -- --host
+      - 80:80 # Serve frontend on port 80 (HTTP default)
     depends_on:
       - api
-
-
 
 networks:
   sprintflow:

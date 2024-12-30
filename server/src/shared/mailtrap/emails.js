@@ -3,6 +3,7 @@ const {
   PASSWORD_RESET_SUCCESS_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
   INVITE_EMAIL_TEMPLATE,
+  ALERT_EMAIL_TEMPLATE
 } = require("./emailTemplates.js");
 const { mailtrapClient, sender } = require("./mailtrap.config.js");
 
@@ -90,7 +91,6 @@ const sendResetSuccessEmail = async (email) => {
 
 const sendInviteEmail = async (email, url, projectName) => {
   const recipient = [{ email }];
-
   try {
     const response = await mailtrapClient.send({
       from: sender,
@@ -108,10 +108,31 @@ const sendInviteEmail = async (email, url, projectName) => {
   }
 };
 
+const sendAlertEmail = async (email, taskDetails) => {
+  const { name, taskName, taskEndIn } = taskDetails;
+  const recipient = [{ email }];
+  try {
+    const response = await mailtrapClient.send({
+      from: sender,
+      to: recipient,
+      subject: "invite a new member",
+      html: ALERT_EMAIL_TEMPLATE.replace("{user_name}", name).replace(
+        "{task_name}",
+        taskName
+      ).replace("{deadline_date}", taskEndIn),
+      category: "Alert",
+    });
+  } catch (error) {
+    console.error(`Error sending password alert email`, error);
+    throw new Error(`Error sending password reset email: ${error}`);
+  }
+};
+
 module.exports = {
   sendPasswordResetEmail,
   sendResetSuccessEmail,
   sendWelcomeEmail,
   sendVerificationEmail,
   sendInviteEmail,
+  sendAlertEmail
 };

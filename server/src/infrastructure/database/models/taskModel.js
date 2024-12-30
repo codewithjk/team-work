@@ -50,6 +50,9 @@ const TaskSchema = new Schema(
     },
     projectId: { type: mongoose.Schema.ObjectId, ref: "Project" },
     createdBy: { type: mongoose.Schema.ObjectId, ref: "User" },
+    files: {
+      type: Array
+    }
   },
   {
     timestamps: true,

@@ -24,6 +24,8 @@ class UserRepositoryImpl extends UserRepository {
     });
   }
   async findByIdAndUpdate(id, data) {
+    console.log(id, data);
+
     return User.findOneAndUpdate({ _id: id }, data, { new: true });
   }
   async update(id, data) {

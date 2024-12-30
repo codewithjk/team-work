@@ -24,6 +24,8 @@ import { toast, Toaster } from "sonner";
 import { useSelector } from "react-redux";
 import ImageSelectorPopover from "@/components/ui/image-selector-popover";
 import profileApi from "../../infrastructure/api/profileApi";
+import { useDispatch } from "react-redux";
+import { setProfile } from "../../application/slice/profileSlice";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -36,7 +38,7 @@ function ProfileSettingsPage() {
   const profile = useSelector((state) => state.profile);
   const { profileData } = profile;
   const [coverImage, setCoverPhoto] = useState("");
-
+const dispatch = useDispatch()
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -73,6 +75,7 @@ function ProfileSettingsPage() {
     if (response.status === 200) {
       const updatedUser = await response.data.user;
       toast.success("Profile updated successfully");
+      dispatch(setProfile(updatedUser))
       form.reset({
         name: updatedUser.name || "",
         email: updatedUser.email || "",

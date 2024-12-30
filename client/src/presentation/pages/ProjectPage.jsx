@@ -18,6 +18,8 @@ import { SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import NoProjects from "@/components/empty-data-message/NoProjects";
 import PricingPopover from "@/components/ui/pricingPopover";
+import { useDispatch } from "react-redux";
+import { setProjcetAction } from "../../application/actions/projectAction";
 
 // Zod schema for form validation
 const projectSchema = z.object({
@@ -30,7 +32,8 @@ function ProjectPage() {
   const [isProjectFormOpen, setIsProjectFormOpen] = useState(false);
   const [coverImage, setCoverPhoto] = useState("");
   const [projects, setProjects] = useState([]);
-  const [isPaymentPopup,setIsPaymentPopup] = useState(false)
+  const [isPaymentPopup, setIsPaymentPopup] = useState(false);
+  const dispatch = useDispatch();
 
   const {
     register,
@@ -70,6 +73,7 @@ function ProjectPage() {
     
 
         setProjects((prevProjects) => [...prevProjects, newProject]);
+        dispatch(setProjcetAction())
 
         toast.success("Project added successfully!");
         setIsProjectFormOpen(false);
@@ -81,7 +85,7 @@ function ProjectPage() {
       if(error.response.status == 402){
         setIsPaymentPopup(true)
       }else{
-        toast.error(error.message || "Failed to add project.");
+        toast.error(error?.response?.data?.error || "Failed to add project.");
       }
      
     }
@@ -204,3 +208,7 @@ const ProjectList = ({ projects }) => {
     </div>
   );
 };
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////

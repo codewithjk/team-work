@@ -20,15 +20,21 @@ import { useEffect } from "react";
 import projectApi from "../../infrastructure/api/projectApi";
 import { Badge } from "./ui/badge";
 import { getSocket } from "@/utils/socketClient.config";
+import { useDispatch } from "react-redux";
+import { setProjcetAction } from "../../application/actions/projectAction";
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [projectsDropdownOpen, setProjectsDropdownOpen] = useState(false);
   const [openProjectDropdowns, setOpenProjectDropdowns] = useState({});
   const location = useLocation();
-  const [projects, setProjects] = useState([]);
+  // const [projects, setProjects] = useState([]);
   const profile = useSelector((state) => state.profile);
+  const {Allprojects} = useSelector((state) => state.project);
+
+  
   const { profileData } = profile;
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -36,6 +42,7 @@ function Sidebar() {
         const response = await projectApi.getAllProjects({ allProjects: true });
         const data = response.data.projects;
         if (response.status === 200) {
+          
           setProjects(data);
         } else {
           // toast.error("Failed to fetch projects.");
@@ -45,7 +52,8 @@ function Sidebar() {
       }
     };
 
-    fetchProjects();
+    // fetchProjects();
+    dispatch(setProjcetAction())
   }, []);
 
   //function to join the project group
@@ -176,7 +184,7 @@ function Sidebar() {
             {/* Projects List */}
             {projectsDropdownOpen && (
               <div className="ml-4 mt-2 space-y-2">
-                {projects.map((project) => (
+                {Allprojects.map((project) => (
                   <div key={project._id}>
                     <button
                       onClick={() => toggleProjectMenu(project._id)}

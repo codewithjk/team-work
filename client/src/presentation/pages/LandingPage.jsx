@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Pricing from "@/components/Pricing";
+import { useDispatch } from "react-redux";
+import { checkAuth } from "../../application/actions/authActions";
+import { useSelector } from "react-redux";
 
 const Navbar = () => (
   <nav className="flex items-center justify-between p-4 bg-background text-forground">
@@ -95,6 +98,17 @@ const Footer = () => (
 );
 
 const LandingPage = () => {
+  const accessToken = localStorage.getItem("accessToken");
+  const auth = useSelector((state) => state.auth);
+  const { user } = auth;
+  const dispatch = useDispatch();
+  useEffect(() => {
+    
+    if (accessToken ||user) {
+    dispatch(checkAuth());
+      
+    }
+  }, [dispatch]);
   return (
     <div className="min-h-screen flex flex-col  bg-background">
       <Navbar />
