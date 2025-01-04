@@ -1,0 +1,59 @@
+name: CI/CD for Team Work Project
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout code
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Step 2: Install Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' 
+
+    # Step 3: Install dependencies and build frontend
+    - name: Install dependencies and build client
+      working-directory: client
+      run: |
+        npm install
+        npm run build
+
+    # Step 4: Install backend dependencies
+    - name: Install dependencies for server
+      working-directory: server
+      run: |
+        npm install
+
+    # Step 5: Deploy to GCP
+    - name: Deploy to GCP
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.GCP_HOST }}
+        username: ${{ secrets.GCP_USERNAME }}
+        key: ${{ secrets.GCP_PRIVATE_KEY }}
+        port: 22
+        script: |
+          # Navigate to project folder
+          cd team-work
+
+          # Pull latest changes
+          git reset --hard
+          git pull origin main
+
+          # Update backend
+          cd server
+          npm install
+          pm2 restart all
+
+          # Update frontend
+          cd ../client
+          npm run build
