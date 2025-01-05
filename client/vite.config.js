@@ -14,4 +14,17 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src/presentation"),
     },
   },
+  build: {
+    sourcemap: false, // Disable sourcemaps in production
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes("node_modules")) {
+            return "vendor"; // Dynamically split vendor libraries
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000, // Adjust chunk size warning limit
+  },
 });
