@@ -7,8 +7,8 @@ class CreateProject {
 
   async execute({ name, description, ownerId, coverImage }) {
     const project = new Project({ name, description, ownerId, coverImage });
-    await this.projectRepository.save(project);
-    return project.toDTO();
+    return await this.projectRepository.save(project);
+
   }
 }
 

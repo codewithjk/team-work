@@ -15,10 +15,9 @@ class ProfileController {
   }
   async updateUser(req, res) {
     try {
-      console.log(req.user, req.userId)
       const userId = req.userId;
       const userDocument = await updateProfile.execute(userId, req.body);
-      console.log(userDocument);
+
 
       const user = userDocument.toObject();
       res.status(200).json({ message: "successful", user });

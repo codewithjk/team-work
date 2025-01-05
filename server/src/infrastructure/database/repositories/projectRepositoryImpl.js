@@ -57,20 +57,24 @@ class ProjectRepositoryImpl extends ProjectRepository {
         .limit(parseInt(limit));
 
       if (filter == "true") {
-        projects = [...projects, ...assignedProjects];
+        projects = [...assignedProjects];
       }
-      console.log(projects, assignedProjects)
+
       return { projects, totalPages };
     } catch (error) {
       throw error;
     }
   }
 
-  async addMember({ email, projectId, inviteToken, role }) {
+  async addMember({ email, projectId, inviteToken, role, status, userId }) {
     try {
+      if (role == "Admin") {
+        const admin = new membersModel({ email, projectId, role, status: "active", userId })
+        return await admin.save();
+      }
       const inviteTokenExpiresAt = Date.now() + 24 * 60 * 60 * 1000;
       const exitstingMemeber = await membersModel.findOne({ email, projectId });
-      console.log("seic ==== ", exitstingMemeber)
+      console.log("this is exist === ", exitstingMemeber)
       if (exitstingMemeber) {
         throw new Error("email is alrady used by other member");
       }

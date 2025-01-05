@@ -127,7 +127,6 @@ const taskSocketHandler = (io, socket) => {
 
 
     } catch (error) {
-      console.log("task update error = >", error);
       socket.emit("error", { message: "Failed to update task" });
     }
   });

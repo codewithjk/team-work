@@ -28,66 +28,64 @@ import {
   socketDisconnected,
 } from "./application/slice/socketSlice";
 
+
 import { getSocket, initSocket } from "@/utils/socketClient.config";
 import MeetingPage from "@/pages/meeting/MeetingPage";
 import NotificationPage from "@/pages/notification/NotificationPage";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
-import { setNotification } from "./application/slice/notificationSlice";
 import LandingPage from "@/pages/LandingPage";
 import { useState } from "react";
 import NotFoundPage from "@/pages/error/Error404";
 import ErrorPage from "@/pages/error/ErrorPage";
 import { useNavigate } from "react-router-dom";
+import { setNotification } from "./application/slice/notificationSlice";
+import { setMessages } from "./application/slice/chatSlice";
 
 function App() {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.auth);
   const { user } = auth;
-  const [socket, setSocket] = useState(null);
+
+  console.log("this is from app ",user)
+
+
+  // useEffect(() => {
+  //   console.log("App refreshed");
+  //   dispatch(checkAuth());
+  // }, [dispatch]);
+
+
   const socketURL =
-    import.meta.env.VITE_SOCKET_BASE_URL || "http://localhost:3000";
-  const navigate = useNavigate()
-  const accessToken = localStorage.getItem("accessToken");
-  useEffect(() => {
-    console.log("App refreshed");
-    dispatch(checkAuth());
-  }, [dispatch]);
+  import.meta.env.VITE_SOCKET_BASE_URL || "http://localhost:3000";
 
 
   const handleNotification = (notification) => {
     toast.info(notification.title);
     dispatch(setNotification(notification));
   };
-
-  useEffect(() => {
-    if (user?.id && !socket) {
-      const newSocket = initSocket(user.id, socketURL);
-
-      newSocket.on("connect", () => {
-        console.log("Socket connected ", newSocket);
-        dispatch(socketConnected());
-      });
-
-      newSocket.on("disconnect", () => {
-        dispatch(socketDisconnected());
-      });
-
-      newSocket.on("receiveNotification", (data) => {
-        handleNotification(data);
-      });
-
-      setSocket(newSocket);
-    }
-
-    // Clean up when component unmounts or user changes
-    return () => {
-      if (socket) {
-        socket.disconnect();
-        setSocket(null);
+    useEffect(() => {
+      if (user) {
+        const newSocket = initSocket(user.id, socketURL);
+  
+        newSocket.on("receiveNotification", (data) => {
+          handleNotification(data);
+        });
+        newSocket.on("receiveMessage", (data) => {
+          console.log("message recieved == ", data)
+          dispatch(setMessages(data))
+        })
+        // Clean up when component unmounts or user changes
+        return () => {
+          if (newSocket) {
+            newSocket.disconnect();
+          }
+        }
       }
-    };
-  }, [user, dispatch, socketURL]);
+    }, []);
+
+
+
   return (
     <div className=" bg-white">
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">

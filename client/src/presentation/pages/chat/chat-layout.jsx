@@ -1,78 +1,50 @@
-import React, { useEffect, useState } from "react";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
+import React, { useState } from "react";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { cn } from "@/lib/utils";
 import Chat from "./chat";
 import Sidebar from "./side-bar";
-import projectApi from "../../../infrastructure/api/projectApi";
+import { useChatGroups } from "@/hooks/useChatGroups";
 import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { useCallback } from "react";
 import { setGroups } from "../../../application/slice/chatSlice";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import projectApi from "../../../infrastructure/api/projectApi";
 import chatApi from "../../../infrastructure/api/chatApi";
 
-export function ChatLayout({
-  defaultLayout = [320, 480],
-  defaultCollapsed = false,
-  navCollapsedSize,
-}) {
-  // const [groups, setGroups] = useState([]);
+
+
+export function ChatLayout({ defaultLayout = [320, 480], defaultCollapsed = false, navCollapsedSize }) {
+  const groups = useSelector((state) => state.chat.groups);
+  console.log("chat layout is rendered",groups);
+
+  const [selectedGroup, setSelectedGroup] = useState(groups[0]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
-  const [selectedGroup, setSelectedGroup] = useState({});
-  const [isMobile, setIsMobile] = useState(false);
-  const dispatch = useDispatch()
+  console.log(selectedGroup)
 
-  const { messages,groups } = useSelector((state) => state.chat);
 
+    ;
   useEffect(() => {
-    async function getAllGroups() {
-      const response = await projectApi.getAllProjects({ allProjects: true });
-      const groups = response.data.projects;
-  
-      // Use map to handle async operations and wait for all to finish
-      const groupsWithMessages = await Promise.all(
-        groups.map(async (group) => {
-          const response = await chatApi.getAllChats(group._id, new Date().toISOString());
-          const fetchedMessages = response.data.messages;
-          // Attach the fetched messages to the group object
-          return { ...group, messages: fetchedMessages };
-        })
-      );
-      // Dispatch the groups with messages
-      dispatch(setGroups(groupsWithMessages));
-      
-      // Set the first group as the selected group
-      setSelectedGroup(groupsWithMessages[0]);
-    }
-  
-    getAllGroups();
-  
-    const checkScreenWidth = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-  
-    // Initial check
-    checkScreenWidth();
-    
-    // Event listener for screen width changes
-    window.addEventListener("resize", checkScreenWidth);
-  
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", checkScreenWidth);
-    };
+
+      const checkScreenWidth = () => {
+          const isMobileView = window.innerWidth <= 768;
+          setIsMobile((prev) => (prev !== isMobileView ? isMobileView : prev));
+      };
+
+      // Set initial screen width
+      window.addEventListener("resize", checkScreenWidth);
+
+      return () => {
+          window.removeEventListener("resize", checkScreenWidth);
+      };
   }, []);
-  
   return (
     groups.length > 0 && (
       <ResizablePanelGroup
         direction="horizontal"
         onLayout={(sizes) => {
-          document.cookie = `react-resizable-panels:layout=${JSON.stringify(
-            sizes
-          )}`;
+          document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`;
         }}
         className="h-full items-stretch"
       >
@@ -84,19 +56,16 @@ export function ChatLayout({
           maxSize={isMobile ? 8 : 30}
           onCollapse={() => {
             setIsCollapsed(true);
-            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-              true
-            )}`;
+            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(true)}`;
           }}
           onExpand={() => {
             setIsCollapsed(false);
-            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(
-              false
-            )}`;
+            document.cookie = `react-resizable-panels:collapsed=${JSON.stringify(false)}`;
           }}
           className={cn(
-            isCollapsed ?
-              "min-w-[50px] md:min-w-[70px] transition-all duration-300 ease-in-out":"min-w-fit"
+            isCollapsed
+              ? "min-w-[50px] md:min-w-[70px] transition-all duration-300 ease-in-out"
+              : "min-w-fit"
           )}
         >
           <Sidebar
@@ -114,11 +83,7 @@ export function ChatLayout({
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-          <Chat
-            messages={selectedGroup.messages}
-            selectedGroup={selectedGroup}
-            isMobile={isMobile}
-          />
+          <Chat  selectedGroup={selectedGroup} isMobile={isMobile} />
         </ResizablePanel>
       </ResizablePanelGroup>
     )

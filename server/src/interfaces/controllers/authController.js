@@ -22,7 +22,7 @@ class AuthController {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
           sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-          maxAge: 7 * 24 * 60 * 60 * 1000,
+          maxAge: 24 * 60 * 60 * 1000,
         })
           .header('Authorization', accessToken);
       }
@@ -42,7 +42,7 @@ class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000,
       });
       const { _id, name, email, isVerified } = user;
 
@@ -52,7 +52,6 @@ class AuthController {
         accessToken
       });
     } catch (error) {
-      console.log(error);
       res.status(401).json({ error: error.message });
     }
   }
@@ -66,7 +65,7 @@ class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000,
       }).header('Authorization', accessToken);
       const { _id, name, email, isVerified } = user;
       res.status(200).json({
@@ -107,7 +106,6 @@ class AuthController {
   async checkAuth(req, res) {
     try {
       const id = req.userId;
-      console.log(id)
       const user = await checkAuth.execute(id);
       const { _id, name, email, isVerified } = user;
       res.status(200).json({
@@ -127,7 +125,7 @@ class AuthController {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 1000,
       });
       const { _id, name, email, isVerified } = user;
 
@@ -172,7 +170,9 @@ class AuthController {
 
 
   async refresh(req, res) {
+    console.log("refreshing.....")
     const refreshToken = req.cookies['refreshToken'];
+    console.log(refreshToken)
     if (!refreshToken) {
       return res.status(401).send('Access Denied. No refresh token provided.');
     }
@@ -182,7 +182,9 @@ class AuthController {
       const accessToken = jwt.sign({ user: decoded.user }, secretKey, { expiresIn: '1h' });
       return res.status(200).json({ accessToken });
     } catch (error) {
-      return res.status(403).send('Invalid or expired refresh token.');
+      console.log("this is from refresh controller  ==error == > ", error);
+
+      return res.status(403).send('refresh token is expired or invalid');
     }
   }
 

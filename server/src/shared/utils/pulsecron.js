@@ -17,7 +17,6 @@ pulse.define('send email', async (job, done) => {
     const { email, name, taskName, taskEndIn } = job.attrs.data;
     try {
         await sendAlertEmail(email, { name, taskName, taskEndIn })
-        console.log(`Email sent to ${email}`);
         done();
     } catch (error) {
         console.error(`Failed to send email to ${email}`, error);

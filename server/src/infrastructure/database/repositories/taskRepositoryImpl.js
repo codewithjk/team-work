@@ -164,6 +164,9 @@ class TaskRepositoryImpl {
           },
         },
         {
+          $sort: { endDate: -1 }, // Sort tasks by `endDate` in descending order (most recent first)
+        },
+        {
           $skip: (page - 1) * limit, // Pagination: skip documents
         },
         {

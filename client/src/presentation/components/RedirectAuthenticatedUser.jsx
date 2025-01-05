@@ -6,6 +6,8 @@ const RedirectAuthenticatedUser = ({ children }) => {
   const auth = useSelector((state) => state.auth);
   const { isAuthenticated, user } = auth;
 
+  console.log(user,isAuthenticated)
+
   if (isAuthenticated && user.isVerified) {
     return <Navigate to="/home" replace />;
   }

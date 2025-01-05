@@ -12,7 +12,7 @@ const userModel = require("../../infrastructure/database/models/userModel");
 const TaskRepositoryImpl = require("../../infrastructure/database/repositories/taskRepositoryImpl");
 const convertToHumanReadableDate = require("../../shared/utils/convertDateToReadbel");
 
-const pulse = require("../../shared/utils/pulsecron")
+const pulse = require("../../shared/utils/pulsecron");
 const taskRepository = new TaskRepositoryImpl();
 
 const creatTaskUseCase = new CreateTask(taskRepository);
@@ -99,6 +99,7 @@ class TaskController {
       await pulse.start();
       const { assignees, endDate } = updatedTask;
       const memberId = assignees[0];
+      console.log(memberId, await membersModel.findById(memberId))
       const { userId } = await membersModel.findById(memberId)
       const assignedUser = await userModel.findById(userId);
       const email = assignedUser.email;

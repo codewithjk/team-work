@@ -3,7 +3,6 @@ class UpdateModule {
     this.messageRepository = messageRepository;
   }
   async execute(id, message) {
-    console.log(id, message);
     return this.messageRepository.update(id, message);
   }
 }

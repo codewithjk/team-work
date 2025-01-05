@@ -24,122 +24,72 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 const getMessageVariant = (senderId, userId) =>
   senderId === userId ? "sent" : "received";
 
-export function ChatList({ selectedGroup, sendMessage, isMobile }) {
-  const groupId = selectedGroup._id;
+export function ChatList({ selectedGroup, isMobile }) {
+  console.log(selectedGroup.name)
+  // const groupId = selectedGroup._id;
   const { profileData } = useSelector((state) => state.profile);
   const userId = profileData?._id;
-  const dispatch = useDispatch();
-  const { messages } = useSelector((state) => state.chat);
+  // const dispatch = useDispatch();
+  // const { groups } = useSelector(state => state.chat);
+  // const currentGroup = groups.filter((ele) => ele._id == groupId);
+  // const messages = currentGroup?.messages || [];
+  const selectedGroupFromRedux = useSelector((state) =>
+    state.chat.groups.find((group) => group._id === selectedGroup._id)
+  );
+  const messages = selectedGroupFromRedux?.messages || [];
+  
+  console.log("chat-list rendered",selectedGroup.messages)
 
   const messagesContainerRef = useRef(null);
   const [loadingOldMessages, setLoadingOldMessages] = useState(false);
   const [loadingRecentMessages, setLoadingRecentMessages] = useState(true);
-  const [hasMoreMessages, setHasMoreMessages] = useState(true);
-  const [onlineUsers, setOnlineUsers] = useState(new Map());
+  // const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  // const [onlineUsers, setOnlineUsers] = useState(new Map());
 
   // Fetch messages implementation...
-  const fetchRecentMessages = useCallback(async () => {
-    try {
-      setLoadingRecentMessages(true);
-      const response = await chatApi.getAllChats(
-        groupId,
-        new Date().toISOString()
-      );
-      const fetchedMessages = response.data.messages;
-      if (fetchedMessages.length > 0) {
-        dispatch(addOldMessages(fetchedMessages));
-      }
-    } catch (error) {
-      console.error("Error fetching recent messages:", error);
-    } finally {
-      setLoadingRecentMessages(false);
-    }
-  }, [groupId, dispatch]);
+  // const fetchRecentMessages = useCallback(async () => {
+  //   try {
+  //     setLoadingRecentMessages(true);
+  //     const response = await chatApi.getAllChats(
+  //       groupId,
+  //       new Date().toISOString()
+  //     );
+  //     const fetchedMessages = response.data.messages;
+  //     if (fetchedMessages.length > 0) {
+  //       dispatch(addOldMessages(fetchedMessages));
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching recent messages:", error);
+  //   } finally {
+  //     setLoadingRecentMessages(false);
+  //   }
+  // }, [groupId, dispatch]);
 
-  const fetchOldMessages = useCallback(async () => {
-    if (!hasMoreMessages || loadingOldMessages || messages.length === 0) return;
+  // const fetchOldMessages = useCallback(async () => {
+  //   if (!hasMoreMessages || loadingOldMessages || messages.length === 0) return;
 
-    const oldestMessage = messages[0];
-    setLoadingOldMessages(true);
+  //   const oldestMessage = messages[0];
+  //   setLoadingOldMessages(true);
 
-    try {
-      const response = await chatApi.getAllChats(
-        groupId,
-        oldestMessage.timestamp
-      );
-      const fetchedMessages = response.data.messages;
-      if (fetchedMessages.length > 0) {
-        dispatch(addOldMessages(fetchedMessages));
-      } else {
-        setHasMoreMessages(false);
-      }
-    } catch (error) {
-      console.error("Error fetching old messages:", error);
-    } finally {
-      setLoadingOldMessages(false);
-    }
-  }, [groupId, hasMoreMessages, loadingOldMessages, messages, dispatch]);
+  //   try {
+  //     const response = await chatApi.getAllChats(
+  //       groupId,
+  //       oldestMessage.timestamp
+  //     );
+  //     const fetchedMessages = response.data.messages;
+  //     if (fetchedMessages.length > 0) {
+  //       dispatch(addOldMessages(fetchedMessages));
+  //     } else {
+  //       setHasMoreMessages(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching old messages:", error);
+  //   } finally {
+  //     setLoadingOldMessages(false);
+  //   }
+  // }, [groupId, hasMoreMessages, loadingOldMessages, messages, dispatch]);
 
-  // Socket connection and event handlers
-  useEffect(() => {
-    const socket = getSocket();
 
-    // Initialize online users when joining
-    socket.emit("joinProjectGroup", { groupId, userId });
-
-    // Handle existing online users
-    socket.on("onlineUsers", (users) => {
-      const usersMap = new Map();
-      users.forEach((user) => {
-        if (user._id !== userId) {
-          usersMap.set(user._id, user);
-        }
-      });
-      setOnlineUsers(usersMap);
-    });
-
-    // Handle new user joining
-    socket.on("userJoined", (user) => {
-      if (user._id !== userId) {
-        setOnlineUsers((prev) => {
-          const newMap = new Map(prev);
-          newMap.set(user._id, user);
-          return newMap;
-        });
-      }
-    });
-
-    // Handle user leaving
-    socket.on("userLeft", (leftUserId) => {
-      if (leftUserId !== userId) {
-        setOnlineUsers((prev) => {
-          const newMap = new Map(prev);
-          newMap.delete(leftUserId);
-          return newMap;
-        });
-      }
-    });
-
-    const handleReceiveMessage = (message) => {
-      console.log("recieved message : ",message)
-      dispatch(setMessages(message));
-
-      dispatch(sortGroups(message))
-    };
-
-    socket.on("receiveMessage", handleReceiveMessage);
-
-    // Cleanup
-    return () => {
-      socket.off("receiveMessage", handleReceiveMessage);
-      socket.off("userJoined");
-      socket.off("userLeft");
-      socket.off("onlineUsers");
-      socket.emit("leaveProjectGroup", { groupId, userId });
-      setOnlineUsers(new Map());
-      dispatch(resetMessages());
-    };
-  }, [selectedGroup, userId, groupId, dispatch]);
 
   // Scroll handling
   useEffect(() => {
@@ -150,46 +100,46 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
   }, [messages]);
 
   useEffect(() => {
-    fetchRecentMessages();
-  }, [fetchRecentMessages]);
+    // fetchRecentMessages();
+  }, []);
 
   const handleScroll = () => {
     if (
       messagesContainerRef.current &&
       messagesContainerRef.current.scrollTop === 0
     ) {
-      fetchOldMessages();
+      // fetchOldMessages();
     }
   };
 
-  const renderOnlineUsers = () => {
-    if (onlineUsers.size === 0) return null;
-    return (
-      <div className="flex items-center gap-2 p-2 bg-secondary/50 mb-2">
-        {/* <span className="text-sm font-medium">Online:</span> */}
-        <div className="flex -space-x-2">
-          {Array.from(onlineUsers.values()).map((user) => (
-            <div key={user._id} className="relative">
-              <Avatar className="h-8 w-8 border-2 border-background">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>
-                  {user.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
-            </div>
-          ))}
-        </div>
-        <span className="text-sm text-muted-foreground">
-          ({onlineUsers.size} online)
-        </span>
-      </div>
-    );
-  };
+  // const renderOnlineUsers = () => {
+  //   if (onlineUsers.size === 0) return null;
+  //   return (
+  //     <div className="flex items-center gap-2 p-2 bg-secondary/50 mb-2">
+  //       {/* <span className="text-sm font-medium">Online:</span> */}
+  //       <div className="flex -space-x-2">
+  //         {Array.from(onlineUsers.values()).map((user) => (
+  //           <div key={user._id} className="relative">
+  //             <Avatar className="h-8 w-8 border-2 border-background">
+  //               <AvatarImage src={user.avatar} alt={user.name} />
+  //               <AvatarFallback>
+  //                 {user.name.charAt(0).toUpperCase()}
+  //               </AvatarFallback>
+  //             </Avatar>
+  //             <span className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full bg-green-500 border-2 border-background" />
+  //           </div>
+  //         ))}
+  //       </div>
+  //       <span className="text-sm text-muted-foreground">
+  //         ({onlineUsers.size} online)
+  //       </span>
+  //     </div>
+  //   );
+  // };
 
   return (
     <div className="w-full overflow-y-auto h-full flex flex-col">
-      {renderOnlineUsers()}
+      {/* {renderOnlineUsers()} */}
 
       <ChatMessageList ref={messagesContainerRef} onScroll={handleScroll}>
         <AnimatePresence>
@@ -268,5 +218,6 @@ export function ChatList({ selectedGroup, sendMessage, isMobile }) {
 
       <ChatBottombar isMobile={isMobile} selectedGroup={selectedGroup} />
     </div>
+   
   );
 }

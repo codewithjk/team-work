@@ -20,36 +20,6 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
   const {user} = useSelector(state=>state.auth);
   const { groups } = useSelector(state => state.chat);
 
-  const [sortedChats, setSortedChats] = useState([]);
-  useEffect(() => {
-    console.log("this useEffect");
-  
-    let sorted = [...groups].sort((a, b) => {
-      // Get the latest message's timestamp for each chat, or null if there are no messages
-      const latestMessageA = a.messages.length > 0 ? a.messages[a.messages.length - 1] : null;
-      const latestMessageB = b.messages.length > 0 ? b.messages[b.messages.length - 1] : null;
-  
-      // If both chats have no messages, consider them equal
-      if (!latestMessageA && !latestMessageB) {
-        return 0;
-      }
-  
-      // If only one chat has no messages, prioritize the one with messages
-      if (!latestMessageA) {
-        return 1; // Move b to the front
-      }
-      if (!latestMessageB) {
-        return -1; // Move a to the front
-      }
-  
-      // Both chats have messages, so compare their timestamps
-      return new Date(latestMessageB.timestamp) - new Date(latestMessageA.timestamp);
-    });
-  
-    setSortedChats(sorted);
-  }, [groups]);
-  
-
   return (
     // ToDo :  sort the chat list according to the latest chat.
     // ToDo :  show the latest message in the group list bar.
@@ -89,7 +59,7 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
         </div>
       )}
       <nav className="grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
-        {sortedChats.map((chat, index) =>
+        {groups.map((chat, index) =>
           isCollapsed ? (
             <TooltipProvider key={index}>
               <Tooltip key={index} delayDuration={0}>

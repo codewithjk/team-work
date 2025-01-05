@@ -11,7 +11,6 @@ const verifyProjectMember = async (req, res, next) => {
         let ownerId;
         let project;
         let members;
-        // console.log("thi si s midnm", projectId)
         if (!projectId || projectId == "undefined") {
             return next()
         } else if (projectId) {

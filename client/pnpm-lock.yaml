@@ -26,6 +26,9 @@ dependencies:
   '@hookform/resolvers':
     specifier: ^3.9.0
     version: 3.9.0(react-hook-form@7.52.2)
+  '@lottiefiles/dotlottie-react':
+    specifier: ^0.12.1
+    version: 0.12.1(react@18.3.1)
   '@radix-ui/react-avatar':
     specifier: ^1.1.0
     version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@18.3.1)(react@18.3.1)
@@ -161,6 +164,9 @@ dependencies:
   recordrtc:
     specifier: ^5.6.2
     version: 5.6.2
+  redux-persist:
+    specifier: ^6.0.0
+    version: 6.0.0(react@18.3.1)(redux@5.0.1)
   shadcn-chat-cli:
     specifier: ^0.2.0
     version: 0.2.0
@@ -942,6 +948,19 @@ packages:
 
   /@kurkle/color@0.3.2:
     resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
+    dev: false
+
+  /@lottiefiles/dotlottie-react@0.12.1(react@18.3.1):
+    resolution: {integrity: sha512-8l0db31gqozQMC2ZfzV6NWN1cit/NOlevVgS98qC2N4vugS6CZ6IWE4EfLLJEa9DILSinENDE4K85+eIJw4MOQ==}
+    peerDependencies:
+      react: ^17 || ^18 || ^19
+    dependencies:
+      '@lottiefiles/dotlottie-web': 0.39.0
+      react: 18.3.1
+    dev: false
+
+  /@lottiefiles/dotlottie-web@0.39.0:
+    resolution: {integrity: sha512-kJWL6NEtbXQQHFK8kMfNte/5vuTHjFhL11a30s4PJSikao8IeEu+hLJH72flWHyTLpL4tmnxW3WkTKUwZ8Osug==}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
@@ -5002,6 +5021,19 @@ packages:
 
   /recordrtc@5.6.2:
     resolution: {integrity: sha512-1QNKKNtl7+KcwD1lyOgP3ZlbiJ1d0HtXnypUy7yq49xEERxk31PHvE9RCciDrulPCY7WJ+oz0R9hpNxgsIurGQ==}
+    dev: false
+
+  /redux-persist@6.0.0(react@18.3.1)(redux@5.0.1):
+    resolution: {integrity: sha512-71LLMbUq2r02ng2We9S215LtPu3fY0KgaGE0k8WRgl6RkqxtGfl7HUozz1Dftwsb0D/5mZ8dwAaPbtnzfvbEwQ==}
+    peerDependencies:
+      react: '>=16'
+      redux: '>4.0.0'
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      react: 18.3.1
+      redux: 5.0.1
     dev: false
 
   /redux-thunk@3.1.0(redux@5.0.1):

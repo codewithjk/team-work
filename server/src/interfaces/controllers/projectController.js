@@ -22,12 +22,17 @@ class ProjectController {
   async createProject(req, res) {
     try {
       const ownerId = req.userId;
+      const ownerEmail = req.email;
 
       const newProject = await createProjectUsecase.execute({
         ...req.body,
         ownerId,
       });
-      console.log(newProject);
+      console.log(newProject)
+      //Add project owner as a member with role Admin
+      if (newProject) {
+        const Admin = await addMemberUsecase.execute({ email: ownerEmail, projectId: newProject._id, role: "Admin", adminId: ownerId })
+      }
 
       res.status(200).json({ message: "successful", project: newProject });
     } catch (error) {

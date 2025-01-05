@@ -51,7 +51,7 @@ class AuthService {
     try {
       const { email, password } = data;
       const user = await userRepository.findByEmail(email);
-      console.log(user)
+
       if (!user) {
         throw new Error("User not found");
       }

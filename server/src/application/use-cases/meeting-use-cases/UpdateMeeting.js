@@ -4,7 +4,6 @@ class UpdateMeeting {
   }
 
   async execute(id, meeting) {
-    console.log(id, meeting);
     return this.meetingRepository.update(id, meeting);
   }
 }

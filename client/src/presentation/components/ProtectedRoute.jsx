@@ -13,11 +13,6 @@ const ProtectedRoute = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // console.log("App refreshed");
-    dispatch(checkAuth());
-  }, [dispatch]);
-
-  useEffect(() => {
     if (user && !loading) {
       dispatch(getProfile(user.id)).finally(() => setIsLoading(false));
     } else {
@@ -25,13 +20,12 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [user, loading, dispatch]);
 
-  console.log(user)
   if (loading || isLoading) {
     return <Skeleton className="w-full h-full">{children}</Skeleton>;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   if (user && !user.isVerified) {

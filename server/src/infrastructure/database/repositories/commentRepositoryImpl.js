@@ -20,7 +20,6 @@ class CommentRepositoryImpl {
     return await commentModel.findByIdAndDelete(id);
   }
   async findAll(queries) {
-    console.log(queries)
     try {
       let { search, filter, page, limit, taskId } = queries;
       taskId = new mongoose.Types.ObjectId(taskId);
@@ -67,7 +66,6 @@ class CommentRepositoryImpl {
           $limit: parseInt(limit), // Pagination: limit documents
         },
       ])
-      console.log(comments)
 
       return { comments, totalPages };
     } catch (error) {

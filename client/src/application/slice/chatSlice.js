@@ -1,15 +1,8 @@
-import { ChatBotMessages, userData, Users } from "@/pages/chat/data";
+
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  selectedExample: { name: "Messenger example", url: "/" },
-  examples: [
-    { name: "Messenger example", url: "/" },
-    { name: "Chatbot example", url: "/chatbot" },
-    { name: "Chatbot2 example", url: "/chatbot2" },
-  ],
   input: "",
-  chatBotMessages: ChatBotMessages,
   messages: [],
   hasInitialAIResponse: false,
   hasInitialResponse: false,
@@ -43,9 +36,30 @@ const chatSlice = createSlice({
       state.selectedGroup = action.payload;
     },
     setMessages: (state, action) => {
-      // state.messages = [...state.messages, action.payload];
-      state.messages.push(action.payload)
+      console.log("set message payload == ", action.payload)
+      const { groupId, timestamp } = action.payload;
+
+      // Find the group with the matching groupId
+      const groupIndex = state.groups.findIndex((group) => group._id === groupId);
+
+      if (groupIndex !== -1) {
+        // Push the new message into the group's messages array
+        state.groups[groupIndex].messages.push(action.payload);
+
+        // Update the group's lastMessageTimestamp for sorting
+        state.groups[groupIndex].lastMessageTimestamp = timestamp;
+
+        // Sort the groups by the lastMessageTimestamp (descending order)
+        state.groups = state.groups.sort((a, b) => {
+          const latestMessageA = a.messages?.at(-1)?.timestamp || 0;
+          const latestMessageB = b.messages?.at(-1)?.timestamp || 0;
+          return new Date(latestMessageB) - new Date(latestMessageA);
+        })
+      } else {
+        console.error(`Group with ID ${groupId} not found`);
+      }
     },
+
     addOldMessages: (state, action) => {
       state.messages = [...action.payload, ...state.messages]; // Prepend old messages
     },

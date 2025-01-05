@@ -54,15 +54,11 @@ class SubscriptionController {
       switch (event.type) {
         case "checkout.session.completed": {
           const session = event.data.object;
-
-
           // Expand session to retrieve line items
           const retrievedSession = await stripe.checkout.sessions.retrieve(
             session.id,
             { expand: ["line_items"] }
           );
-
-
           const customerId = retrievedSession.customer;
           const customerDetails = retrievedSession.customer_details;
 
@@ -86,6 +82,8 @@ class SubscriptionController {
               });
             }
             const lineItems = retrievedSession.line_items?.data || [];
+            console.log(lineItems);
+
             for (const item of lineItems) {
               const priceId = item.price.id;
               const isSubscription = item.price.type === "recurring";

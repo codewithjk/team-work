@@ -1,7 +1,5 @@
 
-
-"use client";
-
+import { getSocket, initSocket } from "@/utils/socketClient.config";
 import Sidebar from "@/components/Sidebar";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
@@ -16,18 +14,23 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { setNotification } from "../../application/slice/notificationSlice";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function HomePage() {
+console.log("home rendered")
   const [assignedTasks, setAssignedTasks] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [recentEndingTask, setRecentEndingTask] = useState();
   const navigate = useNavigate();
   const auth = useSelector((state) => state.auth);
   const { user } = auth;
   const profile = useSelector((state) => state.profile);
   const { profileData } = profile;
-
+  
   useEffect(() => {
     const stripePaymentLink = localStorage.getItem("stripePaymentLink");
     if (stripePaymentLink && user !== null && profileData?.plan === "free") {
@@ -35,6 +38,9 @@ function HomePage() {
       localStorage.removeItem("stripePaymentLink");
       // navigate(`${stripePaymentLink}?prefilled_email=${user.email}`);
       window.open(fullLink, "_blank");
+    }
+    return () => {
+      localStorage.removeItem("stripePaymentLink");
     }
   }, [user, navigate]);
 
@@ -52,8 +58,12 @@ function HomePage() {
         console.error("Error fetching data:", error);
       }
     };
-
     fetchData();
+    if (assignedTasks.length > 0) {
+      let task = assignedTasks.find((task) => task.state != "completed" && task.state != "cancelled");
+      console.log(task)
+      // setRecentEndingTask(task)
+    }
   }, []);
 
   const filterAssignedTasksByState = (state) =>
@@ -162,26 +172,32 @@ function HomePage() {
         </Card>
       </div>
 
-      {assignedTasks.length > 0 && (
+ 
         <div className="flex justify-start p-4 gap-4">
           <Card className="sm:w-1/2 max-w-1/2 hover:border-blue-800">
             <CardHeader className="flex flex-row justify-between gap-8">
               <p>Tasks Overview By State</p>
             </CardHeader>
-            <CardContent className="flex justify-center">
+          <CardContent className="flex justify-center">
+            {assignedTasks.length > 0 ? (
               <Doughnut data={StateData} options={options} />
+            ) : (
+                <DotLottieReact src="src/asset/animations/empty-box.lottie" autoplay></DotLottieReact>
+            )}
             </CardContent>
           </Card>
           <Card className="sm:w-1/2 max-w-1/2 hover:border-blue-800">
             <CardHeader className="flex flex-row justify-between gap-8">
               <p>Tasks Overview By Priority</p>
             </CardHeader>
-            <CardContent className="flex justify-center">
+          <CardContent className="flex justify-center">
+            {assignedTasks.length > 0 ? (
               <Doughnut data={PriorityData} options={options} />
+            ):( <DotLottieReact src="src/asset/animations/empty-box.lottie" autoplay></DotLottieReact>)}
             </CardContent>
           </Card>
         </div>
-      )}
+      
     </>
   );
 }

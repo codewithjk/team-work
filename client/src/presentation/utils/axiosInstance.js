@@ -1,27 +1,13 @@
-
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 const axiosInstance = axios.create({
   baseURL,
-  withCredentials: true, // Ensure cookies are sent with requests
+  withCredentials: true, // Include cookies with requests
 });
 
-// Token refresh state management
-let isRefreshing = false;
-let refreshSubscribers = [];
-
-const onAccessTokenFetched = (accessToken) => {
-  refreshSubscribers.forEach((callback) => callback(accessToken));
-  refreshSubscribers = [];
-};
-
-const addRefreshSubscriber = (callback) => {
-  refreshSubscribers.push(callback);
-};
-
-// Request interceptor to add Authorization header
+// Request interceptor: Attach Authorization token to headers
 axiosInstance.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem("accessToken");
@@ -33,62 +19,50 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle errors
+// Response interceptor: Handle token expiration and retry requests
 axiosInstance.interceptors.response.use(
-  (response) => response, // Directly return successful responses
+  (response) => response, // Return successful response directly
   async (error) => {
+    console.log("this is from interceptor : ", error);
+
     const originalRequest = error.config;
 
-    // Handle forbidden error (403)
-    if (error.response.status === 403) {
-      window.location.href = "/error/403";
-      return Promise.reject(error);
-    }
-
-    // Handle unauthorized error (401) and retry logic
-    // if (error.response.status === 401 && !originalRequest._retry) {
-    //   originalRequest._retry = true;
-
-    //   if (isRefreshing) {
-    //     // If a refresh is already in progress, queue the request
-    //     return new Promise((resolve, reject) => {
-    //       addRefreshSubscriber((newAccessToken) => {
-    //         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-    //         axiosInstance(originalRequest)
-    //           .then(resolve) // Pass the retried response to resolve
-    //           .catch(reject); // Pass the retried error to reject
-    //       });
-    //     });
-    //   }
-
-    //   isRefreshing = true;
-
-    //   try {
-    //     // Call the refresh token endpoint
-    //     const response = await axios.post(`${baseURL}/auth/refresh`, {}, {
-    //       withCredentials: true, // Include cookies for refresh
-    //     });
-
-    //     const newAccessToken = response.data.accessToken; // Fetch the new token
-    //     localStorage.setItem("accessToken", newAccessToken);
-
-    //     // Notify all subscribers about the new token
-    //     onAccessTokenFetched(newAccessToken);
-
-    //     isRefreshing = false;
-
-    //     // Retry the original request with the new access token
-    //     originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-    //     return axiosInstance(originalRequest);
-    //   } catch (refreshError) {
-    //     isRefreshing = false;
-    //     console.error("Error refreshing token:", refreshError);
-    //     window.location.href = "/login"; // Redirect to signup on failure
-    //     return Promise.reject(refreshError);
-    //   }
+    // if (error.response.status === 403) {
+    //   // Forbidden error, redirect to error page
+    //   window.location.href = "/error/403";
+    //   return Promise.reject(error);
     // }
 
-    return Promise.reject(error); // Propagate other errors
+    if (error.response.status === 401 && !originalRequest._retry) {
+      // Handle Unauthorized error (Token expired)
+      console.log("this is endter to 401");
+
+      originalRequest._retry = true;
+
+      try {
+        // Attempt to refresh the access token
+        console.log("Attempting refresh");
+
+        const response = await axios.post(`${baseURL}/auth/refresh`, {}, {
+          withCredentials: true,
+        });
+
+        const newAccessToken = response.data.accessToken;
+        localStorage.setItem("accessToken", newAccessToken);
+
+        // Retry the original request with the new token
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        console.log("retrying with original request")
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        console.error("Error refreshing token:", refreshError);
+        // window.location.href = "/login"; // Redirect to login page on failure
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // If the error is not 401 or 403, reject the promise
+    return Promise.reject(error);
   }
 );
 

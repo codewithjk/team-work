@@ -10,7 +10,8 @@ class AddMember {
     this.projectRepository = projectRepository;
   }
 
-  async execute({ email, projectId, role }) {
+  async execute({ email, projectId, role, adminId }) {
+    console.log(email, projectId, role, adminId)
     try {
       const inviteToken = generateVerificationCode();
       const newMember = await this.projectRepository.addMember({
@@ -18,6 +19,7 @@ class AddMember {
         projectId,
         inviteToken,
         role,
+        userId: adminId
       });
       const project = await this.projectRepository.findById(projectId);
       const { name } = project;
@@ -28,6 +30,7 @@ class AddMember {
       );
 
       return newMember;
+
     } catch (error) {
       throw error;
     }

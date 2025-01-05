@@ -31,8 +31,12 @@ const notifyUserUseCase = new NotifyUser(userNotificationRepository);
 const projectRepository = new ProjectRepositoryImpl();
 const listAllMembersUseCase = new ListAllMembers(projectRepository);
 
+
+
 const chatSoketHandler = (io, socket) => {
   socket.on("sendMessage", async ({ groupId, message }) => {
+
+    console.log("from send message ''' socket map == ", SocketMap)
     try {
       const messageData = {
         groupId,
@@ -61,22 +65,23 @@ const chatSoketHandler = (io, socket) => {
       const allMembers = await listAllMembersUseCase.execute(
         groupId
       );
+      console.log(allMembers)
+
       const memberIds = allMembers
-        .filter(
-          (member) => member.user._id != message.senderId // TODO: consider the sending user
-        )
         .map((member) => member.user._id);
 
       await notifyUserUseCase.execute(memberIds, newNotification._id);
-
+      console.log("member ids ==", memberIds);
       // Notify connected members
       memberIds.forEach((memberId) => {
         const mId = memberId.toString();
         const socketId = SocketMap.get(mId);
 
         if (socketId && socketId !== undefined) {
+          console.log("sending message === ", socketId);
+
           io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
-          io.to(groupId).emit("receiveMessage", newMessage);
+          io.to(socketId).emit("receiveMessage", newMessage);
         }
       });
       // io.to(groupId).emit("receiveMessage", newMessage);
