@@ -65,14 +65,14 @@ function ImageSelectorPopover({ onSelectImage }) {
   };
 
   return (
-    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+    <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} className="flex justify-center w-10">
       <PopoverTrigger asChild>
         <Button variant="ghost" className="w-full mt-2">
           Change Cover
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-4 bg-background text-foreground rounded-lg">
-        <div className="flex items-center space-x-2 mb-4">
+      <PopoverContent className=" p-4 bg-background text-foreground rounded-lg ">
+        <div className="flex items-center space-x-2 mb-4 ">
           <Input
             placeholder="Search Unsplash"
             value={imageSearchQuery}

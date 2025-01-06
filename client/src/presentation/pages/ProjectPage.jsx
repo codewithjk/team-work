@@ -130,7 +130,7 @@ function ProjectPage() {
                     alt="Cover"
                     className="object-cover w-full h-full"
                   />
-                  <div className="absolute bottom-0 right-1 flex justify-center items-center  bg-opacity-25">
+                  <div className="absolute bottom-0 right-1 flex justify-center items-center  bg-opacity-25 ">
                     <ImageSelectorPopover onSelectImage={handleImageSelect} />
                   </div>
                 </div>

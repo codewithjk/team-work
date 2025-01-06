@@ -1,21 +1,21 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; // For navigation
-import { XCircleIcon } from "lucide-react";
 
 const VITE_ZEGO_CLOUD_APP_ID = import.meta.env.VITE_ZEGO_CLOUD_APP_ID;
 const VITE_ZEGO_CLOUD_SERVER_SECRETE = import.meta.env.VITE_ZEGO_CLOUD_SERVER_SECRETE;
 
-function MeetingScreen({ roomId,closepopup }) {
+const MeetingScreen = ({ roomId, onClose }) => {
   const myMeetingRef = useRef(null);
+  const zegoRef = useRef(null);
   const { profileData } = useSelector((state) => state.profile);
-  const navigate = useNavigate(); // To handle navigation
 
-  useEffect(() => {
-    const myMeeting = async (element) => {
+  const initializeZegoCloud = useCallback(
+    async (element) => {
       const appID = VITE_ZEGO_CLOUD_APP_ID;
       const serverSecret = VITE_ZEGO_CLOUD_SERVER_SECRETE;
+
+      // Generate token for Zego
       const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
         Number(appID),
         serverSecret,
@@ -24,41 +24,56 @@ function MeetingScreen({ roomId,closepopup }) {
         profileData?.name || "test user"
       );
 
-      // Create instance object from Kit Token
-      const zp = ZegoUIKitPrebuilt.create(kitToken);
-
-      // Start the call
-      zp.joinRoom({
+      // Create and join room
+      zegoRef.current = ZegoUIKitPrebuilt.create(kitToken);
+      await zegoRef.current.joinRoom({
         container: element,
         scenario: {
           mode: ZegoUIKitPrebuilt.VideoConference,
         },
+        onLeaveRoom: () => {
+          handleLeaveRoom();
+        },
       });
-    };
+    },
+    [roomId, profileData]
+  );
 
-    if (myMeetingRef.current) {
-      myMeeting(myMeetingRef.current);
+  const handleLeaveRoom = useCallback(() => {
+    if (zegoRef.current) {
+      zegoRef.current.destroy();
+      zegoRef.current = null;
     }
-  }, [roomId]);
+    if (myMeetingRef.current) {
+      myMeetingRef.current.innerHTML = ""; // Clear DOM content
+    }
+    onClose(); // Notify parent to hide the MeetingScreen
+  }, [onClose]);
 
-  // Function to handle the close button
-  const handleClose = () => {
-    // Navigate to the homepage (or any other page) on close
-    navigate('/home');  // Change '/home' to wherever you want to navigate after closing the meeting
-  };
+  useEffect(() => {
+    if (myMeetingRef.current) {
+      initializeZegoCloud(myMeetingRef.current);
+    }
 
+    return () => {
+      if (zegoRef.current) {
+        zegoRef.current.destroy();
+        zegoRef.current = null;
+      }
+      if (myMeetingRef.current) {
+        myMeetingRef.current.innerHTML = ""; // Clear DOM content
+      }
+    };
+  }, [initializeZegoCloud]);
 
   return (
-    <div
-      className="absolute inset-0 flex items-center justify-center z-50 border"
-   
-    >
-      <div    ref={myMeetingRef}>
-
+    <div className="absolute inset-0 flex items-center justify-center z-50 bg-black/75">
+      <div className="relative w-full h-full">
+       
+        <div ref={myMeetingRef} className="w-full h-full"></div>
       </div>
-      <XCircleIcon className="absolute top-0 end-0" onClick={()=>closepopup(null)}/>
     </div>
   );
-}
+};
 
 export default MeetingScreen;

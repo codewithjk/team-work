@@ -16,7 +16,6 @@ import { Label } from "@/components/ui/label";
 import { Toaster, toast } from "sonner";
 import DateRangePicker from "@/components/date-range-picker/DateRangePicker";
 import { useParams } from "react-router-dom";
-
 import { Badge } from "@/components/ui/badge";
 import { MoreVertical } from "lucide-react";
 import { CalendarDaysIcon } from "lucide-react";
@@ -67,7 +66,6 @@ const MeetingPage = () => {
   const [projects, setProjects] = useState([]);
   const [selectedProjectName, setSelectedProjectName] = useState(null);
   const [isPaymentPopup,setIsPaymentPopup] = useState(false)
-
 
   const [roomId, setRoomId] = useState(null);
 
@@ -169,19 +167,16 @@ const MeetingPage = () => {
     }
   };
 
+
   const handleCancelDelete = () => {
     setCurrentMeeting(null);
     handleClosePopover();
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+  const handleCloseMeeting = () => {
+    setRoomId(null)
   };
+
 
   return (
     <div className="min-h-screen p-4 max-w-screen">
@@ -349,7 +344,7 @@ const MeetingPage = () => {
       {isPaymentPopup && <PricingPopover closepopup={setIsPaymentPopup}/>
       }
 
-      {roomId && <MeetingScreen closepopup={setRoomId} setRoomId={setRoomId} roomId={roomId} />}
+      {roomId && <MeetingScreen  setRoomId={setRoomId} roomId={roomId} onClose={handleCloseMeeting}/>}
 
     </div>
   );
