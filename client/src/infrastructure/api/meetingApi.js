@@ -4,8 +4,8 @@ const getMeeting = (id) => {
   return axios.get(`/meeting/${id}`);
 };
 
-const getAllMeetings = () => {
-  return axios.get(`/meeting`);
+const getAllMeetings = (page, limit) => {
+  return axios.get(`/meeting?page=${page}&limit=${limit}`);
 };
 
 const createMeeting = (meeting) => {

@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -14,11 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Toaster, toast } from "sonner";
-import DateRangePicker from "@/components/date-range-picker/DateRangePicker";
 import { useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { MoreVertical } from "lucide-react";
-import { CalendarDaysIcon } from "lucide-react";
 import ConfirmationPopover from "@/components/ui/conformationPopover";
 import meetingApi from "../../../infrastructure/api/meetingApi";
 import projectApi from "../../../infrastructure/api/projectApi";
@@ -26,6 +23,7 @@ import { Video } from "lucide-react";
 import MeetingScreen from "./MeetingScreen";
 import PricingPopover from "@/components/ui/pricingPopover";
 import moment from "moment/moment";
+import PaginationFooter from "@/components/pagination";
 
 // Zod schema for form validation
 const meetingSchema = z.object({
@@ -37,15 +35,12 @@ const meetingSchema = z.object({
 }).superRefine((data, ctx) => {
   const start = new Date(data.startTime);
   const end = new Date(data.endTime);
-  console.log(data.startTime,start,ctx)
-
   if (end <= start) {
     ctx.addIssue({
       path: ["endTime"],
       code: z.ZodIssueCode.custom,
       message: "End time must be after start time",
     });
-    
   }
 });
 
@@ -65,10 +60,11 @@ const MeetingPage = () => {
   const handleClosePopover = () => setPopoverOpen(false);
   const [projects, setProjects] = useState([]);
   const [selectedProjectName, setSelectedProjectName] = useState(null);
-  const [isPaymentPopup,setIsPaymentPopup] = useState(false)
-
+  const [isPaymentPopup, setIsPaymentPopup] = useState(false)
+  const [pageNumber, setPageNumber] = useState(1)
+  const [totalPages,setTotalPages] = useState(null)
   const [roomId, setRoomId] = useState(null);
-
+console.log(pageNumber,totalPages)
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -86,19 +82,27 @@ const MeetingPage = () => {
     fetchProjects();
 
     async function getMeetings() {
-      const allProjectsResponse = await projectApi.getAllProjects({
-        allProjects: true,
-      });
-      let projects = allProjectsResponse.data.projects;
-      let projectIds = projects.map((pro) => pro._id);
-
-      const response = await meetingApi.getAllMeetings({ projectIds });
-
+      const response = await meetingApi.getAllMeetings(pageNumber,10);
+      setTotalPages(response.data.totalPages)
       setMeetings(response.data.meetings);
+      console.log(response.data.meetings);
     }
     getMeetings();
-  }, []);
+  }, [pageNumber]);
   
+
+    // Pagination handlers
+    const handleNextPage = () => {
+      if (pageNumber < totalPages) {
+        setPageNumber(prev => prev + 1);
+      }
+    };
+  
+    const handlePrevPage = () => {
+      if (pageNumber > 1) {
+        setPageNumber(prev => prev - 1);
+      }
+    };
 
   // initial value for the form 
   const initialValue = {
@@ -179,7 +183,7 @@ const MeetingPage = () => {
 
 
   return (
-    <div className="min-h-screen p-4 max-w-screen">
+    <div className="min-h-screen p-4 relative ">
       {/* Add meeting Button */}
       <div className="flex justify-end pb-2 ">
         <Button onClick={() => setIsMeetingFormOpen(true)}>Add Meeting</Button>
@@ -189,12 +193,10 @@ const MeetingPage = () => {
           // Parse the endTime to a Date object
           const meetingStartTime = new Date(meeting.startTime);
           const meetingEndTime = new Date(meeting.endTime);
-  
           // Compare meeting end time with current time
           const beforMeetingStart = meetingStartTime > now
           const afterMeetingEnd = meetingEndTime  < now
           const canJoinMeeting = meetingEndTime > now && now > meetingStartTime;
-          console.log(meetingEndTime , now)
           return (
           
             <Card
@@ -233,9 +235,6 @@ const MeetingPage = () => {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    {/* <DropdownMenuItem onClick={() => handleEditMeeting(meeting)}>
-                    Edit
-                  </DropdownMenuItem> */}
                     <DropdownMenuItem
                       onClick={() => handleDeleteMeeting(meeting)}
                     >
@@ -344,8 +343,14 @@ const MeetingPage = () => {
       {isPaymentPopup && <PricingPopover closepopup={setIsPaymentPopup}/>
       }
 
-      {roomId && <MeetingScreen  setRoomId={setRoomId} roomId={roomId} onClose={handleCloseMeeting}/>}
-
+      {roomId && <MeetingScreen setRoomId={setRoomId} roomId={roomId} onClose={handleCloseMeeting} />}
+      <PaginationFooter
+        handleNext={handleNextPage}
+        handlePrev={handlePrevPage}
+        page={pageNumber}
+        totalPages={totalPages}
+      />
+     
     </div>
   );
 };

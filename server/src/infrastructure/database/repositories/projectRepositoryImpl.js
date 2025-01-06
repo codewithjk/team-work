@@ -57,7 +57,7 @@ class ProjectRepositoryImpl extends ProjectRepository {
         .limit(parseInt(limit));
 
       if (filter == "true") {
-        projects = [...assignedProjects];
+        projects = [...assignedProjects]; //removed spredding project after updating member logic to adding creator as member in the role of admin.
       }
 
       return { projects, totalPages };
