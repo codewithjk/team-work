@@ -27,6 +27,7 @@ import { Video } from "lucide-react";
 import { MessageCircleIcon } from "lucide-react";
 import { clearNotification } from "../../../application/slice/notificationSlice";
 import { useDispatch } from "react-redux";
+import PaginationFooter from "@/components/pagination";
 
 const NotificationPage = () => {
   // const { projectId } = useParams();
@@ -38,6 +39,10 @@ const NotificationPage = () => {
   const handleClosePopover = () => setPopoverOpen(false);
   const [projects, setProjects] = useState([]);
   const [selectedProjectName, setSelectedProjectName] = useState(null);
+
+  const [pageNumber, setPageNumber] = useState(1)
+  const [totalPages, setTotalPages] = useState(null)
+  
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(clearNotification());
@@ -65,6 +70,7 @@ const NotificationPage = () => {
 
       const response = await notificationApi.getAllNotifications();
       console.log(response.data.notifications.reverse());
+      setTotalPages(response.data.totalPages)
       
       setNotifications(response.data.notifications.reverse());
     }
@@ -120,8 +126,22 @@ const NotificationPage = () => {
     }
   };
 
+
+    // Pagination handlers
+    const handleNextPage = () => {
+      if (pageNumber < totalPages) {
+        setPageNumber(prev => prev + 1);
+      }
+    };
+  
+    const handlePrevPage = () => {
+      if (pageNumber > 1) {
+        setPageNumber(prev => prev - 1);
+      }
+    };
+
   return (
-    <div className="min-h-screen p-4 max-w-screen">
+    <div className="min-h-screen p-4 max-w-screen relative">
       {/* Add notification Button */}
       <div className="flex justify-end pb-2 ">
         <Button onClick={handleClearAll}>clear all</Button>
@@ -183,6 +203,12 @@ const NotificationPage = () => {
           onConfirm={handleConfirm}
         />
       </div>
+       <PaginationFooter
+              handleNext={handleNextPage}
+              handlePrev={handlePrevPage}
+              page={pageNumber}
+              totalPages={totalPages}
+            />
     </div>
   );
 };

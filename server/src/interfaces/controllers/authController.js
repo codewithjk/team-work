@@ -52,7 +52,7 @@ class AuthController {
         accessToken
       });
     } catch (error) {
-      res.status(401).json({ error: error.message });
+      res.status(404).json({ error: error.message });
     }
   }
   async verify(req, res) {

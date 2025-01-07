@@ -53,6 +53,8 @@ class AuthService {
     if (response.status === 200) {
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem("persist:root"); // Clear persisted Redux state
+
       return response.data;
     }
     throw new Error("failed to logout");

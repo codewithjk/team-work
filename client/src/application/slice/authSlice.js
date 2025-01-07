@@ -91,7 +91,7 @@ const authSlice = createSlice({
       state.user = null;
       state.loading = false;
       state.isAuthenticated = false;
-      state.message = action.payload.message;
+      // state.message = action.payload.message;
     },
     logoutFail: (state, action) => {
       state.loading = false;

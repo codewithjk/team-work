@@ -183,7 +183,7 @@ console.log(pageNumber,totalPages)
 
 
   return (
-    <div className="min-h-screen p-4 relative ">
+    <div className="min-h-screen p-4 max-w-screen relative ">
       {/* Add meeting Button */}
       <div className="flex justify-end pb-2 ">
         <Button onClick={() => setIsMeetingFormOpen(true)}>Add Meeting</Button>

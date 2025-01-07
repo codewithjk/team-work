@@ -48,14 +48,6 @@ function App() {
   const { user } = auth;
 
   console.log("this is from app ",user)
-
-
-  // useEffect(() => {
-  //   console.log("App refreshed");
-  //   dispatch(checkAuth());
-  // }, [dispatch]);
-
-
   const socketURL =
   import.meta.env.VITE_SOCKET_BASE_URL || "http://localhost:3000";
 

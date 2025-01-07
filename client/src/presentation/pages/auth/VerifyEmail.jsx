@@ -91,7 +91,7 @@ function VerifyEmail() {
   }, [auth]);
 
   useEffect(() => {
-    if (message) {
+    if (message && user?.isVerified) {
       toast.success("Email verified successfully!");
       navigate("/login");
     }
@@ -101,10 +101,10 @@ function VerifyEmail() {
   }, [message, error, navigate]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 p-6 sm:p-12">
-      <section className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background p-6 sm:p-12">
+      <section className="w-full max-w-md bg-background  border  border-muted-foreground p-8 rounded-lg shadow-lg">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold text-gray-800">
+          <h1 className="text-3xl font-semibold text-muted-foreground">
             Verify Your Email
           </h1>
           <p className="mt-2 text-sm text-gray-600">
@@ -147,11 +147,11 @@ function VerifyEmail() {
               <Button
                 type="submit"
                 disabled={loading || !isResendDisabled}
-                className="w-full py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                variant="default"
               >
                 {loading ? "Verifying..." : "Verify"}
               </Button>
-              <p className="text-center text-gray-600">
+              <p className="text-center text-muted-foreground">
                 {timer > 0
                   ? `You can enter the code within ${formatTime(timer)}.`
                   : "You can request a new code now."}
