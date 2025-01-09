@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import DateRangePicker from "@/components/date-range-picker/DateRangePicker";
 import { useParams } from "react-router-dom";
 import projectApi from "../../infrastructure/api/projectApi";
@@ -23,6 +23,7 @@ import { MoreVertical } from "lucide-react";
 import { CalendarDaysIcon } from "lucide-react";
 import ModuleForm from "@/components/ui/ModuleForm";
 import ConfirmationPopover from "@/components/ui/conformationPopover";
+import EmptyPage from "@/components/empty-data-message/EmptyPage";
 
 // Zod schema for form validation
 const moduleSchema = z.object({
@@ -192,65 +193,68 @@ const ModulePage = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 max-w-screen">
+    <div className=" max-w-screen flex flex-col ">
       {/* Add module Button */}
-      <div className="flex justify-end pb-2 ">
-        <Button onClick={() => setIsModuleFormOpen(true)}>Add Module</Button>
+      <div className=" sticky top-0 p-2 border border-x-0  bg-background w-full flex justify-end ">
+      <Button onClick={() => setIsModuleFormOpen(true)}>Add Module</Button>
       </div>
-      <div className="flex flex-col gap-2">
-        {modules.map((module) => (
-          <Card
-            key={module.id}
-            className="shadow-md dark:bg-gray-800 p-4 flex flex-col md:flex-row justify-between items-center"
+      {(modules.length > 0)? (
+    <div className="flex flex-col gap-2">
+    {modules.map((module) => (
+      <Card
+        key={module.id}
+        className="shadow-md dark:bg-gray-800 p-4 flex flex-col md:flex-row justify-between items-center m-3"
+      >
+        <div className="flex items-center space-x-4">
+          <div
+            className="radial-progress text-blue-500"
+            style={{ "--value": module.progress, "--size": "3rem" }}
           >
-            <div className="flex items-center space-x-4">
-              <div
-                className="radial-progress text-blue-500"
-                style={{ "--value": module.progress, "--size": "3rem" }}
-              >
-                {module.progress}%
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  {module.name}
-                </h2>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4 mt-4 md:mt-0">
-              <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-                <CalendarDaysIcon className="w-4 h-4 mr-1" />
-                {formatDate(module.startDate)} - {formatDate(module.endDate)}
-              </p>
-              <Badge className="px-2 py-1 bg-background text-foreground border border-foreground-500">
-                {module.status}
-              </Badge>
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <Button variant="ghost">
-                    <MoreVertical className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleEditModule(module)}>
-                    Edit
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleDeleteModule(module)}>
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </Card>
-        ))}
+            {module.progress}%
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {module.name}
+            </h2>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4 mt-4 md:mt-0">
+          <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
+            <CalendarDaysIcon className="w-4 h-4 mr-1" />
+            {formatDate(module.startDate)} - {formatDate(module.endDate)}
+          </p>
+          <Badge className="px-2 py-1 bg-background text-foreground border border-foreground-500">
+            {module.status}
+          </Badge>
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button variant="ghost">
+                <MoreVertical className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => handleEditModule(module)}>
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleDeleteModule(module)}>
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </Card>
+    ))}
 
-        <ConfirmationPopover
-          isOpen={isPopoverOpen}
-          title="Delete Module"
-          description="Are you sure you want to proceed with this action?"
-          onCancel={handleCancelDelete}
-          onConfirm={handleConfirm}
-        />
-      </div>
+    <ConfirmationPopover
+      isOpen={isPopoverOpen}
+      title="Delete Module"
+      description="Are you sure you want to proceed with this action?"
+      onCancel={handleCancelDelete}
+      onConfirm={handleConfirm}
+    />
+  </div>
+  ) : <EmptyPage title={'No modules'}/>}
+     
       {isModuleFormOpen && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <Card className="p-6 w-full max-w-xl bg-background shadow-lg">
@@ -383,7 +387,6 @@ const ModulePage = () => {
           </Card>
         </div>
       )}
-
       {openEditForm && (
         <ModuleForm
           module={currentModule}
@@ -397,3 +400,5 @@ const ModulePage = () => {
 };
 
 export default ModulePage;
+
+

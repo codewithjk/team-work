@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
-import { Toaster, toast } from "sonner";
+import {  toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { MoreVertical } from "lucide-react";
@@ -24,6 +24,7 @@ import MeetingScreen from "./MeetingScreen";
 import PricingPopover from "@/components/ui/pricingPopover";
 import moment from "moment/moment";
 import PaginationFooter from "@/components/pagination";
+import EmptyPage from "@/components/empty-data-message/EmptyPage";
 
 // Zod schema for form validation
 const meetingSchema = z.object({
@@ -183,12 +184,14 @@ console.log(pageNumber,totalPages)
 
 
   return (
-    <div className="min-h-screen p-4 max-w-screen relative ">
+    <div className="min-h-screen  max-w-screen relative ">
       {/* Add meeting Button */}
-      <div className="flex justify-end pb-2 ">
-        <Button onClick={() => setIsMeetingFormOpen(true)}>Add Meeting</Button>
-      </div>
-      <div className="flex flex-col gap-2">
+      <div className=" sticky top-0 p-2 border border-x-0  bg-background w-full flex justify-end ">
+      <Button onClick={() => setIsMeetingFormOpen(true)}>Add Meeting</Button>
+            </div>
+   
+      {(meetings.length > 0)?(
+    <div className="flex flex-col gap-2">
         {meetings.map((meeting) => {
           // Parse the endTime to a Date object
           const meetingStartTime = new Date(meeting.startTime);
@@ -200,8 +203,8 @@ console.log(pageNumber,totalPages)
           return (
           
             <Card
-              key={meeting.id}
-              className="shadow-md dark:bg-gray-800 p-4 flex flex-col md:flex-row justify-between items-center"
+              key={meeting._id}
+              className="shadow-md dark:bg-gray-800 p-4 flex flex-col md:flex-row justify-between items-center m-3"
             >
               <div className="flex items-center space-x-4">
                 <div
@@ -255,6 +258,7 @@ console.log(pageNumber,totalPages)
           onConfirm={handleConfirm}
         />
       </div>
+  ):(<EmptyPage title={"No Meetings"}/>) }
       {isMeetingFormOpen && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
           <Card className="p-6 w-full max-w-xl bg-background shadow-lg">
@@ -344,12 +348,15 @@ console.log(pageNumber,totalPages)
       }
 
       {roomId && <MeetingScreen setRoomId={setRoomId} roomId={roomId} onClose={handleCloseMeeting} />}
-      <PaginationFooter
-        handleNext={handleNextPage}
-        handlePrev={handlePrevPage}
-        page={pageNumber}
-        totalPages={totalPages}
-      />
+      {meetings.length > 0 && (
+  <PaginationFooter
+  handleNext={handleNextPage}
+  handlePrev={handlePrevPage}
+  page={pageNumber}
+  totalPages={totalPages}
+/>
+      )}
+    
      
     </div>
   );
@@ -363,3 +370,5 @@ function getFormattedDates(date) {
 return date.toISOString().slice(0, 16);
 
 }
+
+

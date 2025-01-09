@@ -111,7 +111,7 @@ const INVITE_EMAIL_TEMPLATE = `
     <p>The team of <b>{project_name}</b> wants you to join their team . we hope you will join soon </p>
     <p>To join the team, click the button below:</p>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="{project_url}" style="background-color: #6495ED; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Join Team</a>
+      <a target="_blank" href="{project_url}" style="background-color: #6495ED; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Join Team</a>
     </div>
     <p>This link will expire in 24 hours for security reasons.</p>
     <p>Best regards,<br>Your App Team</p>
@@ -152,10 +152,43 @@ const ALERT_EMAIL_TEMPLATE = `<!DOCTYPE html>
 </html>
 `;
 
+const INVOICE_EMAIL_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice for Your Recent Purchase</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #4CAF50, #4CAF50); padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">Invoice for Your Recent Purchase</h1>
+  </div>
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p>Dear <b>{customer_name}</b>,</p>
+    <p>Thank you for your recent purchase with us! Your invoice is ready for review.</p>
+
+    <p>You can view and download your invoice by clicking the link below:</p>
+    <p><a href="{invoice_url}" style="color: #FF6347; font-weight: bold;">View Your Invoice</a></p>
+
+    <p>If you have any questions or need assistance, feel free to contact our support team.</p>
+
+    <p>Thank you for choosing our services!</p>
+    <p>Best regards,<br>SprintFlow</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email. If you need assistance, contact our support team at sprintflow.site.</p>
+  </div>
+</body>
+</html>
+
+`;
+
 module.exports = {
   VERIFICATION_EMAIL_TEMPLATE,
   PASSWORD_RESET_REQUEST_TEMPLATE,
   PASSWORD_RESET_SUCCESS_TEMPLATE,
   INVITE_EMAIL_TEMPLATE,
-  ALERT_EMAIL_TEMPLATE
+  ALERT_EMAIL_TEMPLATE,
+  INVOICE_EMAIL_TEMPLATE
 };

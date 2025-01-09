@@ -10,9 +10,7 @@ import VerifyEmail from "@/pages/auth/VerifyEmail";
 import HomePage from "@/pages/HomePage";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { checkAuth } from "./application/actions/authActions";
 import { useEffect } from "react";
 import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
 import { useSelector } from "react-redux";
@@ -23,22 +21,15 @@ import VerifyInvitationPage from "@/pages/VerifyInvitePage";
 import ModulePage from "@/pages/ModulePage";
 import TaskPage from "@/pages/TaskPage";
 import ChatPage from "@/pages/chat/ChatPage";
-import {
-  socketConnected,
-  socketDisconnected,
-} from "./application/slice/socketSlice";
 
-
-import { getSocket, initSocket } from "@/utils/socketClient.config";
+import {  initSocket } from "@/utils/socketClient.config";
 import MeetingPage from "@/pages/meeting/MeetingPage";
 import NotificationPage from "@/pages/notification/NotificationPage";
 import { toast } from "sonner";
 import { Toaster } from "sonner";
 import LandingPage from "@/pages/LandingPage";
-import { useState } from "react";
 import NotFoundPage from "@/pages/error/Error404";
 import ErrorPage from "@/pages/error/ErrorPage";
-import { useNavigate } from "react-router-dom";
 import { setNotification } from "./application/slice/notificationSlice";
 import { setMessages } from "./application/slice/chatSlice";
 
@@ -170,9 +161,7 @@ function App() {
             <Route
               path="/verify-invite/:token"
               element={
-                <ProtectedRoute>
                   <VerifyInvitationPage />
-                </ProtectedRoute>
               }
             />
 

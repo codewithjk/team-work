@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Toaster, toast } from "sonner";
+import {  toast } from "sonner";
 import { useParams } from "react-router-dom";
 import projectApi from "../../infrastructure/api/projectApi";
 import taskApi from "../../infrastructure/api/taskApi";
@@ -11,7 +10,6 @@ import KanbanBoard from "@/components/kanban/KanbanBoard";
 import { useDispatch } from "react-redux";
 import { getTasks } from "../../application/actions/taskActions";
 import { useSelector } from "react-redux";
-import { getSocket } from "@/utils/socketClient.config";
 import { uploadFiles } from "@/utils/uploadFiles";
 
 const TaskPage = () => {
@@ -94,12 +92,9 @@ const TaskPage = () => {
   return (
     <div className="min-h-screen  max-w-screen ">
       {/* Add task Button */}
-      <div className="flex justify-end p-2">
-        {isOwner && (
+      {isOwner && ( <div className="flex justify-end p-2">   
           <Button onClick={() => setIsTaskFormOpen(true)}>Add Task</Button>
-        )}
-        {/* Change setIsModuleFormOpen to setIsTaskFormOpen */}
-      </div>
+      </div> )}
 
       <div className=" overflow-scroll">
         <KanbanBoard isOwner={isOwner} />

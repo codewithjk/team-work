@@ -4,8 +4,8 @@ const getNotification = (id) => {
   return axios.get(`/notification/${id}`);
 };
 
-const getAllNotifications = () => {
-  return axios.get(`/notification`);
+const getAllNotifications = (page, limit) => {
+  return axios.get(`/notification?page=${page}&limit=${limit}`);
 };
 
 const deleteNotification = (notificationId) => {

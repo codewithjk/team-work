@@ -36,6 +36,7 @@ class NotificationRepositoryImpl {
 
       const notifications = await notificationModel
         .find(query)
+        .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(parseInt(limit));
 

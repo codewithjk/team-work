@@ -28,6 +28,7 @@ import { MessageCircleIcon } from "lucide-react";
 import { clearNotification } from "../../../application/slice/notificationSlice";
 import { useDispatch } from "react-redux";
 import PaginationFooter from "@/components/pagination";
+import EmptyPage from "@/components/empty-data-message/EmptyPage";
 
 const NotificationPage = () => {
   // const { projectId } = useParams();
@@ -46,20 +47,20 @@ const NotificationPage = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(clearNotification());
-    const fetchProjects = async () => {
-      try {
-        const response = await projectApi.getAllProjects();
-        const data = response.data.projects;
-        if (response.status === 200) {
-          setProjects(data);
-        } else {
-          toast.error("Failed to fetch projects.");
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-    fetchProjects();
+    // const fetchProjects = async () => {
+    //   try {
+    //     const response = await projectApi.getAllProjects();
+    //     const data = response.data.projects;
+    //     if (response.status === 200) {
+    //       setProjects(data);
+    //     } else {
+    //       toast.error("Failed to fetch projects.");
+    //     }
+    //   } catch (error) {
+    //     console.error("Error fetching projects:", error);
+    //   }
+    // };
+    // fetchProjects();
 
     async function getNotifications() {
       const allProjectsResponse = await projectApi.getAllProjects({
@@ -68,14 +69,14 @@ const NotificationPage = () => {
       let projects = allProjectsResponse.data.projects;
       let projectIds = projects.map((pro) => pro._id);
 
-      const response = await notificationApi.getAllNotifications();
-      console.log(response.data.notifications.reverse());
+      const response = await notificationApi.getAllNotifications(pageNumber,10);
       setTotalPages(response.data.totalPages)
+      console.log(response.data.notifications);
       
-      setNotifications(response.data.notifications.reverse());
+      setNotifications(response.data.notifications);
     }
     getNotifications();
-  }, []);
+  }, [pageNumber]);
   const handleDeleteNotification = async (notification) => {
     setCurrentNotification(notification);
     handleOpenPopover();
@@ -143,10 +144,11 @@ const NotificationPage = () => {
   return (
     <div className="min-h-screen p-4 max-w-screen relative">
       {/* Add notification Button */}
-      <div className="flex justify-end pb-2 ">
-        <Button onClick={handleClearAll}>clear all</Button>
-      </div>
-      <div className="flex flex-col gap-2">
+    {notifications.length > 0 &&<div className="flex justify-end pb-2 ">
+      <Button onClick={handleClearAll}>clear all</Button>
+    </div>}
+      {notifications.length > 0?
+     ( <div className="flex flex-col gap-2">
         {notifications.map((notification) => (
           <Card
             key={notification.id}
@@ -169,13 +171,6 @@ const NotificationPage = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
-              {/* <a
-                href={notification.notification.link}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button>View</Button>
-              </a> */}
 
               <DropdownMenu>
                 <DropdownMenuTrigger>
@@ -202,13 +197,15 @@ const NotificationPage = () => {
           onCancel={handleCancelDelete}
           onConfirm={handleConfirm}
         />
-      </div>
-       <PaginationFooter
+        </div>) : (
+          <EmptyPage title={"No notifications"}/>
+      )}
+       {notifications.length > 0 &&<PaginationFooter
               handleNext={handleNextPage}
               handlePrev={handlePrevPage}
               page={pageNumber}
               totalPages={totalPages}
-            />
+            />}
     </div>
   );
 };

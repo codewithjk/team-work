@@ -3,15 +3,8 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { cn } from "@/lib/utils";
 import Chat from "./chat";
 import Sidebar from "./side-bar";
-import { useChatGroups } from "@/hooks/useChatGroups";
 import { useSelector } from "react-redux";
-import { useCallback } from "react";
-import { setGroups } from "../../../application/slice/chatSlice";
-import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import projectApi from "../../../infrastructure/api/projectApi";
-import chatApi from "../../../infrastructure/api/chatApi";
-
 
 
 export function ChatLayout({ defaultLayout = [320, 480], defaultCollapsed = false, navCollapsedSize }) {

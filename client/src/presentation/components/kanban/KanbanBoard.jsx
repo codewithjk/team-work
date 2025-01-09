@@ -6,9 +6,6 @@ import {
   MouseSensor,
   closestCenter,
 } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
-import io from "socket.io-client";
-import axios from "axios";
 import KanbanColumn from "./KanbanColumn";
 import { useSelector } from "react-redux";
 import { updateTask } from "../../../application/actions/taskActions";
@@ -30,11 +27,8 @@ const KanbanBoard = ({ isOwner }) => {
   const socket = getSocket();
 
   useEffect(() => {
-    console.log(socket);
-    
     if (socket) {
       socket.on("receiveUpdatedTask", (updatedTask) => {
-        console.log("receives the updatedTask ===== ", updatedTask);
         dispatch(updateTasksSuccess(updatedTask));
       });
     }
@@ -49,7 +43,6 @@ const KanbanBoard = ({ isOwner }) => {
     const { active, over } = event;
 
     if (!over) return;
-    console.log(event);
 
     const task = active.data.current;
 

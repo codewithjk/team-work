@@ -8,18 +8,9 @@ import {
   ChatBubble,
 } from "@/components/ui/chat/chat-bubble";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
-import { getSocket } from "@/utils/socketClient.config";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  resetMessages,
-  setMessages,
-  addOldMessages,
-  setGroups,
-  sortGroups,
-} from "../../../application/slice/chatSlice";
-import chatApi from "../../../infrastructure/api/chatApi";
+
 import ImageWithDownload from "@/components/imageWithDownload";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const getMessageVariant = (senderId, userId) =>
   senderId === userId ? "sent" : "received";
@@ -44,7 +35,7 @@ export function ChatList({ selectedGroup, isMobile }) {
   const [loadingOldMessages, setLoadingOldMessages] = useState(false);
   const [loadingRecentMessages, setLoadingRecentMessages] = useState(true);
   // const [hasMoreMessages, setHasMoreMessages] = useState(true);
-  // const [onlineUsers, setOnlineUsers] = useState(new Map());
+  const [onlineUsers, setOnlineUsers] = useState(new Map());
 
   // Fetch messages implementation...
   // const fetchRecentMessages = useCallback(async () => {
@@ -204,11 +195,11 @@ export function ChatList({ selectedGroup, isMobile }) {
         </AnimatePresence>
       </ChatMessageList>
 
-      {loadingRecentMessages && (
+      {/* {loadingRecentMessages && (
         <div className="flex justify-center items-center py-2">
           <span>Loading recent messages...</span>
         </div>
-      )}
+      )} */}
 
       {loadingOldMessages && (
         <div className="flex justify-center items-center py-2">

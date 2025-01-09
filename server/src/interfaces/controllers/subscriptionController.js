@@ -13,6 +13,7 @@ const {
   UpdateUser,
 } = require("../../application/use-cases/user-use-cases");
 const userRepositoryImpl = require("../../infrastructure/database/repositories/userRepositoryImpl");
+const { sendInvoiceEmail } = require("../../shared/mailtrap/emails");
 
 
 const subscriptionRepository = new SubscriptionRepositoryImpl();
@@ -128,6 +129,17 @@ class SubscriptionController {
             await updateUserUseCase.execute(user._id, { plan: "free" });
           }
           break;
+        }
+        case "invoice.payment_succeeded": {
+          try {
+            const subscription = event.data.object;
+            const email = subscription.customer_email;
+            const customerName = subscription.customer_name;
+            const url = subscription.hosted_invoice_url;
+            await sendInvoiceEmail(email, url, customerName)
+          } catch (error) {
+            console.error(error)
+          }
         }
         default:
       }

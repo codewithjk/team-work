@@ -302,29 +302,6 @@ function ProjectSettingsPage() {
           </div>
         )}
       </div>
-
-      {/* {isPopoverOpen && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-gray-100 p-4 rounded-lg shadow-md w-80">
-            <h4 className="text-md font-medium">Add New Member</h4>
-            <form className="space-y-4">
-              <Input placeholder="Enter email address" />
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleClosePopover}
-                >
-                  Cancel
-                </Button>
-                <Button type="button" variant="primary">
-                  Add Member
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )} */}
       <AddMemberPopover isOpen={isPopoverOpen} onClose={handleClosePopover} />
     </div>
   );

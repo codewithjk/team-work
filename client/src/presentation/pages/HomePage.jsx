@@ -1,11 +1,5 @@
 
-import { getSocket, initSocket } from "@/utils/socketClient.config";
-import Sidebar from "@/components/Sidebar";
-import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { logout } from "../../application/actions/authActions";
-import PrivatePageLayout from "@/layouts/PrivatePageLayout";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FcTodoList } from "react-icons/fc";
 import taskApi from "../../infrastructure/api/taskApi";
@@ -14,8 +8,7 @@ import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { setNotification } from "../../application/slice/notificationSlice";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import EmptyPage from "@/components/empty-data-message/EmptyPage";
 
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -182,7 +175,7 @@ console.log("home rendered")
             {assignedTasks.length > 0 ? (
               <Doughnut data={StateData} options={options} />
             ) : (
-                <DotLottieReact src="src/asset/animations/empty-box.lottie" autoplay></DotLottieReact>
+              <EmptyPage/>
             )}
             </CardContent>
           </Card>
@@ -193,7 +186,7 @@ console.log("home rendered")
           <CardContent className="flex justify-center">
             {assignedTasks.length > 0 ? (
               <Doughnut data={PriorityData} options={options} />
-            ):( <DotLottieReact src="src/asset/animations/empty-box.lottie" autoplay></DotLottieReact>)}
+            ):( <EmptyPage/>)}
             </CardContent>
           </Card>
         </div>

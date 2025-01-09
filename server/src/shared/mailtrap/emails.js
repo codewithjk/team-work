@@ -3,7 +3,8 @@ const {
   PASSWORD_RESET_SUCCESS_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
   INVITE_EMAIL_TEMPLATE,
-  ALERT_EMAIL_TEMPLATE
+  ALERT_EMAIL_TEMPLATE,
+  INVOICE_EMAIL_TEMPLATE
 } = require("./emailTemplates.js");
 const { mailtrapClient, sender } = require("./mailtrap.config.js");
 
@@ -115,7 +116,7 @@ const sendAlertEmail = async (email, taskDetails) => {
     const response = await mailtrapClient.send({
       from: sender,
       to: recipient,
-      subject: "invite a new member",
+      subject: "⏰ You have a task to be completed by tomorrow",
       html: ALERT_EMAIL_TEMPLATE.replace("{user_name}", name).replace(
         "{task_name}",
         taskName
@@ -123,8 +124,28 @@ const sendAlertEmail = async (email, taskDetails) => {
       category: "Alert",
     });
   } catch (error) {
-    console.error(`Error sending password alert email`, error);
-    throw new Error(`Error sending password reset email: ${error}`);
+    console.error(`Error sending  alert email`, error);
+    throw new Error(`Error sending reset email: ${error}`);
+  }
+};
+
+
+const sendInvoiceEmail = async (email, url, customerName) => {
+  const recipient = [{ email }];
+  try {
+    const response = await mailtrapClient.send({
+      from: sender,
+      to: recipient,
+      subject: "Invoice of payment",
+      html: INVOICE_EMAIL_TEMPLATE.replace("{customer_name}", customerName).replace(
+        "{invoice_url}",
+        url
+      ),
+      category: "Invoice",
+    });
+  } catch (error) {
+    console.error(`Error sending invoice email`, error);
+    throw new Error(`Error sending invoice email: ${error}`);
   }
 };
 
@@ -134,5 +155,6 @@ module.exports = {
   sendWelcomeEmail,
   sendVerificationEmail,
   sendInviteEmail,
-  sendAlertEmail
+  sendAlertEmail,
+  sendInvoiceEmail
 };

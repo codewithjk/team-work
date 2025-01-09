@@ -22,7 +22,6 @@ const addMemberSchema = z.object({
 });
 
 const roles = [
-  { value: "admin", label: "Admin" },
   { value: "developer", label: "Developer" },
   { value: "tester", label: "Tester" },
   { value: "viewer", label: "Viewer" },

@@ -118,7 +118,8 @@ class ProjectController {
         token,
         userId,
       });
-      res.status(200).json({ message: " successfully verified" });
+      const projectId = verifiedMember.projectId
+      res.status(200).json({ message: " successfully verified", projectId });
     } catch (error) {
       res
         .status(500)

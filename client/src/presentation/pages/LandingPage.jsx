@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Pricing from "@/components/Pricing";
 import { useDispatch } from "react-redux";

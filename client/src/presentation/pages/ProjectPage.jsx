@@ -11,15 +11,15 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import ImageSelectorPopover from "@/components/ui/image-selector-popover";
 import projectApi from "../../infrastructure/api/projectApi";
 import { SettingsIcon } from "lucide-react";
 import { Link } from "react-router-dom";
-import NoProjects from "@/components/empty-data-message/NoProjects";
 import PricingPopover from "@/components/ui/pricingPopover";
 import { useDispatch } from "react-redux";
 import { setProjcetAction } from "../../application/actions/projectAction";
+import EmptyPage from "@/components/empty-data-message/EmptyPage";
 
 // Zod schema for form validation
 const projectSchema = z.object({
@@ -109,10 +109,7 @@ function ProjectPage() {
       {projects.length > 0 ? (
         <ProjectList projects={projects} />
       ) : (
-        <NoProjects
-          isProjectFormOpen={isProjectFormOpen}
-          ButtonAction={() => setIsProjectFormOpen(true)}
-        />
+       <EmptyPage title={'No Projects'}/>
       )}
 
       {isProjectFormOpen && (
@@ -208,7 +205,3 @@ const ProjectList = ({ projects }) => {
     </div>
   );
 };
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////
