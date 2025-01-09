@@ -15,10 +15,18 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { sortGroupsInitially } from "../../../application/slice/chatSlice";
 import { useDispatch } from "react-redux";
+import { getSocket } from "@/utils/socketClient.config";
 
 const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
   const {user} = useSelector(state=>state.auth);
   const { groups } = useSelector(state => state.chat);
+  const { profileData } = useSelector((state) => state.profile);
+
+  const handleSelect = (chat) => {
+    setSelectedGroup(chat)
+    const socket = getSocket();
+    socket.emit("joinGroup", { groupId: chat._id, user:profileData });
+  }
 
   return (
     // ToDo :  sort the chat list according to the latest chat.
@@ -65,7 +73,7 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
               <Tooltip key={index} delayDuration={0}>
                 <TooltipTrigger asChild>
                   <Link
-                    onClick={() => setSelectedGroup(chat)}
+                    onClick={() => handleSelect(chat)}
                     to={`/chats/${chat._id}`}
                     className={cn(
                       buttonVariants({ variant: chat.variant, size: "icon" }),
@@ -96,7 +104,7 @@ const Sidebar = ({ chats, isCollapsed, isMobile, setSelectedGroup }) => {
             </TooltipProvider>
           ) : (
             <Link
-              onClick={() => setSelectedGroup(chat)}
+              onClick={() => handleSelect(chat)}
               key={index}
               to={`/chats/${chat._id}`}
               className={cn(

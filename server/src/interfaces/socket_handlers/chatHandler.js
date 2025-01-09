@@ -31,58 +31,77 @@ const notifyUserUseCase = new NotifyUser(userNotificationRepository);
 const projectRepository = new ProjectRepositoryImpl();
 const listAllMembersUseCase = new ListAllMembers(projectRepository);
 
-
+const onlineUsers = new Map();
 
 const chatSoketHandler = (io, socket) => {
-  socket.on("sendMessage", async ({ groupId, message }) => {
-    try {
-      const messageData = {
-        groupId,
-        ...message,
-        timestamp: new Date(),
-      };
+  // Handle joinGroup event
+  socket.on("joinGroup", async (data) => {
+    const { groupId, user } = data;
 
-      const newMessage = await createMessageUseCase.execute(messageData);
-      let notification = {};
-      if (newMessage.attachmentUrl) {
-        notification = {
-          type: "messageReceived",
-          title: `${message.senderName} sent a file`,
-          previewUrl: newMessage.attachmentUrl,
-        };
-      } else {
-        notification = {
-          type: "messageReceived",
-          title: `${message.senderName} sent a message`,
-          message: newMessage.content,
-        };
-      }
-      const newNotification = await createNotificationUseCase.execute(
-        notification
-      );
-      const allMembers = await listAllMembersUseCase.execute(
-        groupId
-      );
-      const memberIds = allMembers
-        .map((member) => member.user._id)
-
-      const idsForSendNotification = memberIds.filter((id) => id != message.senderId);
-
-      await notifyUserUseCase.execute(idsForSendNotification, newNotification._id);
-      // Notify connected members
-      memberIds.forEach((memberId) => {
-        const mId = memberId.toString();
-        const socketId = SocketMap.get(mId);
-
-        if (socketId && socketId !== undefined) {
-          if (memberId != message.senderId) io.to(socketId).emit("receiveNotification", notification); // Send notification via socket
-          io.to(socketId).emit("receiveMessage", newMessage);
-        }
-      });
-      // io.to(groupId).emit("receiveMessage", newMessage);
-    } catch (error) {
-      socket.emit("error", { message: "Failed to send message" });
+    // Add user to onlineUsers map
+    if (!onlineUsers.has(groupId)) {
+      onlineUsers.set(groupId, new Set());
     }
+    const groupUsers = onlineUsers.get(groupId);
+    groupUsers.add(user);
+
+    // Notify connected members
+    const allMembers = await listAllMembersUseCase.execute(groupId);
+    const memberIds = allMembers.map((member) => member.user._id);
+
+    memberIds.forEach((memberId) => {
+      const mId = memberId.toString();
+      const socketId = SocketMap.get(mId);
+
+      if (socketId && socketId !== undefined) {
+        if (memberId !== user._id) {
+          io.to(socketId).emit("userJoined", { groupId, user });
+        }
+      }
+    });
+
+    // Emit updated online users
+    io.to(groupId).emit("onlineUsers", Array.from(groupUsers));
+  });
+
+  // Handle leftGroup event
+  socket.on("leftGroup", async (data) => {
+    const { groupId, user } = data;
+
+    // Remove user from onlineUsers map
+    if (onlineUsers.has(groupId)) {
+      const groupUsers = onlineUsers.get(groupId);
+      groupUsers.delete(user);
+
+      // Remove the group entry if no users are left
+      if (groupUsers.size === 0) {
+        onlineUsers.delete(groupId);
+      }
+    }
+
+    // Notify connected members
+    const allMembers = await listAllMembersUseCase.execute(groupId);
+    const memberIds = allMembers.map((member) => member.user._id);
+
+    memberIds.forEach((memberId) => {
+      const mId = memberId.toString();
+      const socketId = SocketMap.get(mId);
+
+      if (socketId && socketId !== undefined) {
+        if (memberId !== user._id) {
+          io.to(socketId).emit("userLeft", { groupId, user });
+        }
+      }
+    });
+
+    // Emit updated online users
+    io.to(groupId).emit("onlineUsers", Array.from(onlineUsers.get(groupId) || []));
+  });
+
+  // Emit all online users for a group
+  socket.on("getOnlineUsers", ({ groupId }) => {
+    const groupUsers = onlineUsers.get(groupId) || new Set();
+    socket.emit("onlineUsers", Array.from(groupUsers));
   });
 };
 
