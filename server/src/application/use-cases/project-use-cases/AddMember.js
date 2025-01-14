@@ -23,12 +23,13 @@ class AddMember {
       });
       const project = await this.projectRepository.findById(projectId);
       const { name } = project;
-      await sendInviteEmail(
-        email,
-        `${process.env.WEB_APP_ORIGIN}/verify-invite/${inviteToken}`,
-        name
-      );
-
+      if (role != "Admin") {
+        await sendInviteEmail(
+          email,
+          `${process.env.WEB_APP_ORIGIN}/verify-invite/${inviteToken}`,
+          name
+        );
+      }
       return newMember;
 
     } catch (error) {

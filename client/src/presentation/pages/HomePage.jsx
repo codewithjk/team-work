@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FcTodoList } from "react-icons/fc";
@@ -45,6 +44,7 @@ console.log("home rendered")
           projectApi.getAllProjects(),
         ]);
 
+
         setAssignedTasks(tasksResponse.data.tasksAssignedToUser);
         setProjects(projectsResponse.data.projects);
       } catch (error) {
@@ -52,6 +52,7 @@ console.log("home rendered")
       }
     };
     fetchData();
+    console.log(assignedTasks)
     if (assignedTasks.length > 0) {
       let task = assignedTasks.find((task) => task.state != "completed" && task.state != "cancelled");
       console.log(task)
