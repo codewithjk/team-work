@@ -16,52 +16,17 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSelector } from "react-redux";
 
-import { useEffect } from "react";
-import projectApi from "../../infrastructure/api/projectApi";
 import { Badge } from "./ui/badge";
-import { getSocket } from "@/utils/socketClient.config";
-import { useDispatch } from "react-redux";
-import { setProjcetAction } from "../../application/actions/projectAction";
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [projectsDropdownOpen, setProjectsDropdownOpen] = useState(false);
   const [openProjectDropdowns, setOpenProjectDropdowns] = useState({});
   const location = useLocation();
-  // const [projects, setProjects] = useState([]);
   const profile = useSelector((state) => state.profile);
   const {Allprojects} = useSelector((state) => state.project);
-
-  
   const { profileData } = profile;
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const response = await projectApi.getAllProjects({ allProjects: true });
-        const data = response.data.projects;
-        if (response.status === 200) {
-          
-          setProjects(data);
-        } else {
-          // toast.error("Failed to fetch projects.");
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
-
-    // fetchProjects();
-    dispatch(setProjcetAction())
-  }, []);
-
-  //function to join the project group
-  const handleSelectTask = (project) => {
-    const userId = profileData._id;
-    const socket = getSocket();
-    socket.emit("joinProjectTask", { projectId: project._id, userId });
-  };
+ 
 
   const { unread } = useSelector((state) => state.notification);
 
@@ -113,8 +78,9 @@ function Sidebar() {
       >
         {/* Avatar Section */}
         <div className="flex items-center justify-between p-4 ">
+        <Link to="/profile">
           <Avatar className="cursor-pointer overflow-hidden">
-            <Link to="/profile">
+            
               <AvatarImage
                 src={profileData?.avatar}
                 className="object-cover w-full h-full"
@@ -122,8 +88,9 @@ function Sidebar() {
               <AvatarFallback className=" font-extrabold text-2xl">
                 {profileData?.name[0].toUpperCase()}
               </AvatarFallback>
-            </Link>
+          
           </Avatar>
+          </Link>
           <div className="px-2 md:block">
             <Link to="/profile" className="text-sm font-medium text-primary">
               {profileData?.name}
